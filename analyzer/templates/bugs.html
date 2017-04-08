@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>漏洞规则</title>
+    <link href="/static/img/favicon.png" type="image/png" rel="alternate icon">
+    <link href="/static/css/semantic.css" type="text/css" rel="stylesheet">
+    <link href="/static/components/icon.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/home.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/jquery.fileupload.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/kkpager_orange.css" type="text/css" rel="stylesheet">
+
+    <script src="/static/js/jquery-2.1.1.min.js" type="text/javascript"></script>
+    <script src="/static/js/semantic.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.ui.widget.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.iframe-transport.js" type="text/javascript"></script>
+    <script src="/static/js/highcharts.js" type="text/javascript"></script>
+    <script src="/static/js/kkpager.min.js" text="text/javascript"></script>
+    <script src="/static/js/jquery.fileupload.js" type="text/javascript"></script>
+    <script src="/static/js/chartkick.js" tyep="text/javascript"></script>
+    <script src="/static/js/upload.js" text="text/javascript"></script>
+    <script src="/static/js/fixtableheader.js" text="text/javascripy"></script>
+    <script src="/static/js/analyze.js" text="text/javascript"></script>
+    <script src="/static/js/kkpager.min.js" text="text/javascript"></script>
+    <script src="/static/js/jquery.datatables.min.js" text="text/javascript"></script>
+    <script text="text/javascript">
+        $(function(){
+            $('tbody tr').each(
+                    function(){
+                        $(this).children().eq(0).html( $(this).index());
+                    }
+            )
+        })
+    </script>
+        <style type="text/css">
+        table tbody td {
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+        </style>
+
+    <script>
+        $(document).ready(function () {
+            $("#loading").hide();
+        });
+    </script>
+
+
+</head>
+
+<body id='home'>
+<div class="ui active dimmer" id="loading">
+    <div class="ui medium indeterminate text loader">Loading</div>
+</div>
+<div class="ui basic active modal" id="loadbar">
+    <div class="ui dimmer" id="loadbartable">
+        <div class="ui medium indeterminate text loader">Loading</div>
+    </div>
+</div>
+<div class="ui fixed inverted menu">
+    <a class="item" style='margin-left: 10rem;padding: 1.2rem;' href='#'>
+        <i class="home icon"></i>EasyEdu-Analyzer
+    </a>
+
+      <a class="item" style='padding: 1.2rem;' href='/options' id='upload-nav'>
+        <i class="icon setting"></i>嗅探配置
+    </a>
+
+    <a class="item" style='padding: 1.2rem;' href='/upload' id='upload-nav1'>
+        <i class="file icon"></i>文件管理
+    </a>
+
+    <a class="item active" style='padding: 1.2rem;' href='/bugs' id='upload-nav2'>
+        <i class="icon beer"></i>漏洞规则
+    </a>
+
+
+</div>
+<br/>
+<div class="ui divider"></div>
+<div id='wrapper'>
+    <div class="ui small form">
+        <div class="ui segment">
+            <link rel="stylesheet" type="text/css" href="/static/css/kkpager_orange.css">
+            <h3 class="ui dividing header">漏洞规则管理</h3>
+            <div class="ui stacked segment">
+        <br/>
+        <div class="ui top attached black pointing menu">
+            <a class="active item" data-tab="first">SQL注入</a>
+            <a class="item" data-tab="second">XSS跨站</a>
+            <a class="item" data-tab="third">其他</a>
+        </div>
+        <div class="ui bottom attached active tab segment" data-tab="first">
+            <!--first-->
+            {% if sql_code %}
+                    <div class="ui bottom attached active tab segment">
+                        <div class="ui stacked segment" style="height:23rem">
+                            <div style="position:absolute; height:18rem; overflow:auto;width:100%">
+                                <table class="ui black small table" id="pcaptable" cellpadding="0"
+                                        cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th width="10%">#</th>
+                                    <th width="85%">特征字符</th>
+                                    <th width="5%" >编辑</th>
+                                </tr>
+                                </thead>
+                                <tbody style="cursor:pointer;">
+                                    {% for perpro in sql_injection %}
+                                        <tr>
+                                            <td class="number" value="{{ perpro.id }}">{{ perpro.id }}</td>
+                                            <td>
+                                                {% autoescape on %}
+                                                    {{ perpro.filter_string }}
+                                                {% endautoescape %}
+                                            </td>
+{#                                            <td>{{ perpro.filter_reg }} </td>#}
+                                            <td class="right aligned collapsing">
+                                                <input style="zoom:2;" type="checkbox" name="delsqlbugs" value="{{ perpro.id }}"><label></label>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                </table>
+                            </div>
+                            <div class="ui small button" id="delsql-button"  style="float:right;margin-top:265px;">
+                                删除
+                            </div>
+
+                        </div>
+                    </div>
+
+                {% else %}
+                <div class="ui stacked segment">
+                    <div class="ui fitted stackable grid">
+                        <div class="ui sixteen wide column">
+                            <div class="ui black center aligned segment">
+                                <div class="ui large horizontal list">
+                                    <div class="item">
+                                        <div class="content">
+                                            <div class="header">{{ msg }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            <form action="/bugs/sql/" method="post">
+                    <br><span>添加SQL注入规则</span> </br>
+                    <input type="text" name="filter_string" placeholder="请输入需匹配的字符串,例如‘and 1=1’"/>
+                    <br> </br>
+{#                    <br><span>匹配正则</span> </br>#}
+{#                    <input type="text" name="filter_reg" placeholder="请输入可能的正则"/>#}
+{#                    <br> </br>#}
+                    <input class="ui small button" type="submit" value="保存" style="float:right;"/>
+            </form>
+        </div>
+
+        <div class="ui bottom attached tab segment" data-tab="second">
+            <!--second-->
+            {% if xss_code %}
+                    <div class="ui bottom attached active tab segment">
+                        <div class="ui stacked segment" style="height:23rem">
+                            <div style="position:absolute; height:18rem; overflow:auto;width:98%">
+                                <table class="ui black small table" id="pcaptable" cellpadding="0"
+                                        cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th width="10%">#</th>
+                                    <th width="85%">特征字符</th>
+{#                                    <th width="40%">正则匹配</th>#}
+                                    <th width="5%" >编辑</th>
+                                </tr>
+                                </thead>
+                                <tbody style="cursor:pointer;">
+                                    {% for perpro in xss %}
+                                        <tr>
+                                        <td class="number" value="{{ perpro.id }}"></td>
+                                        <td>
+                                            {% autoescape on %}
+                                            {{ perpro.filter_string }}
+                                            {% endautoescape %}
+                                        </td>
+{#                                        <td>{{ perpro.filter_reg }} </td>#}
+                                         <td class="right aligned collapsing">
+                                                <input class="test" style="zoom:2;" type="checkbox" name="delxssbugs" value="{{ perpro.id }}">
+                                         </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                </table>
+                            </div>
+                              <div class="ui small button" id="delxss-button"  style="float:right;margin-top:265px;">
+                                删除
+                              </div>
+                        </div>
+                    </div>
+                {% else %}
+                <div class="ui stacked segment">
+                    <div class="ui fitted stackable grid">
+                        <div class="ui sixteen wide column">
+                            <div class="ui black center aligned segment">
+                                <div class="ui large horizontal list">
+                                    <div class="item">
+                                        <div class="content">
+                                            <div class="header">{{ msg }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+             <form action="/bugs/xss/" method="post">
+                    <br><span>添加XSS跨规则</span> </br>
+                    <input type="text" name="filter_string" placeholder="请输入需匹配的特征字符串"/>
+                    <br> </br>
+
+{#                    <br><span>正则匹配</span> </br>#}
+{#                    <input type="text" name="filter_reg"/>#}
+{#                    <br> </br>#}
+                    <input class="ui small button" type="submit" value="保存" style="float:right;"/>
+            </form>
+        </div>
+
+        <div class="ui bottom attached tab segment" data-tab="third">
+            <!--third-->
+            {% if other_code %}
+                    <div class="ui bottom attached active tab segment">
+                        <div class="ui stacked segment" style="height:23rem">
+                            <div style="position:absolute; height:18rem; overflow:auto;width:98%">
+                                <table class="ui black small table" id="pcaptable" cellpadding="0"
+                                        cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th width="10%">#</th>
+                                    <th width="85%">特征字符</th>
+{#                                    <th width="40%">正则匹配</th>#}
+                                    <th width="5%">编辑</th>
+                                </tr>
+                                </thead>
+                                <tbody style="cursor:pointer;">
+                                    {% for perpro in other %}
+                                        <tr>
+                                        <td class="number" value="{{ perpro.id }}"></td>
+                                        <td>
+                                            {% autoescape on %}
+                                            {{ perpro.filter_string }}
+                                            {% endautoescape %}
+                                        </td>
+{#                                        <td>{{ perpro.filter_reg }} </td>#}
+                                         <td class="right aligned collapsing">
+                                                <input style="zoom:2;" type="checkbox" name="delotherbugs" value="{{ perpro.id }}"><label></label>
+                                         </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                </table>
+                            </div>
+                            <div class="ui small button" id="delother-button"  style="float:right;margin-top:265px;">
+                                删除
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                <div class="ui stacked segment">
+                    <div class="ui fitted stackable grid">
+                        <div class="ui sixteen wide column">
+                            <div class="ui black center aligned segment">
+                                <div class="ui large horizontal list">
+                                    <div class="item">
+                                        <div class="content">
+                                            <div class="header">{{ msg }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            <form action="/bugs/other/" method="post">
+                    <br><span>自定义规则</span> </br>
+                    <input type="text" name="filter_string" placeholder="请输入需匹配的特征字符串"/>
+                    <br> </br>
+
+{#                    <br><span>正则匹配</span> </br>#}
+{#                    <input type="text" name="filter_reg"/>#}
+{#                    <br> </br>#}
+                    <input class="ui small button" type="submit" value="保存" style="float:right;"/>
+            </form>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+<br/><br/>
+<script src="/static/js/mybugs.js" text="text/javascript"></script>
+</body>
+</html>

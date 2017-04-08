@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% block content %}
+    {#{% import "library.html" as library %}#}
+    <link rel="stylesheet" type="text/css" href="/static/css/kkpager_orange.css">
+    <h3 class="ui dividing header">Pcap File Stats</h3>
+    <div class="ui stacked segment">
+        <div class="ui fitted stackable grid">
+            <div class="ui sixteen wide column">
+                <div class="ui black center aligned segment">
+                    <div class="ui large horizontal list">
+                        <div class="item">
+                            <i class="file text outline icon"></i>
+                            <div class="content">
+                                <div class="header">FileName</div>
+                                {{ pcapfile.file }}
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="database icon"></i>
+                            <div class="content">
+                                <div class="header">FileSize</div>
+                                {{ pcapfile.filesize }}
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="info circle icon"></i>
+                            <div class="content">
+                                <div class="header">Packets</div>
+                                {{ pcapfile.filepcap }}
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="zoom icon"></i>
+                            <div class="content">
+                                <div class="header">Avg Packet Length</div>
+                                {{ details.stats.avg_length }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="analyzeid" value="{{ pcapfile.id }}">
+        <div class="ui two column fitted stackable grid">
+            <div class="ui eleven wide column">
+                <div class="ui black segment">
+                    {#					{% column_chart details.stats.breakdown with library=library.col_library %}#}
+                </div>
+            </div>
+            <div class="ui five wide column">
+                <div class="ui black segment">
+                    {#					{% pie_chart details.stats.length_buckets with library=library.pie_library %}#}
+                </div>
+            </div>
+        </div>
+
+        <div class="spinner hide">
+            <div class="ui packetPane modal"></div>
+        </div>
+
+        <div class="ui small que modal">
+            <i class="close icon"></i>
+            <div class="header">
+                Confirm Filter?
+            </div>
+            <div class="actions">
+                <div class="ui negative button">
+                    No
+                </div>
+                <div class="ui positive right labeled icon button">
+                    Yes
+                    <i class="checkmark icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <br/>
+        <div class="ui top attached black pointing menu">
+            <a class="active item" data-tab="first">包列表信息</a>
+            <a class="item" data-tab="third">Web请求信息</a>
+            <a class="item" data-tab="fourth">DNS请求信息</a>
+        </div>
+        <div class="ui bottom attached active tab segment" data-tab="first">
+            <!--first-->
+            <div class="ui stacked segment" style="height:37rem">
+                <br/>
+                <div style="position:absolute; height:31rem; overflow:auto;width: 100%">
+                    <table class="ui black small table" id="pcaptable" cellpadding="0" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th width="6%">序号</th>
+                            <th width="9%">时间</th>
+                            <th width="13%">源地址</th>
+                            <th width="13%">目地址</th>
+                            <th width="5%">协议</th>
+                            <th width="5%">长度</th>
+                            <th>概要</th>
+                        </tr>
+                        </thead>
+                        <tbody style="cursor:pointer;" class="pktdetail" id="xxx_tbody">
+                        {% for packet in details.packets %}
+                            {% if packet.protocol == 'HTTP' %}
+                                <tr class="positive yytr">
+                            {% elif packet.protocol == 'TCP' %}
+                                <tr class="warning yytr">
+                            {% elif packet.protocol == 'UDP' %}
+                                <tr class="negative yytr">
+                            {% else %}
+                                <tr class="yytr">
+                            {% endif %}
+                        <td class="number">{{ packet.number }}</td>
+                        <td>{{ packet.time }}</td>
+                        <td>{{ packet.src_ip }} </td>
+                        <td>{{ packet.dst_ip }} </td>
+                        <td>{{ packet.protocol }}
+                            {% if packet.stream %}
+                                <a class="filter-stream pull-right" data-filter="tcp.stream == {{ packet.stream }}"
+                                   title="Follow Stream ({{ packet.stream }})"><i
+                                        class="fa fa-space-shuttle"></i></a>{% endif %}
+                        </td>
+                        <td>{{ packet.length }}</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">{{ packet.desc }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+{#                <div style="width:810px;margin-top:445px;">#}
+{#                    <div id="pkt_kkpager"></div>#}
+{#                </div>#}
+            </div>
+        </div>
+        <div class="ui bottom attached tab segment" data-tab="third">
+			<div class="ui raised segment">
+			<a class="ui red ribbon label">Web Packets</a>
+				<div class="ui black segment" style = "word-wrap: break-word;word-break:break-all;">
+
+                        {% for w in web %}
+                            {% if w.flag %}
+                                {% autoescape off %}
+                                    {{w.result }}
+                                {% endautoescape %}
+                            {% else %}
+                                 {{ w.count }}
+                                 <br>
+                                 {% autoescape on %}
+                                    {{w.result }}
+                                {% endautoescape %}
+                                <hr>
+                            {% endif %}
+
+                        {% endfor %}
+
+				</div>
+			</div>
+		</div>
+        <div class="ui bottom attached tab segment" data-tab="fourth">
+            <div class="ui raised segment">
+                <a class="ui red ribbon label">DNS Requests</a>
+                <div class="ui stacked segment">
+                    <div class="ui black center aligned segment">
+                        {% autoescape off %}
+                            {{ dns }}
+                        {% endautoescape %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="width:800px;margin:0 auto;">
+            <div id="kkpager"></div>
+        </div>
+    </div>
+
+    <style type="text/css">
+        table tbody td {
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+    </style>
+    <script src="/static/js/fixtableheader.js" text="text/javascripy"></script>
+    <script src="/static/js/analyze.js" text="text/javascript"></script>
+    <script>
+        function getParameter(name) {
+	        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	        var r = window.location.search.substr(1).match(reg);
+	        if (r!=null) return unescape(r[2]); return null;
+        }
+
+//init
+$(function(){
+	var totalPage = {{ num }};
+	var totalRecords = {{ total }};
+	var pageNo = getParameter('pno');
+	if(!pageNo){
+		pageNo = 1;
+	}
+	//生成分页
+	//有些参数是可选的，比如lang，若不传有默认值
+	kkpager.generPageHtml({
+		pno : {{ num }},
+		//总页码
+		total : {{ total }},
+		//总数据条数
+		totalRecords : {{ pcapfile.filepcap }},
+		getLink : function(n){
+			return "/analyze/" + {{ id }} + '/' + n + '/';
+		}
+		,lang				: {
+			firstPageText			: '首页',
+			firstPageTipText		: '首页',
+			lastPageText			: '尾页',
+			lastPageTipText			: '尾页',
+			prePageText				: '上一页',
+			prePageTipText			: '上一页',
+			nextPageText			: '下一页',
+			nextPageTipText			: '下一页',
+			totalPageBeforeText		: '共',
+			totalPageAfterText		: '页',
+			currPageBeforeText		: '当前第',
+			currPageAfterText		: '页',
+			totalInfoSplitStr		: '/',
+			totalRecordsBeforeText	: '共',
+			totalRecordsAfterText	: '条数据',
+			gopageBeforeText		: '&nbsp;转到',
+			gopageButtonOkText		: '确定',
+			gopageAfterText			: '页',
+			buttonTipBeforeText		: '第',
+			buttonTipAfterText		: '页'
+		}
+	});
+});
+    </script>
+{% endblock %}

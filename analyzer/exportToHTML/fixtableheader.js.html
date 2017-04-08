@@ -1,0 +1,71 @@
+<html>
+<head>
+<title>fixtableheader.js</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(128,128,128); font-style: italic; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(0,0,128); font-weight: bold; }
+.s3 { color: rgb(0,128,0); font-weight: bold; }
+.s4 { color: rgb(0,0,255); }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+fixtableheader.js</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">/* 
+* Auther:Mike.Jiang 
+* Email: dataadapter@hotmail.com 
+* Date: 2012-09-05 
+*/</span><span class="s1"> 
+</span><span class="s0">/* 
+主要思想： 
+1&gt;将原有的TABLE中的THEAD元素复制一份放在一个新的DIV(fixedheadwrap)中 
+2&gt;设置这个fixedheadwrap为绝对位于原来的TABLE的THEAD位置 
+*/</span><span class="s1"> 
+(</span><span class="s2">function </span><span class="s1">($) { 
+    $.fn.extend({ 
+        FixedHead: </span><span class="s2">function </span><span class="s1">(options) { 
+            </span><span class="s2">var </span><span class="s1">op = $.extend({ tableLayout: </span><span class="s3">&quot;auto&quot; </span><span class="s1">}, options); 
+            </span><span class="s2">return this</span><span class="s1">.each(</span><span class="s2">function </span><span class="s1">() { 
+                </span><span class="s2">var </span><span class="s1">$this = $(</span><span class="s2">this</span><span class="s1">); </span><span class="s0">//指向当前的table</span><span class="s1"> 
+                </span><span class="s2">var </span><span class="s1">$thisParentDiv = $(</span><span class="s2">this</span><span class="s1">).parent(); </span><span class="s0">//指向当前table的父级DIV，这个DIV要自己手动加上去</span><span class="s1"> 
+                $thisParentDiv.wrap(</span><span class="s3">&quot;&lt;div class='fixedtablewrap'&gt;&lt;/div&gt;&quot;</span><span class="s1">).parent().css({ </span><span class="s3">&quot;position&quot;</span><span class="s1">: </span><span class="s3">&quot;relative&quot; </span><span class="s1">}); </span><span class="s0">//在当前table的父级DIV上，再加一个DIV</span><span class="s1"> 
+                </span><span class="s2">var </span><span class="s1">x = $thisParentDiv.position(); 
+ 
+                </span><span class="s2">var </span><span class="s1">fixedDiv = $(</span><span class="s3">&quot;&lt;div class='fixedheadwrap' style='clear:both;overflow:hidden;z-index:11;position:absolute;' &gt;&lt;/div&gt;&quot;</span><span class="s1">) 
+                    .insertBefore($thisParentDiv)</span><span class="s0">//在当前table的父级DIV的前面加一个DIV，此DIV用来包装tabelr的表头</span><span class="s1"> 
+                    .css({ </span><span class="s3">&quot;width&quot;</span><span class="s1">: $thisParentDiv[</span><span class="s4">0</span><span class="s1">].clientWidth, </span><span class="s3">&quot;left&quot;</span><span class="s1">: x.left, </span><span class="s3">&quot;top&quot;</span><span class="s1">: x.top }); 
+ 
+                </span><span class="s2">var </span><span class="s1">$thisClone = $this.clone(</span><span class="s2">true</span><span class="s1">); 
+                $thisClone.find(</span><span class="s3">&quot;tbody&quot;</span><span class="s1">).remove(); </span><span class="s0">//复制一份table，并将tbody中的内容删除，这样就仅余thead，所以要求表格的表头要放在thead中</span><span class="s1"> 
+                $thisClone.appendTo(fixedDiv); </span><span class="s0">//将表头添加到fixedDiv中</span><span class="s1"> 
+ 
+                $this.css({ </span><span class="s3">&quot;marginTop&quot;</span><span class="s1">: </span><span class="s4">0</span><span class="s1">, </span><span class="s3">&quot;table-layout&quot;</span><span class="s1">: op.tableLayout }); 
+                </span><span class="s0">//当前TABLE的父级DIV有水平滚动条，并水平滚动时，同时滚动包装thead的DIV</span><span class="s1"> 
+                $thisParentDiv.scroll(</span><span class="s2">function </span><span class="s1">() { 
+                    fixedDiv[</span><span class="s4">0</span><span class="s1">].scrollLeft = $(</span><span class="s2">this</span><span class="s1">)[</span><span class="s4">0</span><span class="s1">].scrollLeft; 
+                }); 
+ 
+                </span><span class="s0">//因为固定后的表头与原来的表格分离开了，难免会有一些宽度问题</span><span class="s1"> 
+                </span><span class="s0">//下面的代码是将原来表格中每一个TD的宽度赋给新的固定表头</span><span class="s1"> 
+                </span><span class="s2">var </span><span class="s1">$fixHeadTrs = $thisClone.find(</span><span class="s3">&quot;thead tr&quot;</span><span class="s1">); 
+                </span><span class="s2">var </span><span class="s1">$orginalHeadTrs = $this.find(</span><span class="s3">&quot;thead&quot;</span><span class="s1">); 
+                $fixHeadTrs.each(</span><span class="s2">function </span><span class="s1">(indexTr) { 
+                    </span><span class="s2">var </span><span class="s1">$curFixTds = $(</span><span class="s2">this</span><span class="s1">).find(</span><span class="s3">&quot;td&quot;</span><span class="s1">); 
+                    </span><span class="s2">var </span><span class="s1">$curOrgTr = $orginalHeadTrs.find(</span><span class="s3">&quot;tr:eq(&quot; </span><span class="s1">+ indexTr + </span><span class="s3">&quot;)&quot;</span><span class="s1">); 
+                    $curFixTds.each(</span><span class="s2">function </span><span class="s1">(indexTd) { 
+                        $(</span><span class="s2">this</span><span class="s1">).css(</span><span class="s3">&quot;width&quot;</span><span class="s1">, $curOrgTr.find(</span><span class="s3">&quot;td:eq(&quot; </span><span class="s1">+ indexTd + </span><span class="s3">&quot;)&quot;</span><span class="s1">).width()); 
+                    }); 
+                }); 
+            }); 
+        } 
+    }); 
+})(jQuery);</span></pre>
+</body>
+</html>

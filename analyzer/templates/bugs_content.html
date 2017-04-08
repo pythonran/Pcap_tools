@@ -1,0 +1,64 @@
+{% extends "wraper.html" %}
+{% block content2 %}
+    {% if code %}
+        <div class="ui bottom attached active tab segment">
+            <div class="ui stacked segment" style="height:20rem">
+                <br/>
+                <div style="position:absolute; height:31rem; overflow:auto;width: 100%">
+                    <table class="ui black small table" id="pcaptable" cellpadding="0"
+                           cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th width="6%">#</th>
+                            <th width="9%">Project</th>
+                            <th width="13%">Netcard</th>
+                            <th width="13%">Filter</th>
+                            <th width="3%">PktCounts</th>
+                            <th width="3%">PcapSize</th>
+                            <th width="%4">PcapFname</th>
+                            <th>On/Off</th>
+                        </tr>
+                        </thead>
+                        <tbody style="cursor:pointer;" class="controller">
+                        {% for perpro in params %}
+                            {% if perpro.stat %}
+                                <tr class="positive">
+                                    {% else %}
+                                <tr class="warning">
+                                <tr>
+                            {% endif %}
+                        <td class="number">{{ perpro.id }}</td>
+                        <td>{{ perpro.pro_name }}</td>
+                        <td>{{ perpro.netcard }}</td>
+                        <td>{{ perpro.filter }} </td>
+                        <td>{{ perpro.pkt_counts }} </td>
+                        <td>{{ perpro.pcap_size }}</td>
+                        <td>{{ perpro.pcap_name }}</td>
+                        <td>{% if pero.stat %}<span>On</span>
+                            {% else %}<span>Off</span>
+                            {% endif %}
+                        </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="ui stacked segment">
+        <div class="ui fitted stackable grid">
+            <div class="ui sixteen wide column">
+                <div class="ui black center aligned segment">
+                    <div class="ui large horizontal list">
+                        <div class="item">
+                            <div class="content">
+                                <div class="header">{{ msg }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

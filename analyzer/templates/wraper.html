@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>在线流量嗅探</title>
+    <link href="/static/img/favicon.png" type="image/png" rel="alternate icon">
+    <link href="/static/css/semantic.css" type="text/css" rel="stylesheet">
+    <link href="/static/components/icon.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/home.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/jquery.fileupload.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/kkpager_orange.css" type="text/css" rel="stylesheet">
+
+    <script src="/static/js/jquery-2.1.1.min.js" type="text/javascript"></script>
+    <script src="/static/js/semantic.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.ui.widget.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.iframe-transport.js" type="text/javascript"></script>
+    <script src="/static/js/highcharts.js" type="text/javascript"></script>
+    <script src="/static/js/kkpager.min.js" text="text/javascript"></script>
+    <script src="/static/js/jquery.fileupload.js" type="text/javascript"></script>
+    <script src="/static/js/chartkick.js" tyep="text/javascript"></script>
+    <script src="/static/js/upload.js" text="text/javascript"></script>
+    <script src="/static/js/fixtableheader.js" text="text/javascripy"></script>
+    <script src="/static/js/analyze.js" text="text/javascript"></script>
+
+    <script src="/static/js/jquery.datatables.min.js" text="text/javascript"></script>
+    <script src="/static/js/jquery-form.js" text="text/javascript"></script>
+    <script src="/static/js/layer/layer.js" text="text/javascript"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#loading").hide();
+        });
+    </script>
+
+    <style type="text/css">
+        table tbody td {
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body id='home'>
+<div class="ui active dimmer" id="loading">
+    <div class="ui medium indeterminate text loader">Loading</div>
+</div>
+<div class="ui basic active modal" id="loadbar">
+    <div class="ui dimmer" id="loadbartable">
+        <div class="ui medium indeterminate text loader">Loading</div>
+    </div>
+</div>
+<div class="ui fixed inverted menu">
+    <a class="item" style='margin-left: 10rem;padding: 1.2rem;' href='#'>
+        <i class="home icon"></i>EasyEdu-Analyzer
+    </a>
+
+    <a class="item active" style='padding: 1.2rem;' href='/options' id='upload-nav'>
+        <i class="icon setting"></i>嗅探配置
+    </a>
+
+    <a class="item" style='padding: 1.2rem;' href='/upload' id='upload-nav1'>
+        <i class="file icon"></i>文件管理
+    </a>
+
+    <a class="item " style='padding: 1.2rem;' href='/bugs' id='upload-nav2'>
+        <i class="icon beer"></i>漏洞规则
+    </a>
+
+</div>
+<br/>
+<div class="ui divider"></div>
+<div id='wrapper'>
+    <div class="ui small form">
+        <div class="ui segment">
+            <h3 class="ui dividing header">项目管理</h3>
+            {% block content2 %}
+            {% endblock %}
+
+            <div class="ui stacked segment">
+                <br/>
+                <div class="ui top attached black pointing menu">
+                    <a class="active item" data-tab="first">添加项目</a>
+                </div>
+                <div class="ui bottom attached active tab segment" data-tab="first">
+                    <!--first-->
+                    <div class="ui stacked segment" style="height:42rem">
+                        <br/>
+                        <form id="proform">
+                            <br><span>新建项目</span> <span id="message"
+                                                        style="color: red;display: none">项目已存在！</span> </br>
+                            <input type="text" id="username" name="pro_name" placeholder="请输入项目名称，例如：new_pcap"/>
+                            <br> </br>
+
+                            <br><span>选择网卡:{{ deviceerr }}</span> </br>
+                            <!--<input type="text" list="url_list" name="netcard"/>-->
+                            <select autocomplete = "off" id="url_list" name="netcard" placeholder="请选择需要监听的网卡">
+                                {% for netcard in Iface %}
+                                    <option label="{{ netcard }}" value="{{ netcard }}"/>
+                                {% endfor %}
+                            </select>
+                            <br>
+
+                            <br><span> 过滤条件(遵循BPF过滤条件:<a href="/bpffilter/">在线查看BPF</a>)</span> </br>
+                            <input type="text" value="" list="bpf_filter" name="filter" placeholder="请输入过滤条件" id ="bpf"/>
+                                <datalist id="bpf_filter">
+                                    {% for bpf in bpf_filter%}
+                                        <option label="{{ bpf.info }}" value="{{ bpf.example }}"></option>
+                                    {% endfor %}
+                                </datalist>
+                            <br> </br>
+
+                            <br><span>抓包阈值</span> </br>
+                            <input id="pkt_count" type="text" name="pkt_counts" placeholder="请输入最大抓包量,0为无限制(单位:个)"
+                                   onKeyUp="value=value.replace(/\D/g,'')" onafterpaste="value=value.replace(/\D/g,'')">
+                            <br> </br>
+
+                            <br><span> 文件阈值</span> </br>
+                            <input id="file_size" type="text" name="pcap_size"
+                                   placeholder="请输入抓包的大小,0为无限制(单位:M;与抓包阈值，二者满足其一即停止嗅探)"
+                                   onKeyUp="value=value.replace(/\D/g,'')" onafterpaste="value=value.replace(/\D/g,'')">
+                            <br> </br>
+
+                            <input class="ui small button" type="button" disabled="" id="btn" value="保存"
+                                   style="float:right;"/>
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<br/><br/>
+<script text="text/javascript">
+    $(function () {
+        $('tbody tr').each(
+                function () {
+                    $(this).children().eq(0).html($(this).index());
+                }
+        )
+    });
+
+</script>
+<script src="/static/js/mybugs.js" text="text/javascript"></script>
+<script text="text/javascript">
+    $("#btn").click(function () {
+        createDevice();
+    });
+    function createDevice() {
+        $("#proform").ajaxSubmit({
+            url: "../options",
+            type: "post",
+            dataType: "json",
+            success: function (result) {
+                if (result["data_err"] == 1) {
+                    layer.msg(result["msg"]);
+                }
+            }, error: function () {
+                window.location.reload();
+            }
+        });
+        return false;
+    }
+
+    $("#username").blur(function () {
+        $.ajax({
+            type: "put",
+            url: "../options",
+            data: {"pname": $("#username").val()},
+            success: function (message) {
+                if (message != '') {
+                    $("#btn").attr("disabled", "disabled");
+                }
+                else {
+                    $("#btn").removeAttr("disabled", "disabled");
+                }
+                $("#message").show();
+                $("#message").html(message);
+            }
+        });
+    });
+
+    $("#bpf").blur(function () {
+        $.ajax({
+            type: "post",
+            url: "/sniffverify/",
+            data: {"filter": $("#bpf").val(),"netcard":$("#url_list").val()},
+            success: function (message) {
+                    if (message == "device_err"){
+                        layer.msg("请确认项目需要监听桥接出的网卡！！",{
+                            time:2000
+                        })
+                    }else if (message == "filter_err"){
+                        $("#btn").attr("disabled", "disabled");
+                        layer.msg("非法的BPF过滤条件，请重新输入",{
+                            time:1000
+                        })
+                    }
+                    else {
+                        $("#btn").removeAttr("disabled", "disabled");
+                    }
+            }
+        });
+    });
+</script>
+
+
+</body>
+</html>

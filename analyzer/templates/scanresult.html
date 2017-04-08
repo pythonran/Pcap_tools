@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>扫描结果</title>
+    <link href="/static/img/favicon.png" type="image/png" rel="alternate icon">
+    <link href="/static/css/semantic.css" type="text/css" rel="stylesheet">
+    <link href="/static/components/icon.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/home.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/jquery.fileupload.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/kkpager_orange.css" type="text/css" rel="stylesheet">
+
+    <script src="/static/js/jquery-2.1.1.min.js" type="text/javascript"></script>
+    <script src="/static/js/semantic.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.ui.widget.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.iframe-transport.js" type="text/javascript"></script>
+    <script src="/static/js/highcharts.js" type="text/javascript"></script>
+    <script src="/static/js/kkpager.min.js" text="text/javascript"></script>
+    <script src="/static/js/jquery.fileupload.js" type="text/javascript"></script>
+    <script src="/static/js/chartkick.js" tyep="text/javascript"></script>
+    <script src="/static/js/upload.js" text="text/javascript"></script>
+    <script src="/static/js/fixtableheader.js" text="text/javascripy"></script>
+    <script src="/static/js/upload.js" text="text/javascript"></script>
+    <script src="/static/js/analyze.js" text="text/javascript"></script>
+    <script src="/static/js/cookie_util.js" text="text/javascript"></script>
+    <script src="/static/js/jquery.cookie.js" text="text/javascript"></script>
+    <script src="/static/js/layer/layer.js" text="text/javascript"></script>
+    <script>
+        $(document).ready(function () {
+            $("#loading").hide();
+        });
+    </script>
+
+</head>
+<body id='home'>
+<br/>
+
+<div id='wrapper'>
+    <div class="ui small form">
+        <div class="ui segment">
+            <h3 class="ui dividing header">扫描结果(共{{ recoder }}条)</h3>
+            {% if code %}
+                <div class="ui bottom attached active tab segment">
+                    <div class="ui stacked segment" style="height:60rem">
+                        <br/>
+                        <div style="position:absolute; height:50rem; overflow:auto;width: 100%">
+                            <table class="ui black small table" id="pcaptable" cellpadding="0"
+                                   cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <!-- 序号、规则、包号、协议、内容、编辑-->
+                                    <th width="4%">序号</th>
+                                    <th width="20%">规则</th>
+                                    <th width="5%">pkt_num</th>
+                                    <th width="65%">pkt_content</th>
+                                    <th width="6%">编辑</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for mbdc in mongo_bugs_data %}
+                                    <tr>
+                                        <td width="4%">{{ mbdc.content_num }}</td>
+                                        <td width="20%">
+                                            {% autoescape off %}
+                                                {{ mbdc.bugs_name }}
+                                            {% endautoescape %}
+                                        </td>
+                                        <td width="5%">{{ mbdc.packet_num }}</td>
+                                        {% if mbdc.escape %}
+                                            {% autoescape off %}
+                                                <td width="50%">
+                                                    {{ mbdc.content }}
+                                                </td>
+                                            {% endautoescape %}
+                                        {% else %}
+                                            <td width="50%">
+                                                <div class="ui vertical segment">
+                                                    <p style="word-wrap:break-word;word-break:break-all">
+                                                        <span style="font-weight: bold; color: red">注意: 含有html标签的数据包</span>
+                                                        <br>
+                                                        {% autoescape on %}
+                                                            {{ mbdc.content }}
+                                                        {% endautoescape %}
+                                                    </p>
+                                                </div>
+                                            </td>
+                                        {% endif %}
+                                        <td class="right aligned collapsing" width="6%">
+                                            <input style="zoom:2;" type="checkbox" name="repoter_select"
+                                                   value="{{ mbdc.content_num }}"><label></label>
+                                        </td>
+                                    </tr>
+
+                                {% endfor %}
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div class="full-width" style="position: absolute;bottom: 30px;right: 10px;">
+                            <div class="ui small button" id="repoter-button" style="float:right;margin:auto;">
+                                生成报告
+                            </div>
+                            <div class="ui small button" id="select-button" style="float:right;margin-right: 10px">
+                                全选
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if  kkpager_flag %}
+                    <div style="width:800px;margin:0 auto;">
+                        <div id="kkpager"></div>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="ui stacked segment">
+                    <div class="ui fitted stackable grid">
+                        <div class="ui sixteen wide column">
+                            <div class="ui black center aligned segment">
+                                <div class="ui large horizontal list">
+                                    <div class="item">
+                                        <div class="content">
+                                            <div class="header">{{ msg }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<br/><br/>
+
+<script>
+    function getParameter(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
+
+    //init
+    $(function () {
+        var totalPage = {{ curpage }};
+        var totalRecords = {{ page_total }};
+        var pageNo = getParameter('pno');
+        if (!pageNo) {
+            pageNo = 1;
+        }
+        //生成分页
+        //有些参数是可选的，比如lang，若不传有默认值
+        kkpager.generPageHtml({
+            pno: {{ curpage }},
+            //总页码
+            total: {{ page_total }},
+            //总数据条数
+            totalRecords: {{ recoder }},
+            getLink: function (n) {
+                return "/scandetail/" + {{ id }} +"/" + n + '/';
+            }
+            , lang: {
+                firstPageText: '首页',
+                firstPageTipText: '首页',
+                lastPageText: '尾页',
+                lastPageTipText: '尾页',
+                prePageText: '上一页',
+                prePageTipText: '上一页',
+                nextPageText: '下一页',
+                nextPageTipText: '下一页',
+                totalPageBeforeText: '共',
+                totalPageAfterText: '页',
+                currPageBeforeText: '当前第',
+                currPageAfterText: '页',
+                totalInfoSplitStr: '/',
+                totalRecordsBeforeText: '共',
+                totalRecordsAfterText: '条数据',
+                gopageBeforeText: '&nbsp;转到',
+                gopageButtonOkText: '确定',
+                gopageAfterText: '页',
+                buttonTipBeforeText: '第',
+                buttonTipAfterText: '页'
+            }
+        });
+    });
+</script>
+
+<script>
+    {#关闭页面是清除cookie#}
+
+    {#刷新页面checkbox#}
+    $(function () {
+        $("input[name='repoter_select']").each(function () {
+            var checkbox_value = $(this).attr("value");
+            var page = {{ curpage }} +"_key";
+            var idstr = getCookie(page);
+            if (idstr != null) {
+                var idlist = idstr.split(",");
+                for (var i = 0; i < idlist.length; i++) {
+                    if (checkbox_value == idlist[i]) {
+                        $(this).click();
+                        break;
+                    }
+                }
+            }
+        });
+    });
+
+    {#生成报告按钮#}
+    $("#repoter-button").click(function () {
+        layer.prompt({
+            title: "请输入报告名称"
+        }, function (value, index, elem) {
+            var flag = "";
+            $.ajax({
+                type: "post", async: false, url: "/repoterinfo/name/", data: {"name": value}, success: function (d) {
+                    flag = d;
+                }
+            });
+            if (flag === "false") {
+                layer.msg("名字重复，请重新输入！");
+                setTimeout(function () {
+                    $("#repoter-button").click();
+                }, 500);
+            } else if (flag === "warnning") {
+                layer.msg("名字为汉字,数字,字母,不能含有特殊字符！");
+                setTimeout(function () {
+                    $("#repoter-button").click();
+                }, 500);
+            }
+            else {
+                $.get("/scandetail/" + {{ id }}+"/info/", function (retdata) {
+                    layer.confirm(retdata, {
+                        btn: ['生成', '取消'] //按钮
+                    }, function () {
+
+                        var index = layer.load(1, {
+                            shade: [0.4, '#000'], //0.1透明度的白色背景
+                            success: function (layero, index) {
+                                layer.closeAll('dialog');
+
+                            }
+                        });
+                        $.get("/scandetail/" + {{ id }} +"/repoter/", function (d) {
+
+                            layer.close(index);
+                            layer.msg('生成完毕');
+                            setTimeout(function () {
+                                window.location.href = "../../../" + d;
+                            }, 1000);
+
+                        });
+
+                    }, function () {
+                        layer.msg('取消生成报告', {
+                            time: 1000 //20s后自动关闭
+                        });
+                    });
+                });
+            }
+            layer.close(index);
+        });
+    });
+
+    {#全选按钮事件#}
+    $("#select-button").click(function () {
+        var flag = false;
+        $("input[name='repoter_select']").each(function () {
+            if (!($(this).is(":checked"))) {
+                flag = true;
+            }
+        });
+        if (flag) {
+            $("input[name='repoter_select']").each(function () {
+                if (!($(this).is(":checked"))) {
+                    $(this).click();
+                }
+            });
+        }
+        else {
+            $("input[name='repoter_select']").each(function () {
+                $(this).click();
+            });
+        }
+    });
+
+</script>
+
+<!-- 添加cookie-->
+<script>
+    $("input[name='repoter_select']").click(function () {
+
+        var key = {{ curpage }} +'_key';
+        var cnum = $(this).attr("value") + ",";
+        var cnum_arry = [];
+        var url = window.location.href.split("/");
+        url = url[url.length - 3];
+        cnum_arry.push(cnum);
+
+        if ($(this).is(":checked")) {
+            var ret = getCookie(key);
+            if (ret == null) {
+                $.cookie(key, cnum_arry.join(""), {path: "/scandetail/" + url + "/"});
+            }
+            else {
+                cnum_arry.push(ret);
+                var tmp = ret.split(",");
+                var flag = true;
+                for (var i = 0; i < tmp.length; i++) {
+                    if (cnum.split(",")[0] == tmp[i]) {
+                        flag = false;
+                    }
+                }
+                if (flag) {
+                    $.cookie(key, cnum_arry.join(""), {path: "/scandetail/" + url + "/"});
+                }
+            }
+        }
+        else {
+            var ret = getCookie(key);
+            if (ret != null) {
+                var tmp_arry = ret.split(",");
+                var real_arry = tmp_arry;
+                for (var i = 0; i < tmp_arry.length; i++) {
+                    if (tmp_arry[i] == cnum.split(",")[0]) {
+                        real_arry.splice(i, 1);
+                    }
+                }
+                $.cookie(key, real_arry.join(","), {path: "/scandetail/" + url + "/"});
+            }
+            else {
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

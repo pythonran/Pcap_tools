@@ -1,0 +1,177 @@
+<html>
+<head>
+<title>mybugs.js</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(128,128,128); font-style: italic; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(0,128,0); font-weight: bold; }
+.s3 { color: rgb(0,0,128); font-weight: bold; }
+.s4 { color: rgb(0,0,255); }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+mybugs.js</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">/** 
+ * Created by Administrator on 2016/11/1 0001. 
+ */</span><span class="s1"> 
+</span><span class="s0">/*删除sql*/</span><span class="s1"> 
+$(document.getElementsByName(</span><span class="s2">&quot;delsqlbugs&quot;</span><span class="s1">)).click(</span><span class="s3">function </span><span class="s1">() { 
+    </span><span class="s3">if </span><span class="s1">($(</span><span class="s3">this</span><span class="s1">).hasClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">)) { 
+        $(</span><span class="s3">this</span><span class="s1">).removeClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">); 
+    } </span><span class="s3">else </span><span class="s1">{ 
+        $(</span><span class="s3">this</span><span class="s1">).addClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">); 
+    } 
+}); 
+$(</span><span class="s3">function </span><span class="s1">() { 
+    $(</span><span class="s2">&quot;#delsql-button&quot;</span><span class="s1">).click(deletesqlbugs); 
+}); 
+</span><span class="s3">function </span><span class="s1">deletesqlbugs() { 
+    </span><span class="s3">var </span><span class="s1">array = </span><span class="s3">new </span><span class="s1">Array(); 
+    $(document.getElementsByName(</span><span class="s2">&quot;delsqlbugs&quot;</span><span class="s1">)).each(</span><span class="s3">function </span><span class="s1">() { 
+        </span><span class="s3">if </span><span class="s1">($(</span><span class="s3">this</span><span class="s1">).hasClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">)) { 
+            array.push($(</span><span class="s3">this</span><span class="s1">).attr(</span><span class="s2">&quot;value&quot;</span><span class="s1">)); 
+            console.log(array); 
+        } 
+    }); 
+    $.get(</span><span class="s2">&quot;/delbugs/&quot; </span><span class="s1">+ array + </span><span class="s2">'/'</span><span class="s1">, </span><span class="s3">function </span><span class="s1">(result) { 
+        </span><span class="s3">if </span><span class="s1">(result.status = </span><span class="s4">1</span><span class="s1">) { 
+            window.location.reload(); 
+        } </span><span class="s3">else </span><span class="s1">{ 
+            </span><span class="s0">// alert(result.msg);</span><span class="s1"> 
+        } 
+    }); 
+} 
+ 
+</span><span class="s0">/*删除xss*/</span><span class="s1"> 
+$(document.getElementsByName(</span><span class="s2">&quot;delxssbugs&quot;</span><span class="s1">)).click(</span><span class="s3">function </span><span class="s1">() { 
+    </span><span class="s3">if </span><span class="s1">($(</span><span class="s3">this</span><span class="s1">).hasClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">)) { 
+        $(</span><span class="s3">this</span><span class="s1">).removeClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">); 
+    } </span><span class="s3">else </span><span class="s1">{ 
+        $(</span><span class="s3">this</span><span class="s1">).addClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">); 
+    } 
+}); 
+$(</span><span class="s3">function </span><span class="s1">() { 
+    $(</span><span class="s2">&quot;#delxss-button&quot;</span><span class="s1">).click(deletexssbugs); 
+}); 
+</span><span class="s3">function </span><span class="s1">deletexssbugs() { 
+    </span><span class="s3">var </span><span class="s1">array = </span><span class="s3">new </span><span class="s1">Array(); 
+    $(document.getElementsByName(</span><span class="s2">&quot;delxssbugs&quot;</span><span class="s1">)).each(</span><span class="s3">function </span><span class="s1">() { 
+        </span><span class="s3">if </span><span class="s1">($(</span><span class="s3">this</span><span class="s1">).hasClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">)) { 
+            array.push($(</span><span class="s3">this</span><span class="s1">).attr(</span><span class="s2">&quot;value&quot;</span><span class="s1">)); 
+            console.log(array); 
+        } 
+    }); 
+    $.get(</span><span class="s2">&quot;/delbugs/&quot; </span><span class="s1">+ array + </span><span class="s2">'/'</span><span class="s1">, </span><span class="s3">function </span><span class="s1">(result) { 
+        </span><span class="s3">if </span><span class="s1">(result.status = </span><span class="s4">1</span><span class="s1">) { 
+            window.location.reload(); 
+        } </span><span class="s3">else </span><span class="s1">{ 
+            </span><span class="s0">// alert(result.msg);</span><span class="s1"> 
+        } 
+    }); 
+} 
+ 
+</span><span class="s0">/*删除other*/</span><span class="s1"> 
+$(document.getElementsByName(</span><span class="s2">&quot;delotherbugs&quot;</span><span class="s1">)).click(</span><span class="s3">function </span><span class="s1">() { 
+    </span><span class="s3">if </span><span class="s1">($(</span><span class="s3">this</span><span class="s1">).hasClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">)) { 
+        $(</span><span class="s3">this</span><span class="s1">).removeClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">); 
+    } </span><span class="s3">else </span><span class="s1">{ 
+        $(</span><span class="s3">this</span><span class="s1">).addClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">); 
+    } 
+}); 
+$(</span><span class="s3">function </span><span class="s1">() { 
+    $(</span><span class="s2">&quot;#delother-button&quot;</span><span class="s1">).click(deleteotherbugs); 
+}); 
+</span><span class="s3">function </span><span class="s1">deleteotherbugs() { 
+    </span><span class="s3">var </span><span class="s1">array = </span><span class="s3">new </span><span class="s1">Array(); 
+    $(document.getElementsByName(</span><span class="s2">&quot;delotherbugs&quot;</span><span class="s1">)).each(</span><span class="s3">function </span><span class="s1">() { 
+        </span><span class="s3">if </span><span class="s1">($(</span><span class="s3">this</span><span class="s1">).hasClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">)) { 
+            array.push($(</span><span class="s3">this</span><span class="s1">).attr(</span><span class="s2">&quot;value&quot;</span><span class="s1">)); 
+            console.log(array); 
+        } 
+    }); 
+    $.get(</span><span class="s2">&quot;/delbugs/&quot; </span><span class="s1">+ array + </span><span class="s2">'/'</span><span class="s1">, </span><span class="s3">function </span><span class="s1">(result) { 
+        </span><span class="s3">if </span><span class="s1">(result.status = </span><span class="s4">1</span><span class="s1">) { 
+            window.location.reload(); 
+        } </span><span class="s3">else </span><span class="s1">{ 
+            </span><span class="s0">// alert(result.msg);</span><span class="s1"> 
+        } 
+    }); 
+} 
+ 
+</span><span class="s0">/*删除项目*/</span><span class="s1"> 
+$(document.getElementsByName(</span><span class="s2">&quot;delpro&quot;</span><span class="s1">)).click(</span><span class="s3">function </span><span class="s1">() { 
+    </span><span class="s3">if </span><span class="s1">($(</span><span class="s3">this</span><span class="s1">).hasClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">)) { 
+        $(</span><span class="s3">this</span><span class="s1">).removeClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">); 
+    } </span><span class="s3">else </span><span class="s1">{ 
+        $(</span><span class="s3">this</span><span class="s1">).addClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">); 
+    } 
+    event.stopPropagation(); 
+}); 
+ 
+</span><span class="s0">/*删除嗅探项目*/</span><span class="s1"> 
+$(</span><span class="s3">function </span><span class="s1">() { 
+    $(</span><span class="s2">&quot;#delpro-button&quot;</span><span class="s1">).click(deletepro); 
+}); 
+ 
+</span><span class="s3">function </span><span class="s1">deletepro() { 
+    </span><span class="s3">var </span><span class="s1">array = </span><span class="s3">new </span><span class="s1">Array(); 
+    $(document.getElementsByName(</span><span class="s2">&quot;delpro&quot;</span><span class="s1">)).each(</span><span class="s3">function </span><span class="s1">() { 
+        </span><span class="s3">if </span><span class="s1">($(</span><span class="s3">this</span><span class="s1">).hasClass(</span><span class="s2">&quot;checked&quot;</span><span class="s1">)) { 
+            array.push($(</span><span class="s3">this</span><span class="s1">).attr(</span><span class="s2">&quot;value&quot;</span><span class="s1">)); 
+            </span><span class="s0">// console.log(array);</span><span class="s1"> 
+        } 
+    }); 
+    $.get(</span><span class="s2">&quot;/delpro/&quot; </span><span class="s1">+ array + </span><span class="s2">'/'</span><span class="s1">, </span><span class="s3">function </span><span class="s1">(result) { 
+        </span><span class="s3">if </span><span class="s1">(result.status = </span><span class="s4">1</span><span class="s1">) { 
+            window.location.reload(); 
+        } </span><span class="s3">else </span><span class="s1">{ 
+            </span><span class="s0">// alert(result.msg);</span><span class="s1"> 
+        } 
+    }); 
+} 
+ 
+</span><span class="s0">/*刷新嗅探项目*/</span><span class="s1"> 
+$(</span><span class="s3">function </span><span class="s1">() { 
+    $(</span><span class="s2">&quot;#flush-button&quot;</span><span class="s1">).click(flushpro); 
+}); 
+ 
+</span><span class="s3">function </span><span class="s1">flushpro() { 
+    </span><span class="s3">var </span><span class="s1">array = </span><span class="s3">new </span><span class="s1">Array(); 
+    $(</span><span class="s2">&quot;#flushtb tr&quot;</span><span class="s1">).each(</span><span class="s3">function </span><span class="s1">() { 
+        </span><span class="s3">var </span><span class="s1">flag = $(</span><span class="s3">this</span><span class="s1">).children().eq(</span><span class="s4">6</span><span class="s1">).html(); 
+        </span><span class="s3">if </span><span class="s1">(flag == </span><span class="s2">&quot;On&quot;</span><span class="s1">) { 
+            </span><span class="s0">// alert(&quot;ON&quot;);</span><span class="s1"> 
+            array.push($(</span><span class="s3">this</span><span class="s1">).children().eq(</span><span class="s4">0</span><span class="s1">).attr(</span><span class="s2">&quot;value&quot;</span><span class="s1">)); 
+        } 
+    }); 
+    </span><span class="s3">if </span><span class="s1">(array.length != </span><span class="s4">0</span><span class="s1">) { 
+        $.get(</span><span class="s2">&quot;/flushsniff/&quot; </span><span class="s1">+ array + </span><span class="s2">'/'</span><span class="s1">, </span><span class="s3">function </span><span class="s1">(result) { 
+            </span><span class="s3">if </span><span class="s1">(result.status = </span><span class="s4">1</span><span class="s1">) { 
+                layer.msg( </span><span class="s2">'刷新完成'</span><span class="s1">, { 
+                    time: </span><span class="s4">2000 </span><span class="s0">//1s后自动关闭</span><span class="s1"> 
+                }); 
+                window.location.reload(); 
+            } </span><span class="s3">else </span><span class="s1">{ 
+ 
+            } 
+        }); 
+ 
+    } 
+    </span><span class="s3">else </span><span class="s1">{ 
+        layer.msg(</span><span class="s2">&quot;没有正在嗅探中的项目&quot;</span><span class="s1">) 
+    } 
+ 
+} 
+ 
+ 
+ 
+</span></pre>
+</body>
+</html>

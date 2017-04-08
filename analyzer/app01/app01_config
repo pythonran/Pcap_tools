@@ -1,0 +1,17 @@
+[example_bpf]
+监听物理地址  = ether host 00:00:5e:00:53:00
+监听ARP = ether proto 0x0806
+滤出广播和多播 =  not broadcast and not multicast
+滤出ARP =  not arp
+只要IP4 =  ip
+IPv4地址 = host 192.0.2.1
+只要IPv6 = ip6
+IPv6地址  = host 2001:db8::1
+只要TCP = tcp
+只要UDP = udp
+80端口 = port 80
+TCP80端口 = tcp port 80
+滤出ARP、DNS = not arp and port not 53
+谷歌的非HTTP、SMTP包 = not port 80 and not port 25 and host www.google.org
+[report]
+downloadurl = http://192.168.137.100:8000/

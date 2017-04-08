@@ -1,0 +1,87 @@
+{% extends "wraper.html" %}
+{% block content2 %}
+
+    {% if code %}
+        <div class="ui bottom attached active tab segment">
+            <div class="ui stacked segment" style="height:24rem">
+                <br/>
+                <div style="position:absolute; height:18rem; overflow:auto;width: 100%">
+                    <table class="ui black small table" id="pcaptable" cellpadding="0"
+                           cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th width="2%">序号</th>
+                            <th width="15%">项目</th>
+                            <th width="13%">网卡</th>
+                            <th width="35%">过滤</th>
+                            <th width="15%">包数(个)</th>
+                            <th width="12%">大小(M)</th>
+                            <th width="4%">嗅探</th>
+                            <th width="4%">编辑</th>
+                        </tr>
+                        </thead>
+                        <tbody style="cursor:pointer;" class="controller" id="flushtb">
+                        {% for perpro in params %}
+                            {% if perpro.stat %}
+                                <tr class="positive" title="单击关闭嗅探">
+                                    <td class="number" value="{{ perpro.id }}">{{ perpro.id }}</td>
+                                    <td>{{ perpro.pro_name }}</td>
+                                    <td>{{ perpro.netcard }}</td>
+                                    <td>{{ perpro.filter }} </td>
+                                    <td>{{ perpro.pkt_counts }} </td>
+                                    <td>{{ perpro.pcap_size }}</td>
+                                    {#                                    <td>{{ perpro.pcap_name }}</td>#}
+                                    <td>On</td>
+                                    <td class="right aligned collapsing">
+                                        <input style="zoom:2;" type="checkbox" name="delpro"
+                                               value="{{ perpro.id }}"><label></label>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr class="warning" title="单击开始嗅探">
+                                    <td class="number" value="{{ perpro.id }}">{{ perpro.id }}</td>
+                                    <td>{{ perpro.pro_name }}</td>
+                                    <td>{{ perpro.netcard }}</td>
+                                    <td>{{ perpro.filter }} </td>
+                                    <td>{{ perpro.pkt_counts }} </td>
+                                    <td>{{ perpro.pcap_size }}</td>
+                                    {#                                    <td>{{ perpro.pcap_name }}</td>#}
+                                    <td>Off</td>
+                                    <td class="right aligned collapsing">
+                                        <input style="zoom:2;" type="checkbox" name="delpro"
+                                               value="{{ perpro.id }}"><label></label>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="ui small button" id="delpro-button" style="float:right;margin-top:265px;">
+                    删除
+                </div>
+                <div class="ui small button" id="flush-button" style="float:right;margin-top:265px;">
+                    刷新
+                </div>
+
+            </div>
+        </div>
+    {% else %}
+        <div class="ui stacked segment">
+            <div class="ui fitted stackable grid">
+                <div class="ui sixteen wide column">
+                    <div class="ui black center aligned segment">
+                        <div class="ui large horizontal list">
+                            <div class="item">
+                                <div class="content">
+                                    <div class="header">{{ msg }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}

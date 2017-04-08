@@ -1,0 +1,1489 @@
+<html>
+<head>
+<title>jquery.fileupload.js</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(128,128,128); font-style: italic; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(0,0,128); font-weight: bold; }
+.s3 { color: rgb(0,128,0); font-weight: bold; }
+.s4 { color: rgb(0,0,255); }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+jquery.fileupload.js</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">/* 
+ * jQuery File Upload Plugin 5.42.2 
+ * https://github.com/blueimp/jQuery-File-Upload 
+ * 
+ * Copyright 2010, Sebastian Tschan 
+ * https://blueimp.net 
+ * 
+ * Licensed under the MIT license: 
+ * http://www.opensource.org/licenses/MIT 
+ */</span><span class="s1"> 
+ 
+</span><span class="s0">/* jshint nomen:false */</span><span class="s1"> 
+</span><span class="s0">/* global define, require, window, document, location, Blob, FormData */</span><span class="s1"> 
+ 
+(</span><span class="s2">function </span><span class="s1">(factory) { 
+    </span><span class="s3">'use strict'</span><span class="s1">; 
+    </span><span class="s2">if </span><span class="s1">(</span><span class="s2">typeof </span><span class="s1">define === </span><span class="s3">'function' </span><span class="s1">&amp;&amp; define.amd) { 
+        </span><span class="s0">// Register as an anonymous AMD module:</span><span class="s1"> 
+        define([ 
+            </span><span class="s3">'jquery'</span><span class="s1">, 
+            </span><span class="s3">'jquery.ui.widget'</span><span class="s1"> 
+        ], factory); 
+    } </span><span class="s2">else if </span><span class="s1">(</span><span class="s2">typeof </span><span class="s1">exports === </span><span class="s3">'object'</span><span class="s1">) { 
+        </span><span class="s0">// Node/CommonJS:</span><span class="s1"> 
+        factory( 
+            require(</span><span class="s3">'jquery'</span><span class="s1">), 
+            require(</span><span class="s3">'./vendor/jquery.ui.widget'</span><span class="s1">) 
+        ); 
+    } </span><span class="s2">else </span><span class="s1">{ 
+        </span><span class="s0">// Browser globals:</span><span class="s1"> 
+        factory(window.jQuery); 
+    } 
+}(</span><span class="s2">function </span><span class="s1">($) { 
+    </span><span class="s3">'use strict'</span><span class="s1">; 
+ 
+    </span><span class="s0">// Detect file input support, based on</span><span class="s1"> 
+    </span><span class="s0">// http://viljamis.com/blog/2012/file-upload-support-on-mobile/</span><span class="s1"> 
+    $.support.fileInput = !(</span><span class="s2">new </span><span class="s1">RegExp( 
+        </span><span class="s0">// Handle devices which give false positives for the feature detection:</span><span class="s1"> 
+        </span><span class="s3">'(Android (1</span><span class="s2">\\</span><span class="s3">.[0156]|2</span><span class="s2">\\</span><span class="s3">.[01]))' </span><span class="s1">+ 
+            </span><span class="s3">'|(Windows Phone (OS 7|8</span><span class="s2">\\</span><span class="s3">.0))|(XBLWP)|(ZuneWP)|(WPDesktop)' </span><span class="s1">+ 
+            </span><span class="s3">'|(w(eb)?OSBrowser)|(webOS)' </span><span class="s1">+ 
+            </span><span class="s3">'|(Kindle/(1</span><span class="s2">\\</span><span class="s3">.0|2</span><span class="s2">\\</span><span class="s3">.[05]|3</span><span class="s2">\\</span><span class="s3">.0))'</span><span class="s1"> 
+    ).test(window.navigator.userAgent) || 
+        </span><span class="s0">// Feature detection for all other devices:</span><span class="s1"> 
+        $(</span><span class="s3">'&lt;input type=&quot;file&quot;&gt;'</span><span class="s1">).prop(</span><span class="s3">'disabled'</span><span class="s1">)); 
+ 
+    </span><span class="s0">// The FileReader API is not actually used, but works as feature detection,</span><span class="s1"> 
+    </span><span class="s0">// as some Safari versions (5?) support XHR file uploads via the FormData API,</span><span class="s1"> 
+    </span><span class="s0">// but not non-multipart XHR file uploads.</span><span class="s1"> 
+    </span><span class="s0">// window.XMLHttpRequestUpload is not available on IE10, so we check for</span><span class="s1"> 
+    </span><span class="s0">// window.ProgressEvent instead to detect XHR2 file upload capability:</span><span class="s1"> 
+    $.support.xhrFileUpload = !!(window.ProgressEvent &amp;&amp; window.FileReader); 
+    $.support.xhrFormDataFileUpload = !!window.FormData; 
+ 
+    </span><span class="s0">// Detect support for Blob slicing (required for chunked uploads):</span><span class="s1"> 
+    $.support.blobSlice = window.Blob &amp;&amp; (Blob.prototype.slice || 
+        Blob.prototype.webkitSlice || Blob.prototype.mozSlice); 
+ 
+    </span><span class="s0">// Helper function to create drag handlers for dragover/dragenter/dragleave:</span><span class="s1"> 
+    </span><span class="s2">function </span><span class="s1">getDragHandler(type) { 
+        </span><span class="s2">var </span><span class="s1">isDragOver = type === </span><span class="s3">'dragover'</span><span class="s1">; 
+        </span><span class="s2">return function </span><span class="s1">(e) { 
+            e.dataTransfer = e.originalEvent &amp;&amp; e.originalEvent.dataTransfer; 
+            </span><span class="s2">var </span><span class="s1">dataTransfer = e.dataTransfer; 
+            </span><span class="s2">if </span><span class="s1">(dataTransfer &amp;&amp; $.inArray(</span><span class="s3">'Files'</span><span class="s1">, dataTransfer.types) !== -</span><span class="s4">1 </span><span class="s1">&amp;&amp; 
+                    </span><span class="s2">this</span><span class="s1">._trigger( 
+                        type, 
+                        $.Event(type, {delegatedEvent: e}) 
+                    ) !== </span><span class="s2">false</span><span class="s1">) { 
+                e.preventDefault(); 
+                </span><span class="s2">if </span><span class="s1">(isDragOver) { 
+                    dataTransfer.dropEffect = </span><span class="s3">'copy'</span><span class="s1">; 
+                } 
+            } 
+        }; 
+    } 
+ 
+    </span><span class="s0">// The fileupload widget listens for change events on file input fields defined</span><span class="s1"> 
+    </span><span class="s0">// via fileInput setting and paste or drop events of the given dropZone.</span><span class="s1"> 
+    </span><span class="s0">// In addition to the default jQuery Widget methods, the fileupload widget</span><span class="s1"> 
+    </span><span class="s0">// exposes the &quot;add&quot; and &quot;send&quot; methods, to add or directly send files using</span><span class="s1"> 
+    </span><span class="s0">// the fileupload API.</span><span class="s1"> 
+    </span><span class="s0">// By default, files added via file input selection, paste, drag &amp; drop or</span><span class="s1"> 
+    </span><span class="s0">// &quot;add&quot; method are uploaded immediately, but it is possible to override</span><span class="s1"> 
+    </span><span class="s0">// the &quot;add&quot; callback option to queue file uploads.</span><span class="s1"> 
+    $.widget(</span><span class="s3">'blueimp.fileupload'</span><span class="s1">, { 
+ 
+        options: { 
+            </span><span class="s0">// The drop target element(s), by the default the complete document.</span><span class="s1"> 
+            </span><span class="s0">// Set to null to disable drag &amp; drop support:</span><span class="s1"> 
+            dropZone: $(document), 
+            </span><span class="s0">// The paste target element(s), by the default undefined.</span><span class="s1"> 
+            </span><span class="s0">// Set to a DOM node or jQuery object to enable file pasting:</span><span class="s1"> 
+            pasteZone: undefined, 
+            </span><span class="s0">// The file input field(s), that are listened to for change events.</span><span class="s1"> 
+            </span><span class="s0">// If undefined, it is set to the file input fields inside</span><span class="s1"> 
+            </span><span class="s0">// of the widget element on plugin initialization.</span><span class="s1"> 
+            </span><span class="s0">// Set to null to disable the change listener.</span><span class="s1"> 
+            fileInput: undefined, 
+            </span><span class="s0">// By default, the file input field is replaced with a clone after</span><span class="s1"> 
+            </span><span class="s0">// each input field change event. This is required for iframe transport</span><span class="s1"> 
+            </span><span class="s0">// queues and allows change events to be fired for the same file</span><span class="s1"> 
+            </span><span class="s0">// selection, but can be disabled by setting the following option to false:</span><span class="s1"> 
+            replaceFileInput: </span><span class="s2">true</span><span class="s1">, 
+            </span><span class="s0">// The parameter name for the file form data (the request argument name).</span><span class="s1"> 
+            </span><span class="s0">// If undefined or empty, the name property of the file input field is</span><span class="s1"> 
+            </span><span class="s0">// used, or &quot;files[]&quot; if the file input name property is also empty,</span><span class="s1"> 
+            </span><span class="s0">// can be a string or an array of strings:</span><span class="s1"> 
+            paramName: undefined, 
+            </span><span class="s0">// By default, each file of a selection is uploaded using an individual</span><span class="s1"> 
+            </span><span class="s0">// request for XHR type uploads. Set to false to upload file</span><span class="s1"> 
+            </span><span class="s0">// selections in one request each:</span><span class="s1"> 
+            singleFileUploads: </span><span class="s2">true</span><span class="s1">, 
+            </span><span class="s0">// To limit the number of files uploaded with one XHR request,</span><span class="s1"> 
+            </span><span class="s0">// set the following option to an integer greater than 0:</span><span class="s1"> 
+            limitMultiFileUploads: undefined, 
+            </span><span class="s0">// The following option limits the number of files uploaded with one</span><span class="s1"> 
+            </span><span class="s0">// XHR request to keep the request size under or equal to the defined</span><span class="s1"> 
+            </span><span class="s0">// limit in bytes:</span><span class="s1"> 
+            limitMultiFileUploadSize: undefined, 
+            </span><span class="s0">// Multipart file uploads add a number of bytes to each uploaded file,</span><span class="s1"> 
+            </span><span class="s0">// therefore the following option adds an overhead for each file used</span><span class="s1"> 
+            </span><span class="s0">// in the limitMultiFileUploadSize configuration:</span><span class="s1"> 
+            limitMultiFileUploadSizeOverhead: </span><span class="s4">512</span><span class="s1">, 
+            </span><span class="s0">// Set the following option to true to issue all file upload requests</span><span class="s1"> 
+            </span><span class="s0">// in a sequential order:</span><span class="s1"> 
+            sequentialUploads: </span><span class="s2">false</span><span class="s1">, 
+            </span><span class="s0">// To limit the number of concurrent uploads,</span><span class="s1"> 
+            </span><span class="s0">// set the following option to an integer greater than 0:</span><span class="s1"> 
+            limitConcurrentUploads: undefined, 
+            </span><span class="s0">// Set the following option to true to force iframe transport uploads:</span><span class="s1"> 
+            forceIframeTransport: </span><span class="s2">false</span><span class="s1">, 
+            </span><span class="s0">// Set the following option to the location of a redirect url on the</span><span class="s1"> 
+            </span><span class="s0">// origin server, for cross-domain iframe transport uploads:</span><span class="s1"> 
+            redirect: undefined, 
+            </span><span class="s0">// The parameter name for the redirect url, sent as part of the form</span><span class="s1"> 
+            </span><span class="s0">// data and set to 'redirect' if this option is empty:</span><span class="s1"> 
+            redirectParamName: undefined, 
+            </span><span class="s0">// Set the following option to the location of a postMessage window,</span><span class="s1"> 
+            </span><span class="s0">// to enable postMessage transport uploads:</span><span class="s1"> 
+            postMessage: undefined, 
+            </span><span class="s0">// By default, XHR file uploads are sent as multipart/form-data.</span><span class="s1"> 
+            </span><span class="s0">// The iframe transport is always using multipart/form-data.</span><span class="s1"> 
+            </span><span class="s0">// Set to false to enable non-multipart XHR uploads:</span><span class="s1"> 
+            multipart: </span><span class="s2">true</span><span class="s1">, 
+            </span><span class="s0">// To upload large files in smaller chunks, set the following option</span><span class="s1"> 
+            </span><span class="s0">// to a preferred maximum chunk size. If set to 0, null or undefined,</span><span class="s1"> 
+            </span><span class="s0">// or the browser does not support the required Blob API, files will</span><span class="s1"> 
+            </span><span class="s0">// be uploaded as a whole.</span><span class="s1"> 
+            maxChunkSize: undefined, 
+            </span><span class="s0">// When a non-multipart upload or a chunked multipart upload has been</span><span class="s1"> 
+            </span><span class="s0">// aborted, this option can be used to resume the upload by setting</span><span class="s1"> 
+            </span><span class="s0">// it to the size of the already uploaded bytes. This option is most</span><span class="s1"> 
+            </span><span class="s0">// useful when modifying the options object inside of the &quot;add&quot; or</span><span class="s1"> 
+            </span><span class="s0">// &quot;send&quot; callbacks, as the options are cloned for each file upload.</span><span class="s1"> 
+            uploadedBytes: undefined, 
+            </span><span class="s0">// By default, failed (abort or error) file uploads are removed from the</span><span class="s1"> 
+            </span><span class="s0">// global progress calculation. Set the following option to false to</span><span class="s1"> 
+            </span><span class="s0">// prevent recalculating the global progress data:</span><span class="s1"> 
+            recalculateProgress: </span><span class="s2">true</span><span class="s1">, 
+            </span><span class="s0">// Interval in milliseconds to calculate and trigger progress events:</span><span class="s1"> 
+            progressInterval: </span><span class="s4">100</span><span class="s1">, 
+            </span><span class="s0">// Interval in milliseconds to calculate progress bitrate:</span><span class="s1"> 
+            bitrateInterval: </span><span class="s4">500</span><span class="s1">, 
+            </span><span class="s0">// By default, uploads are started automatically when adding files:</span><span class="s1"> 
+            autoUpload: </span><span class="s2">true</span><span class="s1">, 
+ 
+            </span><span class="s0">// Error and info messages:</span><span class="s1"> 
+            messages: { 
+                uploadedBytes: </span><span class="s3">'Uploaded bytes exceed file size'</span><span class="s1"> 
+            }, 
+ 
+            </span><span class="s0">// Translation function, gets the message key to be translated</span><span class="s1"> 
+            </span><span class="s0">// and an object with context specific data as arguments:</span><span class="s1"> 
+            i18n: </span><span class="s2">function </span><span class="s1">(message, context) { 
+                message = </span><span class="s2">this</span><span class="s1">.messages[message] || message.toString(); 
+                </span><span class="s2">if </span><span class="s1">(context) { 
+                    $.each(context, </span><span class="s2">function </span><span class="s1">(key, value) { 
+                        message = message.replace(</span><span class="s3">'{' </span><span class="s1">+ key + </span><span class="s3">'}'</span><span class="s1">, value); 
+                    }); 
+                } 
+                </span><span class="s2">return </span><span class="s1">message; 
+            }, 
+ 
+            </span><span class="s0">// Additional form data to be sent along with the file uploads can be set</span><span class="s1"> 
+            </span><span class="s0">// using this option, which accepts an array of objects with name and</span><span class="s1"> 
+            </span><span class="s0">// value properties, a function returning such an array, a FormData</span><span class="s1"> 
+            </span><span class="s0">// object (for XHR file uploads), or a simple object.</span><span class="s1"> 
+            </span><span class="s0">// The form of the first fileInput is given as parameter to the function:</span><span class="s1"> 
+            formData: </span><span class="s2">function </span><span class="s1">(form) { 
+                </span><span class="s2">return </span><span class="s1">form.serializeArray(); 
+            }, 
+ 
+            </span><span class="s0">// The add callback is invoked as soon as files are added to the fileupload</span><span class="s1"> 
+            </span><span class="s0">// widget (via file input selection, drag &amp; drop, paste or add API call).</span><span class="s1"> 
+            </span><span class="s0">// If the singleFileUploads option is enabled, this callback will be</span><span class="s1"> 
+            </span><span class="s0">// called once for each file in the selection for XHR file uploads, else</span><span class="s1"> 
+            </span><span class="s0">// once for each file selection.</span><span class="s1"> 
+            </span><span class="s0">//</span><span class="s1"> 
+            </span><span class="s0">// The upload starts when the submit method is invoked on the data parameter.</span><span class="s1"> 
+            </span><span class="s0">// The data object contains a files property holding the added files</span><span class="s1"> 
+            </span><span class="s0">// and allows you to override plugin options as well as define ajax settings.</span><span class="s1"> 
+            </span><span class="s0">//</span><span class="s1"> 
+            </span><span class="s0">// Listeners for this callback can also be bound the following way:</span><span class="s1"> 
+            </span><span class="s0">// .bind('fileuploadadd', func);</span><span class="s1"> 
+            </span><span class="s0">//</span><span class="s1"> 
+            </span><span class="s0">// data.submit() returns a Promise object and allows to attach additional</span><span class="s1"> 
+            </span><span class="s0">// handlers using jQuery's Deferred callbacks:</span><span class="s1"> 
+            </span><span class="s0">// data.submit().done(func).fail(func).always(func);</span><span class="s1"> 
+            add: </span><span class="s2">function </span><span class="s1">(e, data) { 
+                </span><span class="s2">if </span><span class="s1">(e.isDefaultPrevented()) { 
+                    </span><span class="s2">return false</span><span class="s1">; 
+                } 
+                </span><span class="s2">if </span><span class="s1">(data.autoUpload || (data.autoUpload !== </span><span class="s2">false </span><span class="s1">&amp;&amp; 
+                        $(</span><span class="s2">this</span><span class="s1">).fileupload(</span><span class="s3">'option'</span><span class="s1">, </span><span class="s3">'autoUpload'</span><span class="s1">))) { 
+                    data.process().done(</span><span class="s2">function </span><span class="s1">() { 
+                        data.submit(); 
+                    }); 
+                } 
+            }, 
+ 
+            </span><span class="s0">// Other callbacks:</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for the submit event of each file upload:</span><span class="s1"> 
+            </span><span class="s0">// submit: function (e, data) {}, // .bind('fileuploadsubmit', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for the start of each file upload request:</span><span class="s1"> 
+            </span><span class="s0">// send: function (e, data) {}, // .bind('fileuploadsend', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for successful uploads:</span><span class="s1"> 
+            </span><span class="s0">// done: function (e, data) {}, // .bind('fileuploaddone', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for failed (abort or error) uploads:</span><span class="s1"> 
+            </span><span class="s0">// fail: function (e, data) {}, // .bind('fileuploadfail', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for completed (success, abort or error) requests:</span><span class="s1"> 
+            </span><span class="s0">// always: function (e, data) {}, // .bind('fileuploadalways', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for upload progress events:</span><span class="s1"> 
+            </span><span class="s0">// progress: function (e, data) {}, // .bind('fileuploadprogress', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for global upload progress events:</span><span class="s1"> 
+            </span><span class="s0">// progressall: function (e, data) {}, // .bind('fileuploadprogressall', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for uploads start, equivalent to the global ajaxStart event:</span><span class="s1"> 
+            </span><span class="s0">// start: function (e) {}, // .bind('fileuploadstart', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for uploads stop, equivalent to the global ajaxStop event:</span><span class="s1"> 
+            </span><span class="s0">// stop: function (e) {}, // .bind('fileuploadstop', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for change events of the fileInput(s):</span><span class="s1"> 
+            </span><span class="s0">// change: function (e, data) {}, // .bind('fileuploadchange', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for paste events to the pasteZone(s):</span><span class="s1"> 
+            </span><span class="s0">// paste: function (e, data) {}, // .bind('fileuploadpaste', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for drop events of the dropZone(s):</span><span class="s1"> 
+            </span><span class="s0">// drop: function (e, data) {}, // .bind('fileuploaddrop', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for dragover events of the dropZone(s):</span><span class="s1"> 
+            </span><span class="s0">// dragover: function (e) {}, // .bind('fileuploaddragover', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for the start of each chunk upload request:</span><span class="s1"> 
+            </span><span class="s0">// chunksend: function (e, data) {}, // .bind('fileuploadchunksend', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for successful chunk uploads:</span><span class="s1"> 
+            </span><span class="s0">// chunkdone: function (e, data) {}, // .bind('fileuploadchunkdone', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for failed (abort or error) chunk uploads:</span><span class="s1"> 
+            </span><span class="s0">// chunkfail: function (e, data) {}, // .bind('fileuploadchunkfail', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// Callback for completed (success, abort or error) chunk upload requests:</span><span class="s1"> 
+            </span><span class="s0">// chunkalways: function (e, data) {}, // .bind('fileuploadchunkalways', func);</span><span class="s1"> 
+ 
+            </span><span class="s0">// The plugin options are used as settings object for the ajax calls.</span><span class="s1"> 
+            </span><span class="s0">// The following are jQuery ajax settings required for the file uploads:</span><span class="s1"> 
+            processData: </span><span class="s2">false</span><span class="s1">, 
+            contentType: </span><span class="s2">false</span><span class="s1">, 
+            cache: </span><span class="s2">false</span><span class="s1"> 
+        }, 
+ 
+        </span><span class="s0">// A list of options that require reinitializing event listeners and/or</span><span class="s1"> 
+        </span><span class="s0">// special initialization code:</span><span class="s1"> 
+        _specialOptions: [ 
+            </span><span class="s3">'fileInput'</span><span class="s1">, 
+            </span><span class="s3">'dropZone'</span><span class="s1">, 
+            </span><span class="s3">'pasteZone'</span><span class="s1">, 
+            </span><span class="s3">'multipart'</span><span class="s1">, 
+            </span><span class="s3">'forceIframeTransport'</span><span class="s1"> 
+        ], 
+ 
+        _blobSlice: $.support.blobSlice &amp;&amp; </span><span class="s2">function </span><span class="s1">() { 
+            </span><span class="s2">var </span><span class="s1">slice = </span><span class="s2">this</span><span class="s1">.slice || </span><span class="s2">this</span><span class="s1">.webkitSlice || </span><span class="s2">this</span><span class="s1">.mozSlice; 
+            </span><span class="s2">return </span><span class="s1">slice.apply(</span><span class="s2">this</span><span class="s1">, arguments); 
+        }, 
+ 
+        _BitrateTimer: </span><span class="s2">function </span><span class="s1">() { 
+            </span><span class="s2">this</span><span class="s1">.timestamp = ((Date.now) ? Date.now() : (</span><span class="s2">new </span><span class="s1">Date()).getTime()); 
+            </span><span class="s2">this</span><span class="s1">.loaded = </span><span class="s4">0</span><span class="s1">; 
+            </span><span class="s2">this</span><span class="s1">.bitrate = </span><span class="s4">0</span><span class="s1">; 
+            </span><span class="s2">this</span><span class="s1">.getBitrate = </span><span class="s2">function </span><span class="s1">(now, loaded, interval) { 
+                </span><span class="s2">var </span><span class="s1">timeDiff = now - </span><span class="s2">this</span><span class="s1">.timestamp; 
+                </span><span class="s2">if </span><span class="s1">(!</span><span class="s2">this</span><span class="s1">.bitrate || !interval || timeDiff &gt; interval) { 
+                    </span><span class="s2">this</span><span class="s1">.bitrate = (loaded - </span><span class="s2">this</span><span class="s1">.loaded) * (</span><span class="s4">1000 </span><span class="s1">/ timeDiff) * </span><span class="s4">8</span><span class="s1">; 
+                    </span><span class="s2">this</span><span class="s1">.loaded = loaded; 
+                    </span><span class="s2">this</span><span class="s1">.timestamp = now; 
+                } 
+                </span><span class="s2">return this</span><span class="s1">.bitrate; 
+            }; 
+        }, 
+ 
+        _isXHRUpload: </span><span class="s2">function </span><span class="s1">(options) { 
+            </span><span class="s2">return </span><span class="s1">!options.forceIframeTransport &amp;&amp; 
+                ((!options.multipart &amp;&amp; $.support.xhrFileUpload) || 
+                $.support.xhrFormDataFileUpload); 
+        }, 
+ 
+        _getFormData: </span><span class="s2">function </span><span class="s1">(options) { 
+            </span><span class="s2">var </span><span class="s1">formData; 
+            </span><span class="s2">if </span><span class="s1">($.type(options.formData) === </span><span class="s3">'function'</span><span class="s1">) { 
+                </span><span class="s2">return </span><span class="s1">options.formData(options.form); 
+            } 
+            </span><span class="s2">if </span><span class="s1">($.isArray(options.formData)) { 
+                </span><span class="s2">return </span><span class="s1">options.formData; 
+            } 
+            </span><span class="s2">if </span><span class="s1">($.type(options.formData) === </span><span class="s3">'object'</span><span class="s1">) { 
+                formData = []; 
+                $.each(options.formData, </span><span class="s2">function </span><span class="s1">(name, value) { 
+                    formData.push({name: name, value: value}); 
+                }); 
+                </span><span class="s2">return </span><span class="s1">formData; 
+            } 
+            </span><span class="s2">return </span><span class="s1">[]; 
+        }, 
+ 
+        _getTotal: </span><span class="s2">function </span><span class="s1">(files) { 
+            </span><span class="s2">var </span><span class="s1">total = </span><span class="s4">0</span><span class="s1">; 
+            $.each(files, </span><span class="s2">function </span><span class="s1">(index, file) { 
+                total += file.size || </span><span class="s4">1</span><span class="s1">; 
+            }); 
+            </span><span class="s2">return </span><span class="s1">total; 
+        }, 
+ 
+        _initProgressObject: </span><span class="s2">function </span><span class="s1">(obj) { 
+            </span><span class="s2">var </span><span class="s1">progress = { 
+                loaded: </span><span class="s4">0</span><span class="s1">, 
+                total: </span><span class="s4">0</span><span class="s1">, 
+                bitrate: </span><span class="s4">0</span><span class="s1"> 
+            }; 
+            </span><span class="s2">if </span><span class="s1">(obj._progress) { 
+                $.extend(obj._progress, progress); 
+            } </span><span class="s2">else </span><span class="s1">{ 
+                obj._progress = progress; 
+            } 
+        }, 
+ 
+        _initResponseObject: </span><span class="s2">function </span><span class="s1">(obj) { 
+            </span><span class="s2">var </span><span class="s1">prop; 
+            </span><span class="s2">if </span><span class="s1">(obj._response) { 
+                </span><span class="s2">for </span><span class="s1">(prop </span><span class="s2">in </span><span class="s1">obj._response) { 
+                    </span><span class="s2">if </span><span class="s1">(obj._response.hasOwnProperty(prop)) { 
+                        </span><span class="s2">delete </span><span class="s1">obj._response[prop]; 
+                    } 
+                } 
+            } </span><span class="s2">else </span><span class="s1">{ 
+                obj._response = {}; 
+            } 
+        }, 
+ 
+        _onProgress: </span><span class="s2">function </span><span class="s1">(e, data) { 
+            </span><span class="s2">if </span><span class="s1">(e.lengthComputable) { 
+                </span><span class="s2">var </span><span class="s1">now = ((Date.now) ? Date.now() : (</span><span class="s2">new </span><span class="s1">Date()).getTime()), 
+                    loaded; 
+                </span><span class="s2">if </span><span class="s1">(data._time &amp;&amp; data.progressInterval &amp;&amp; 
+                        (now - data._time &lt; data.progressInterval) &amp;&amp; 
+                        e.loaded !== e.total) { 
+                    </span><span class="s2">return</span><span class="s1">; 
+                } 
+                data._time = now; 
+                loaded = Math.floor( 
+                    e.loaded / e.total * (data.chunkSize || data._progress.total) 
+                ) + (data.uploadedBytes || </span><span class="s4">0</span><span class="s1">); 
+                </span><span class="s0">// Add the difference from the previously loaded state</span><span class="s1"> 
+                </span><span class="s0">// to the global loaded counter:</span><span class="s1"> 
+                </span><span class="s2">this</span><span class="s1">._progress.loaded += (loaded - data._progress.loaded); 
+                </span><span class="s2">this</span><span class="s1">._progress.bitrate = </span><span class="s2">this</span><span class="s1">._bitrateTimer.getBitrate( 
+                    now, 
+                    </span><span class="s2">this</span><span class="s1">._progress.loaded, 
+                    data.bitrateInterval 
+                ); 
+                data._progress.loaded = data.loaded = loaded; 
+                data._progress.bitrate = data.bitrate = data._bitrateTimer.getBitrate( 
+                    now, 
+                    loaded, 
+                    data.bitrateInterval 
+                ); 
+                </span><span class="s0">// Trigger a custom progress event with a total data property set</span><span class="s1"> 
+                </span><span class="s0">// to the file size(s) of the current upload and a loaded data</span><span class="s1"> 
+                </span><span class="s0">// property calculated accordingly:</span><span class="s1"> 
+                </span><span class="s2">this</span><span class="s1">._trigger( 
+                    </span><span class="s3">'progress'</span><span class="s1">, 
+                    $.Event(</span><span class="s3">'progress'</span><span class="s1">, {delegatedEvent: e}), 
+                    data 
+                ); 
+                </span><span class="s0">// Trigger a global progress event for all current file uploads,</span><span class="s1"> 
+                </span><span class="s0">// including ajax calls queued for sequential file uploads:</span><span class="s1"> 
+                </span><span class="s2">this</span><span class="s1">._trigger( 
+                    </span><span class="s3">'progressall'</span><span class="s1">, 
+                    $.Event(</span><span class="s3">'progressall'</span><span class="s1">, {delegatedEvent: e}), 
+                    </span><span class="s2">this</span><span class="s1">._progress 
+                ); 
+            } 
+        }, 
+ 
+        _initProgressListener: </span><span class="s2">function </span><span class="s1">(options) { 
+            </span><span class="s2">var </span><span class="s1">that = </span><span class="s2">this</span><span class="s1">, 
+                xhr = options.xhr ? options.xhr() : $.ajaxSettings.xhr(); 
+            </span><span class="s0">// Accesss to the native XHR object is required to add event listeners</span><span class="s1"> 
+            </span><span class="s0">// for the upload progress event:</span><span class="s1"> 
+            </span><span class="s2">if </span><span class="s1">(xhr.upload) { 
+                $(xhr.upload).bind(</span><span class="s3">'progress'</span><span class="s1">, </span><span class="s2">function </span><span class="s1">(e) { 
+                    </span><span class="s2">var </span><span class="s1">oe = e.originalEvent; 
+                    </span><span class="s0">// Make sure the progress event properties get copied over:</span><span class="s1"> 
+                    e.lengthComputable = oe.lengthComputable; 
+                    e.loaded = oe.loaded; 
+                    e.total = oe.total; 
+                    that._onProgress(e, options); 
+                }); 
+                options.xhr = </span><span class="s2">function </span><span class="s1">() { 
+                    </span><span class="s2">return </span><span class="s1">xhr; 
+                }; 
+            } 
+        }, 
+ 
+        _isInstanceOf: </span><span class="s2">function </span><span class="s1">(type, obj) { 
+            </span><span class="s0">// Cross-frame instanceof check</span><span class="s1"> 
+            </span><span class="s2">return </span><span class="s1">Object.prototype.toString.call(obj) === </span><span class="s3">'[object ' </span><span class="s1">+ type + </span><span class="s3">']'</span><span class="s1">; 
+        }, 
+ 
+        _initXHRData: </span><span class="s2">function </span><span class="s1">(options) { 
+            </span><span class="s2">var </span><span class="s1">that = </span><span class="s2">this</span><span class="s1">, 
+                formData, 
+                file = options.files[</span><span class="s4">0</span><span class="s1">], 
+                </span><span class="s0">// Ignore non-multipart setting if not supported:</span><span class="s1"> 
+                multipart = options.multipart || !$.support.xhrFileUpload, 
+                paramName = $.type(options.paramName) === </span><span class="s3">'array' </span><span class="s1">? 
+                    options.paramName[</span><span class="s4">0</span><span class="s1">] : options.paramName; 
+            options.headers = $.extend({}, options.headers); 
+            </span><span class="s2">if </span><span class="s1">(options.contentRange) { 
+                options.headers[</span><span class="s3">'Content-Range'</span><span class="s1">] = options.contentRange; 
+            } 
+            </span><span class="s2">if </span><span class="s1">(!multipart || options.blob || !</span><span class="s2">this</span><span class="s1">._isInstanceOf(</span><span class="s3">'File'</span><span class="s1">, file)) { 
+                options.headers[</span><span class="s3">'Content-Disposition'</span><span class="s1">] = </span><span class="s3">'attachment; filename=&quot;' </span><span class="s1">+ 
+                    encodeURI(file.name) + </span><span class="s3">'&quot;'</span><span class="s1">; 
+            } 
+            </span><span class="s2">if </span><span class="s1">(!multipart) { 
+                options.contentType = file.type || </span><span class="s3">'application/octet-stream'</span><span class="s1">; 
+                options.data = options.blob || file; 
+            } </span><span class="s2">else if </span><span class="s1">($.support.xhrFormDataFileUpload) { 
+                </span><span class="s2">if </span><span class="s1">(options.postMessage) { 
+                    </span><span class="s0">// window.postMessage does not allow sending FormData</span><span class="s1"> 
+                    </span><span class="s0">// objects, so we just add the File/Blob objects to</span><span class="s1"> 
+                    </span><span class="s0">// the formData array and let the postMessage window</span><span class="s1"> 
+                    </span><span class="s0">// create the FormData object out of this array:</span><span class="s1"> 
+                    formData = </span><span class="s2">this</span><span class="s1">._getFormData(options); 
+                    </span><span class="s2">if </span><span class="s1">(options.blob) { 
+                        formData.push({ 
+                            name: paramName, 
+                            value: options.blob 
+                        }); 
+                    } </span><span class="s2">else </span><span class="s1">{ 
+                        $.each(options.files, </span><span class="s2">function </span><span class="s1">(index, file) { 
+                            formData.push({ 
+                                name: ($.type(options.paramName) === </span><span class="s3">'array' </span><span class="s1">&amp;&amp; 
+                                    options.paramName[index]) || paramName, 
+                                value: file 
+                            }); 
+                        }); 
+                    } 
+                } </span><span class="s2">else </span><span class="s1">{ 
+                    </span><span class="s2">if </span><span class="s1">(that._isInstanceOf(</span><span class="s3">'FormData'</span><span class="s1">, options.formData)) { 
+                        formData = options.formData; 
+                    } </span><span class="s2">else </span><span class="s1">{ 
+                        formData = </span><span class="s2">new </span><span class="s1">FormData(); 
+                        $.each(</span><span class="s2">this</span><span class="s1">._getFormData(options), </span><span class="s2">function </span><span class="s1">(index, field) { 
+                            formData.append(field.name, field.value); 
+                        }); 
+                    } 
+                    </span><span class="s2">if </span><span class="s1">(options.blob) { 
+                        formData.append(paramName, options.blob, file.name); 
+                    } </span><span class="s2">else </span><span class="s1">{ 
+                        $.each(options.files, </span><span class="s2">function </span><span class="s1">(index, file) { 
+                            </span><span class="s0">// This check allows the tests to run with</span><span class="s1"> 
+                            </span><span class="s0">// dummy objects:</span><span class="s1"> 
+                            </span><span class="s2">if </span><span class="s1">(that._isInstanceOf(</span><span class="s3">'File'</span><span class="s1">, file) || 
+                                    that._isInstanceOf(</span><span class="s3">'Blob'</span><span class="s1">, file)) { 
+                                formData.append( 
+                                    ($.type(options.paramName) === </span><span class="s3">'array' </span><span class="s1">&amp;&amp; 
+                                        options.paramName[index]) || paramName, 
+                                    file, 
+                                    file.uploadName || file.name 
+                                ); 
+                            } 
+                        }); 
+                    } 
+                } 
+                options.data = formData; 
+            } 
+            </span><span class="s0">// Blob reference is not needed anymore, free memory:</span><span class="s1"> 
+            options.blob = </span><span class="s2">null</span><span class="s1">; 
+        }, 
+ 
+        _initIframeSettings: </span><span class="s2">function </span><span class="s1">(options) { 
+            </span><span class="s2">var </span><span class="s1">targetHost = $(</span><span class="s3">'&lt;a&gt;&lt;/a&gt;'</span><span class="s1">).prop(</span><span class="s3">'href'</span><span class="s1">, options.url).prop(</span><span class="s3">'host'</span><span class="s1">); 
+            </span><span class="s0">// Setting the dataType to iframe enables the iframe transport:</span><span class="s1"> 
+            options.dataType = </span><span class="s3">'iframe ' </span><span class="s1">+ (options.dataType || </span><span class="s3">''</span><span class="s1">); 
+            </span><span class="s0">// The iframe transport accepts a serialized array as form data:</span><span class="s1"> 
+            options.formData = </span><span class="s2">this</span><span class="s1">._getFormData(options); 
+            </span><span class="s0">// Add redirect url to form data on cross-domain uploads:</span><span class="s1"> 
+            </span><span class="s2">if </span><span class="s1">(options.redirect &amp;&amp; targetHost &amp;&amp; targetHost !== location.host) { 
+                options.formData.push({ 
+                    name: options.redirectParamName || </span><span class="s3">'redirect'</span><span class="s1">, 
+                    value: options.redirect 
+                }); 
+            } 
+        }, 
+ 
+        _initDataSettings: </span><span class="s2">function </span><span class="s1">(options) { 
+            </span><span class="s2">if </span><span class="s1">(</span><span class="s2">this</span><span class="s1">._isXHRUpload(options)) { 
+                </span><span class="s2">if </span><span class="s1">(!</span><span class="s2">this</span><span class="s1">._chunkedUpload(options, </span><span class="s2">true</span><span class="s1">)) { 
+                    </span><span class="s2">if </span><span class="s1">(!options.data) { 
+                        </span><span class="s2">this</span><span class="s1">._initXHRData(options); 
+                    } 
+                    </span><span class="s2">this</span><span class="s1">._initProgressListener(options); 
+                } 
+                </span><span class="s2">if </span><span class="s1">(options.postMessage) { 
+                    </span><span class="s0">// Setting the dataType to postmessage enables the</span><span class="s1"> 
+                    </span><span class="s0">// postMessage transport:</span><span class="s1"> 
+                    options.dataType = </span><span class="s3">'postmessage ' </span><span class="s1">+ (options.dataType || </span><span class="s3">''</span><span class="s1">); 
+                } 
+            } </span><span class="s2">else </span><span class="s1">{ 
+                </span><span class="s2">this</span><span class="s1">._initIframeSettings(options); 
+            } 
+        }, 
+ 
+        _getParamName: </span><span class="s2">function </span><span class="s1">(options) { 
+            </span><span class="s2">var </span><span class="s1">fileInput = $(options.fileInput), 
+                paramName = options.paramName; 
+            </span><span class="s2">if </span><span class="s1">(!paramName) { 
+                paramName = []; 
+                fileInput.each(</span><span class="s2">function </span><span class="s1">() { 
+                    </span><span class="s2">var </span><span class="s1">input = $(</span><span class="s2">this</span><span class="s1">), 
+                        name = input.prop(</span><span class="s3">'name'</span><span class="s1">) || </span><span class="s3">'files[]'</span><span class="s1">, 
+                        i = (input.prop(</span><span class="s3">'files'</span><span class="s1">) || [</span><span class="s4">1</span><span class="s1">]).length; 
+                    </span><span class="s2">while </span><span class="s1">(i) { 
+                        paramName.push(name); 
+                        i -= </span><span class="s4">1</span><span class="s1">; 
+                    } 
+                }); 
+                </span><span class="s2">if </span><span class="s1">(!paramName.length) { 
+                    paramName = [fileInput.prop(</span><span class="s3">'name'</span><span class="s1">) || </span><span class="s3">'files[]'</span><span class="s1">]; 
+                } 
+            } </span><span class="s2">else if </span><span class="s1">(!$.isArray(paramName)) { 
+                paramName = [paramName]; 
+            } 
+            </span><span class="s2">return </span><span class="s1">paramName; 
+        }, 
+ 
+        _initFormSettings: </span><span class="s2">function </span><span class="s1">(options) { 
+            </span><span class="s0">// Retrieve missing options from the input field and the</span><span class="s1"> 
+            </span><span class="s0">// associated form, if available:</span><span class="s1"> 
+            </span><span class="s2">if </span><span class="s1">(!options.form || !options.form.length) { 
+                options.form = $(options.fileInput.prop(</span><span class="s3">'form'</span><span class="s1">)); 
+                </span><span class="s0">// If the given file input doesn't have an associated form,</span><span class="s1"> 
+                </span><span class="s0">// use the default widget file input's form:</span><span class="s1"> 
+                </span><span class="s2">if </span><span class="s1">(!options.form.length) { 
+                    options.form = $(</span><span class="s2">this</span><span class="s1">.options.fileInput.prop(</span><span class="s3">'form'</span><span class="s1">)); 
+                } 
+            } 
+            options.paramName = </span><span class="s2">this</span><span class="s1">._getParamName(options); 
+            </span><span class="s2">if </span><span class="s1">(!options.url) { 
+                options.url = options.form.prop(</span><span class="s3">'action'</span><span class="s1">) || location.href; 
+            } 
+            </span><span class="s0">// The HTTP request method must be &quot;POST&quot; or &quot;PUT&quot;:</span><span class="s1"> 
+            options.type = (options.type || 
+                ($.type(options.form.prop(</span><span class="s3">'method'</span><span class="s1">)) === </span><span class="s3">'string' </span><span class="s1">&amp;&amp; 
+                    options.form.prop(</span><span class="s3">'method'</span><span class="s1">)) || </span><span class="s3">''</span><span class="s1"> 
+                ).toUpperCase(); 
+            </span><span class="s2">if </span><span class="s1">(options.type !== </span><span class="s3">'POST' </span><span class="s1">&amp;&amp; options.type !== </span><span class="s3">'PUT' </span><span class="s1">&amp;&amp; 
+                    options.type !== </span><span class="s3">'PATCH'</span><span class="s1">) { 
+                options.type = </span><span class="s3">'POST'</span><span class="s1">; 
+            } 
+            </span><span class="s2">if </span><span class="s1">(!options.formAcceptCharset) { 
+                options.formAcceptCharset = options.form.attr(</span><span class="s3">'accept-charset'</span><span class="s1">); 
+            } 
+        }, 
+ 
+        _getAJAXSettings: </span><span class="s2">function </span><span class="s1">(data) { 
+            </span><span class="s2">var </span><span class="s1">options = $.extend({}, </span><span class="s2">this</span><span class="s1">.options, data); 
+            </span><span class="s2">this</span><span class="s1">._initFormSettings(options); 
+            </span><span class="s2">this</span><span class="s1">._initDataSettings(options); 
+            </span><span class="s2">return </span><span class="s1">options; 
+        }, 
+ 
+        </span><span class="s0">// jQuery 1.6 doesn't provide .state(),</span><span class="s1"> 
+        </span><span class="s0">// while jQuery 1.8+ removed .isRejected() and .isResolved():</span><span class="s1"> 
+        _getDeferredState: </span><span class="s2">function </span><span class="s1">(deferred) { 
+            </span><span class="s2">if </span><span class="s1">(deferred.state) { 
+                </span><span class="s2">return </span><span class="s1">deferred.state(); 
+            } 
+            </span><span class="s2">if </span><span class="s1">(deferred.isResolved()) { 
+                </span><span class="s2">return </span><span class="s3">'resolved'</span><span class="s1">; 
+            } 
+            </span><span class="s2">if </span><span class="s1">(deferred.isRejected()) { 
+                </span><span class="s2">return </span><span class="s3">'rejected'</span><span class="s1">; 
+            } 
+            </span><span class="s2">return </span><span class="s3">'pending'</span><span class="s1">; 
+        }, 
+ 
+        </span><span class="s0">// Maps jqXHR callbacks to the equivalent</span><span class="s1"> 
+        </span><span class="s0">// methods of the given Promise object:</span><span class="s1"> 
+        _enhancePromise: </span><span class="s2">function </span><span class="s1">(promise) { 
+            promise.success = promise.done; 
+            promise.error = promise.fail; 
+            promise.complete = promise.always; 
+            </span><span class="s2">return </span><span class="s1">promise; 
+        }, 
+ 
+        </span><span class="s0">// Creates and returns a Promise object enhanced with</span><span class="s1"> 
+        </span><span class="s0">// the jqXHR methods abort, success, error and complete:</span><span class="s1"> 
+        _getXHRPromise: </span><span class="s2">function </span><span class="s1">(resolveOrReject, context, args) { 
+            </span><span class="s2">var </span><span class="s1">dfd = $.Deferred(), 
+                promise = dfd.promise(); 
+            context = context || </span><span class="s2">this</span><span class="s1">.options.context || promise; 
+            </span><span class="s2">if </span><span class="s1">(resolveOrReject === </span><span class="s2">true</span><span class="s1">) { 
+                dfd.resolveWith(context, args); 
+            } </span><span class="s2">else if </span><span class="s1">(resolveOrReject === </span><span class="s2">false</span><span class="s1">) { 
+                dfd.rejectWith(context, args); 
+            } 
+            promise.abort = dfd.promise; 
+            </span><span class="s2">return this</span><span class="s1">._enhancePromise(promise); 
+        }, 
+ 
+        </span><span class="s0">// Adds convenience methods to the data callback argument:</span><span class="s1"> 
+        _addConvenienceMethods: </span><span class="s2">function </span><span class="s1">(e, data) { 
+            </span><span class="s2">var </span><span class="s1">that = </span><span class="s2">this</span><span class="s1">, 
+                getPromise = </span><span class="s2">function </span><span class="s1">(args) { 
+                    </span><span class="s2">return </span><span class="s1">$.Deferred().resolveWith(that, args).promise(); 
+                }; 
+            data.process = </span><span class="s2">function </span><span class="s1">(resolveFunc, rejectFunc) { 
+                </span><span class="s2">if </span><span class="s1">(resolveFunc || rejectFunc) { 
+                    data._processQueue = </span><span class="s2">this</span><span class="s1">._processQueue = 
+                        (</span><span class="s2">this</span><span class="s1">._processQueue || getPromise([</span><span class="s2">this</span><span class="s1">])).pipe( 
+                            </span><span class="s2">function </span><span class="s1">() { 
+                                </span><span class="s2">if </span><span class="s1">(data.errorThrown) { 
+                                    </span><span class="s2">return </span><span class="s1">$.Deferred() 
+                                        .rejectWith(that, [data]).promise(); 
+                                } 
+                                </span><span class="s2">return </span><span class="s1">getPromise(arguments); 
+                            } 
+                        ).pipe(resolveFunc, rejectFunc); 
+                } 
+                </span><span class="s2">return this</span><span class="s1">._processQueue || getPromise([</span><span class="s2">this</span><span class="s1">]); 
+            }; 
+            data.submit = </span><span class="s2">function </span><span class="s1">() { 
+                </span><span class="s2">if </span><span class="s1">(</span><span class="s2">this</span><span class="s1">.state() !== </span><span class="s3">'pending'</span><span class="s1">) { 
+                    data.jqXHR = </span><span class="s2">this</span><span class="s1">.jqXHR = 
+                        (that._trigger( 
+                            </span><span class="s3">'submit'</span><span class="s1">, 
+                            $.Event(</span><span class="s3">'submit'</span><span class="s1">, {delegatedEvent: e}), 
+                            </span><span class="s2">this</span><span class="s1"> 
+                        ) !== </span><span class="s2">false</span><span class="s1">) &amp;&amp; that._onSend(e, </span><span class="s2">this</span><span class="s1">); 
+                } 
+                </span><span class="s2">return this</span><span class="s1">.jqXHR || that._getXHRPromise(); 
+            }; 
+            data.abort = </span><span class="s2">function </span><span class="s1">() { 
+                </span><span class="s2">if </span><span class="s1">(</span><span class="s2">this</span><span class="s1">.jqXHR) { 
+                    </span><span class="s2">return this</span><span class="s1">.jqXHR.abort(); 
+                } 
+                </span><span class="s2">this</span><span class="s1">.errorThrown = </span><span class="s3">'abort'</span><span class="s1">; 
+                that._trigger(</span><span class="s3">'fail'</span><span class="s1">, </span><span class="s2">null</span><span class="s1">, </span><span class="s2">this</span><span class="s1">); 
+                </span><span class="s2">return </span><span class="s1">that._getXHRPromise(</span><span class="s2">false</span><span class="s1">); 
+            }; 
+            data.state = </span><span class="s2">function </span><span class="s1">() { 
+                </span><span class="s2">if </span><span class="s1">(</span><span class="s2">this</span><span class="s1">.jqXHR) { 
+                    </span><span class="s2">return </span><span class="s1">that._getDeferredState(</span><span class="s2">this</span><span class="s1">.jqXHR); 
+                } 
+                </span><span class="s2">if </span><span class="s1">(</span><span class="s2">this</span><span class="s1">._processQueue) { 
+                    </span><span class="s2">return </span><span class="s1">that._getDeferredState(</span><span class="s2">this</span><span class="s1">._processQueue); 
+                } 
+            }; 
+            data.processing = </span><span class="s2">function </span><span class="s1">() { 
+                </span><span class="s2">return </span><span class="s1">!</span><span class="s2">this</span><span class="s1">.jqXHR &amp;&amp; </span><span class="s2">this</span><span class="s1">._processQueue &amp;&amp; that 
+                    ._getDeferredState(</span><span class="s2">this</span><span class="s1">._processQueue) === </span><span class="s3">'pending'</span><span class="s1">; 
+            }; 
+            data.progress = </span><span class="s2">function </span><span class="s1">() { 
+                </span><span class="s2">return this</span><span class="s1">._progress; 
+            }; 
+            data.response = </span><span class="s2">function </span><span class="s1">() { 
+                </span><span class="s2">return this</span><span class="s1">._response; 
+            }; 
+        }, 
+ 
+        </span><span class="s0">// Parses the Range header from the server response</span><span class="s1"> 
+        </span><span class="s0">// and returns the uploaded bytes:</span><span class="s1"> 
+        _getUploadedBytes: </span><span class="s2">function </span><span class="s1">(jqXHR) { 
+            </span><span class="s2">var </span><span class="s1">range = jqXHR.getResponseHeader(</span><span class="s3">'Range'</span><span class="s1">), 
+                parts = range &amp;&amp; range.split(</span><span class="s3">'-'</span><span class="s1">), 
+                upperBytesPos = parts &amp;&amp; parts.length &gt; </span><span class="s4">1 </span><span class="s1">&amp;&amp; 
+                    parseInt(parts[</span><span class="s4">1</span><span class="s1">], </span><span class="s4">10</span><span class="s1">); 
+            </span><span class="s2">return </span><span class="s1">upperBytesPos &amp;&amp; upperBytesPos + </span><span class="s4">1</span><span class="s1">; 
+        }, 
+ 
+        </span><span class="s0">// Uploads a file in multiple, sequential requests</span><span class="s1"> 
+        </span><span class="s0">// by splitting the file up in multiple blob chunks.</span><span class="s1"> 
+        </span><span class="s0">// If the second parameter is true, only tests if the file</span><span class="s1"> 
+        </span><span class="s0">// should be uploaded in chunks, but does not invoke any</span><span class="s1"> 
+        </span><span class="s0">// upload requests:</span><span class="s1"> 
+        _chunkedUpload: </span><span class="s2">function </span><span class="s1">(options, testOnly) { 
+            options.uploadedBytes = options.uploadedBytes || </span><span class="s4">0</span><span class="s1">; 
+            </span><span class="s2">var </span><span class="s1">that = </span><span class="s2">this</span><span class="s1">, 
+                file = options.files[</span><span class="s4">0</span><span class="s1">], 
+                fs = file.size, 
+                ub = options.uploadedBytes, 
+                mcs = options.maxChunkSize || fs, 
+                slice = </span><span class="s2">this</span><span class="s1">._blobSlice, 
+                dfd = $.Deferred(), 
+                promise = dfd.promise(), 
+                jqXHR, 
+                upload; 
+            </span><span class="s2">if </span><span class="s1">(!(</span><span class="s2">this</span><span class="s1">._isXHRUpload(options) &amp;&amp; slice &amp;&amp; (ub || mcs &lt; fs)) || 
+                    options.data) { 
+                </span><span class="s2">return false</span><span class="s1">; 
+            } 
+            </span><span class="s2">if </span><span class="s1">(testOnly) { 
+                </span><span class="s2">return true</span><span class="s1">; 
+            } 
+            </span><span class="s2">if </span><span class="s1">(ub &gt;= fs) { 
+                file.error = options.i18n(</span><span class="s3">'uploadedBytes'</span><span class="s1">); 
+                </span><span class="s2">return this</span><span class="s1">._getXHRPromise( 
+                    </span><span class="s2">false</span><span class="s1">, 
+                    options.context, 
+                    [</span><span class="s2">null</span><span class="s1">, </span><span class="s3">'error'</span><span class="s1">, file.error] 
+                ); 
+            } 
+            </span><span class="s0">// The chunk upload method:</span><span class="s1"> 
+            upload = </span><span class="s2">function </span><span class="s1">() { 
+                </span><span class="s0">// Clone the options object for each chunk upload:</span><span class="s1"> 
+                </span><span class="s2">var </span><span class="s1">o = $.extend({}, options), 
+                    currentLoaded = o._progress.loaded; 
+                o.blob = slice.call( 
+                    file, 
+                    ub, 
+                    ub + mcs, 
+                    file.type 
+                ); 
+                </span><span class="s0">// Store the current chunk size, as the blob itself</span><span class="s1"> 
+                </span><span class="s0">// will be dereferenced after data processing:</span><span class="s1"> 
+                o.chunkSize = o.blob.size; 
+                </span><span class="s0">// Expose the chunk bytes position range:</span><span class="s1"> 
+                o.contentRange = </span><span class="s3">'bytes ' </span><span class="s1">+ ub + </span><span class="s3">'-' </span><span class="s1">+ 
+                    (ub + o.chunkSize - </span><span class="s4">1</span><span class="s1">) + </span><span class="s3">'/' </span><span class="s1">+ fs; 
+                </span><span class="s0">// Process the upload data (the blob and potential form data):</span><span class="s1"> 
+                that._initXHRData(o); 
+                </span><span class="s0">// Add progress listeners for this chunk upload:</span><span class="s1"> 
+                that._initProgressListener(o); 
+                jqXHR = ((that._trigger(</span><span class="s3">'chunksend'</span><span class="s1">, </span><span class="s2">null</span><span class="s1">, o) !== </span><span class="s2">false </span><span class="s1">&amp;&amp; $.ajax(o)) || 
+                        that._getXHRPromise(</span><span class="s2">false</span><span class="s1">, o.context)) 
+                    .done(</span><span class="s2">function </span><span class="s1">(result, textStatus, jqXHR) { 
+                        ub = that._getUploadedBytes(jqXHR) || 
+                            (ub + o.chunkSize); 
+                        </span><span class="s0">// Create a progress event if no final progress event</span><span class="s1"> 
+                        </span><span class="s0">// with loaded equaling total has been triggered</span><span class="s1"> 
+                        </span><span class="s0">// for this chunk:</span><span class="s1"> 
+                        </span><span class="s2">if </span><span class="s1">(currentLoaded + o.chunkSize - o._progress.loaded) { 
+                            that._onProgress($.Event(</span><span class="s3">'progress'</span><span class="s1">, { 
+                                lengthComputable: </span><span class="s2">true</span><span class="s1">, 
+                                loaded: ub - o.uploadedBytes, 
+                                total: ub - o.uploadedBytes 
+                            }), o); 
+                        } 
+                        options.uploadedBytes = o.uploadedBytes = ub; 
+                        o.result = result; 
+                        o.textStatus = textStatus; 
+                        o.jqXHR = jqXHR; 
+                        that._trigger(</span><span class="s3">'chunkdone'</span><span class="s1">, </span><span class="s2">null</span><span class="s1">, o); 
+                        that._trigger(</span><span class="s3">'chunkalways'</span><span class="s1">, </span><span class="s2">null</span><span class="s1">, o); 
+                        </span><span class="s2">if </span><span class="s1">(ub &lt; fs) { 
+                            </span><span class="s0">// File upload not yet complete,</span><span class="s1"> 
+                            </span><span class="s0">// continue with the next chunk:</span><span class="s1"> 
+                            upload(); 
+                        } </span><span class="s2">else </span><span class="s1">{ 
+                            dfd.resolveWith( 
+                                o.context, 
+                                [result, textStatus, jqXHR] 
+                            ); 
+                        } 
+                    }) 
+                    .fail(</span><span class="s2">function </span><span class="s1">(jqXHR, textStatus, errorThrown) { 
+                        o.jqXHR = jqXHR; 
+                        o.textStatus = textStatus; 
+                        o.errorThrown = errorThrown; 
+                        that._trigger(</span><span class="s3">'chunkfail'</span><span class="s1">, </span><span class="s2">null</span><span class="s1">, o); 
+                        that._trigger(</span><span class="s3">'chunkalways'</span><span class="s1">, </span><span class="s2">null</span><span class="s1">, o); 
+                        dfd.rejectWith( 
+                            o.context, 
+                            [jqXHR, textStatus, errorThrown] 
+                        ); 
+                    }); 
+            }; 
+            </span><span class="s2">this</span><span class="s1">._enhancePromise(promise); 
+            promise.abort = </span><span class="s2">function </span><span class="s1">() { 
+                </span><span class="s2">return </span><span class="s1">jqXHR.abort(); 
+            }; 
+            upload(); 
+            </span><span class="s2">return </span><span class="s1">promise; 
+        }, 
+ 
+        _beforeSend: </span><span class="s2">function </span><span class="s1">(e, data) { 
+            </span><span class="s2">if </span><span class="s1">(</span><span class="s2">this</span><span class="s1">._active === </span><span class="s4">0</span><span class="s1">) { 
+                </span><span class="s0">// the start callback is triggered when an upload starts</span><span class="s1"> 
+                </span><span class="s0">// and no other uploads are currently running,</span><span class="s1"> 
+                </span><span class="s0">// equivalent to the global ajaxStart event:</span><span class="s1"> 
+                </span><span class="s2">this</span><span class="s1">._trigger(</span><span class="s3">'start'</span><span class="s1">); 
+                </span><span class="s0">// Set timer for global bitrate progress calculation:</span><span class="s1"> 
+                </span><span class="s2">this</span><span class="s1">._bitrateTimer = </span><span class="s2">new this</span><span class="s1">._BitrateTimer(); 
+                </span><span class="s0">// Reset the global progress values:</span><span class="s1"> 
+                </span><span class="s2">this</span><span class="s1">._progress.loaded = </span><span class="s2">this</span><span class="s1">._progress.total = </span><span class="s4">0</span><span class="s1">; 
+                </span><span class="s2">this</span><span class="s1">._progress.bitrate = </span><span class="s4">0</span><span class="s1">; 
+            } 
+            </span><span class="s0">// Make sure the container objects for the .response() and</span><span class="s1"> 
+            </span><span class="s0">// .progress() methods on the data object are available</span><span class="s1"> 
+            </span><span class="s0">// and reset to their initial state:</span><span class="s1"> 
+            </span><span class="s2">this</span><span class="s1">._initResponseObject(data); 
+            </span><span class="s2">this</span><span class="s1">._initProgressObject(data); 
+            data._progress.loaded = data.loaded = data.uploadedBytes || </span><span class="s4">0</span><span class="s1">; 
+            data._progress.total = data.total = </span><span class="s2">this</span><span class="s1">._getTotal(data.files) || </span><span class="s4">1</span><span class="s1">; 
+            data._progress.bitrate = data.bitrate = </span><span class="s4">0</span><span class="s1">; 
+            </span><span class="s2">this</span><span class="s1">._active += </span><span class="s4">1</span><span class="s1">; 
+            </span><span class="s0">// Initialize the global progress values:</span><span class="s1"> 
+            </span><span class="s2">this</span><span class="s1">._progress.loaded += data.loaded; 
+            </span><span class="s2">this</span><span class="s1">._progress.total += data.total; 
+        }, 
+ 
+        _onDone: </span><span class="s2">function </span><span class="s1">(result, textStatus, jqXHR, options) { 
+            </span><span class="s2">var </span><span class="s1">total = options._progress.total, 
+                response = options._response; 
+            </span><span class="s2">if </span><span class="s1">(options._progress.loaded &lt; total) { 
+                </span><span class="s0">// Create a progress event if no final progress event</span><span class="s1"> 
+                </span><span class="s0">// with loaded equaling total has been triggered:</span><span class="s1"> 
+                </span><span class="s2">this</span><span class="s1">._onProgress($.Event(</span><span class="s3">'progress'</span><span class="s1">, { 
+                    lengthComputable: </span><span class="s2">true</span><span class="s1">, 
+                    loaded: total, 
+                    total: total 
+                }), options); 
+            } 
+            response.result = options.result = result; 
+            response.textStatus = options.textStatus = textStatus; 
+            response.jqXHR = options.jqXHR = jqXHR; 
+            </span><span class="s2">this</span><span class="s1">._trigger(</span><span class="s3">'done'</span><span class="s1">, </span><span class="s2">null</span><span class="s1">, options); 
+        }, 
+ 
+        _onFail: </span><span class="s2">function </span><span class="s1">(jqXHR, textStatus, errorThrown, options) { 
+            </span><span class="s2">var </span><span class="s1">response = options._response; 
+            </span><span class="s2">if </span><span class="s1">(options.recalculateProgress) { 
+                </span><span class="s0">// Remove the failed (error or abort) file upload from</span><span class="s1"> 
+                </span><span class="s0">// the global progress calculation:</span><span class="s1"> 
+                </span><span class="s2">this</span><span class="s1">._progress.loaded -= options._progress.loaded; 
+                </span><span class="s2">this</span><span class="s1">._progress.total -= options._progress.total; 
+            } 
+            response.jqXHR = options.jqXHR = jqXHR; 
+            response.textStatus = options.textStatus = textStatus; 
+            response.errorThrown = options.errorThrown = errorThrown; 
+            </span><span class="s2">this</span><span class="s1">._trigger(</span><span class="s3">'fail'</span><span class="s1">, </span><span class="s2">null</span><span class="s1">, options); 
+        }, 
+ 
+        _onAlways: </span><span class="s2">function </span><span class="s1">(jqXHRorResult, textStatus, jqXHRorError, options) { 
+            </span><span class="s0">// jqXHRorResult, textStatus and jqXHRorError are added to the</span><span class="s1"> 
+            </span><span class="s0">// options object via done and fail callbacks</span><span class="s1"> 
+            </span><span class="s2">this</span><span class="s1">._trigger(</span><span class="s3">'always'</span><span class="s1">, </span><span class="s2">null</span><span class="s1">, options); 
+        }, 
+ 
+        _onSend: </span><span class="s2">function </span><span class="s1">(e, data) { 
+            </span><span class="s2">if </span><span class="s1">(!data.submit) { 
+                </span><span class="s2">this</span><span class="s1">._addConvenienceMethods(e, data); 
+            } 
+            </span><span class="s2">var </span><span class="s1">that = </span><span class="s2">this</span><span class="s1">, 
+                jqXHR, 
+                aborted, 
+                slot, 
+                pipe, 
+                options = that._getAJAXSettings(data), 
+                send = </span><span class="s2">function </span><span class="s1">() { 
+                    that._sending += </span><span class="s4">1</span><span class="s1">; 
+                    </span><span class="s0">// Set timer for bitrate progress calculation:</span><span class="s1"> 
+                    options._bitrateTimer = </span><span class="s2">new </span><span class="s1">that._BitrateTimer(); 
+                    jqXHR = jqXHR || ( 
+                        ((aborted || that._trigger( 
+                            </span><span class="s3">'send'</span><span class="s1">, 
+                            $.Event(</span><span class="s3">'send'</span><span class="s1">, {delegatedEvent: e}), 
+                            options 
+                        ) === </span><span class="s2">false</span><span class="s1">) &amp;&amp; 
+                        that._getXHRPromise(</span><span class="s2">false</span><span class="s1">, options.context, aborted)) || 
+                        that._chunkedUpload(options) || $.ajax(options) 
+                    ).done(</span><span class="s2">function </span><span class="s1">(result, textStatus, jqXHR) { 
+                        that._onDone(result, textStatus, jqXHR, options); 
+                    }).fail(</span><span class="s2">function </span><span class="s1">(jqXHR, textStatus, errorThrown) { 
+                        that._onFail(jqXHR, textStatus, errorThrown, options); 
+                    }).always(</span><span class="s2">function </span><span class="s1">(jqXHRorResult, textStatus, jqXHRorError) { 
+                        that._onAlways( 
+                            jqXHRorResult, 
+                            textStatus, 
+                            jqXHRorError, 
+                            options 
+                        ); 
+                        that._sending -= </span><span class="s4">1</span><span class="s1">; 
+                        that._active -= </span><span class="s4">1</span><span class="s1">; 
+                        </span><span class="s2">if </span><span class="s1">(options.limitConcurrentUploads &amp;&amp; 
+                                options.limitConcurrentUploads &gt; that._sending) { 
+                            </span><span class="s0">// Start the next queued upload,</span><span class="s1"> 
+                            </span><span class="s0">// that has not been aborted:</span><span class="s1"> 
+                            </span><span class="s2">var </span><span class="s1">nextSlot = that._slots.shift(); 
+                            </span><span class="s2">while </span><span class="s1">(nextSlot) { 
+                                </span><span class="s2">if </span><span class="s1">(that._getDeferredState(nextSlot) === </span><span class="s3">'pending'</span><span class="s1">) { 
+                                    nextSlot.resolve(); 
+                                    </span><span class="s2">break</span><span class="s1">; 
+                                } 
+                                nextSlot = that._slots.shift(); 
+                            } 
+                        } 
+                        </span><span class="s2">if </span><span class="s1">(that._active === </span><span class="s4">0</span><span class="s1">) { 
+                            </span><span class="s0">// The stop callback is triggered when all uploads have</span><span class="s1"> 
+                            </span><span class="s0">// been completed, equivalent to the global ajaxStop event:</span><span class="s1"> 
+                            that._trigger(</span><span class="s3">'stop'</span><span class="s1">); 
+                        } 
+                    }); 
+                    </span><span class="s2">return </span><span class="s1">jqXHR; 
+                }; 
+            </span><span class="s2">this</span><span class="s1">._beforeSend(e, options); 
+            </span><span class="s2">if </span><span class="s1">(</span><span class="s2">this</span><span class="s1">.options.sequentialUploads || 
+                    (</span><span class="s2">this</span><span class="s1">.options.limitConcurrentUploads &amp;&amp; 
+                    </span><span class="s2">this</span><span class="s1">.options.limitConcurrentUploads &lt;= </span><span class="s2">this</span><span class="s1">._sending)) { 
+                </span><span class="s2">if </span><span class="s1">(</span><span class="s2">this</span><span class="s1">.options.limitConcurrentUploads &gt; </span><span class="s4">1</span><span class="s1">) { 
+                    slot = $.Deferred(); 
+                    </span><span class="s2">this</span><span class="s1">._slots.push(slot); 
+                    pipe = slot.pipe(send); 
+                } </span><span class="s2">else </span><span class="s1">{ 
+                    </span><span class="s2">this</span><span class="s1">._sequence = </span><span class="s2">this</span><span class="s1">._sequence.pipe(send, send); 
+                    pipe = </span><span class="s2">this</span><span class="s1">._sequence; 
+                } 
+                </span><span class="s0">// Return the piped Promise object, enhanced with an abort method,</span><span class="s1"> 
+                </span><span class="s0">// which is delegated to the jqXHR object of the current upload,</span><span class="s1"> 
+                </span><span class="s0">// and jqXHR callbacks mapped to the equivalent Promise methods:</span><span class="s1"> 
+                pipe.abort = </span><span class="s2">function </span><span class="s1">() { 
+                    aborted = [undefined, </span><span class="s3">'abort'</span><span class="s1">, </span><span class="s3">'abort'</span><span class="s1">]; 
+                    </span><span class="s2">if </span><span class="s1">(!jqXHR) { 
+                        </span><span class="s2">if </span><span class="s1">(slot) { 
+                            slot.rejectWith(options.context, aborted); 
+                        } 
+                        </span><span class="s2">return </span><span class="s1">send(); 
+                    } 
+                    </span><span class="s2">return </span><span class="s1">jqXHR.abort(); 
+                }; 
+                </span><span class="s2">return this</span><span class="s1">._enhancePromise(pipe); 
+            } 
+            </span><span class="s2">return </span><span class="s1">send(); 
+        }, 
+ 
+        _onAdd: </span><span class="s2">function </span><span class="s1">(e, data) { 
+            </span><span class="s2">var </span><span class="s1">that = </span><span class="s2">this</span><span class="s1">, 
+                result = </span><span class="s2">true</span><span class="s1">, 
+                options = $.extend({}, </span><span class="s2">this</span><span class="s1">.options, data), 
+                files = data.files, 
+                filesLength = files.length, 
+                limit = options.limitMultiFileUploads, 
+                limitSize = options.limitMultiFileUploadSize, 
+                overhead = options.limitMultiFileUploadSizeOverhead, 
+                batchSize = </span><span class="s4">0</span><span class="s1">, 
+                paramName = </span><span class="s2">this</span><span class="s1">._getParamName(options), 
+                paramNameSet, 
+                paramNameSlice, 
+                fileSet, 
+                i, 
+                j = </span><span class="s4">0</span><span class="s1">; 
+            </span><span class="s2">if </span><span class="s1">(limitSize &amp;&amp; (!filesLength || files[</span><span class="s4">0</span><span class="s1">].size === undefined)) { 
+                limitSize = undefined; 
+            } 
+            </span><span class="s2">if </span><span class="s1">(!(options.singleFileUploads || limit || limitSize) || 
+                    !</span><span class="s2">this</span><span class="s1">._isXHRUpload(options)) { 
+                fileSet = [files]; 
+                paramNameSet = [paramName]; 
+            } </span><span class="s2">else if </span><span class="s1">(!(options.singleFileUploads || limitSize) &amp;&amp; limit) { 
+                fileSet = []; 
+                paramNameSet = []; 
+                </span><span class="s2">for </span><span class="s1">(i = </span><span class="s4">0</span><span class="s1">; i &lt; filesLength; i += limit) { 
+                    fileSet.push(files.slice(i, i + limit)); 
+                    paramNameSlice = paramName.slice(i, i + limit); 
+                    </span><span class="s2">if </span><span class="s1">(!paramNameSlice.length) { 
+                        paramNameSlice = paramName; 
+                    } 
+                    paramNameSet.push(paramNameSlice); 
+                } 
+            } </span><span class="s2">else if </span><span class="s1">(!options.singleFileUploads &amp;&amp; limitSize) { 
+                fileSet = []; 
+                paramNameSet = []; 
+                </span><span class="s2">for </span><span class="s1">(i = </span><span class="s4">0</span><span class="s1">; i &lt; filesLength; i = i + </span><span class="s4">1</span><span class="s1">) { 
+                    batchSize += files[i].size + overhead; 
+                    </span><span class="s2">if </span><span class="s1">(i + </span><span class="s4">1 </span><span class="s1">=== filesLength || 
+                            ((batchSize + files[i + </span><span class="s4">1</span><span class="s1">].size + overhead) &gt; limitSize) || 
+                            (limit &amp;&amp; i + </span><span class="s4">1 </span><span class="s1">- j &gt;= limit)) { 
+                        fileSet.push(files.slice(j, i + </span><span class="s4">1</span><span class="s1">)); 
+                        paramNameSlice = paramName.slice(j, i + </span><span class="s4">1</span><span class="s1">); 
+                        </span><span class="s2">if </span><span class="s1">(!paramNameSlice.length) { 
+                            paramNameSlice = paramName; 
+                        } 
+                        paramNameSet.push(paramNameSlice); 
+                        j = i + </span><span class="s4">1</span><span class="s1">; 
+                        batchSize = </span><span class="s4">0</span><span class="s1">; 
+                    } 
+                } 
+            } </span><span class="s2">else </span><span class="s1">{ 
+                paramNameSet = paramName; 
+            } 
+            data.originalFiles = files; 
+            $.each(fileSet || files, </span><span class="s2">function </span><span class="s1">(index, element) { 
+                </span><span class="s2">var </span><span class="s1">newData = $.extend({}, data); 
+                newData.files = fileSet ? element : [element]; 
+                newData.paramName = paramNameSet[index]; 
+                that._initResponseObject(newData); 
+                that._initProgressObject(newData); 
+                that._addConvenienceMethods(e, newData); 
+                result = that._trigger( 
+                    </span><span class="s3">'add'</span><span class="s1">, 
+                    $.Event(</span><span class="s3">'add'</span><span class="s1">, {delegatedEvent: e}), 
+                    newData 
+                ); 
+                </span><span class="s2">return </span><span class="s1">result; 
+            }); 
+            </span><span class="s2">return </span><span class="s1">result; 
+        }, 
+ 
+        _replaceFileInput: </span><span class="s2">function </span><span class="s1">(data) { 
+            </span><span class="s2">var </span><span class="s1">input = data.fileInput, 
+                inputClone = input.clone(</span><span class="s2">true</span><span class="s1">); 
+            </span><span class="s0">// Add a reference for the new cloned file input to the data argument:</span><span class="s1"> 
+            data.fileInputClone = inputClone; 
+            $(</span><span class="s3">'&lt;form&gt;&lt;/form&gt;'</span><span class="s1">).append(inputClone)[</span><span class="s4">0</span><span class="s1">].reset(); 
+            </span><span class="s0">// Detaching allows to insert the fileInput on another form</span><span class="s1"> 
+            </span><span class="s0">// without loosing the file input value:</span><span class="s1"> 
+            input.after(inputClone).detach(); 
+            </span><span class="s0">// Avoid memory leaks with the detached file input:</span><span class="s1"> 
+            $.cleanData(input.unbind(</span><span class="s3">'remove'</span><span class="s1">)); 
+            </span><span class="s0">// Replace the original file input element in the fileInput</span><span class="s1"> 
+            </span><span class="s0">// elements set with the clone, which has been copied including</span><span class="s1"> 
+            </span><span class="s0">// event handlers:</span><span class="s1"> 
+            </span><span class="s2">this</span><span class="s1">.options.fileInput = </span><span class="s2">this</span><span class="s1">.options.fileInput.map(</span><span class="s2">function </span><span class="s1">(i, el) { 
+                </span><span class="s2">if </span><span class="s1">(el === input[</span><span class="s4">0</span><span class="s1">]) { 
+                    </span><span class="s2">return </span><span class="s1">inputClone[</span><span class="s4">0</span><span class="s1">]; 
+                } 
+                </span><span class="s2">return </span><span class="s1">el; 
+            }); 
+            </span><span class="s0">// If the widget has been initialized on the file input itself,</span><span class="s1"> 
+            </span><span class="s0">// override this.element with the file input clone:</span><span class="s1"> 
+            </span><span class="s2">if </span><span class="s1">(input[</span><span class="s4">0</span><span class="s1">] === </span><span class="s2">this</span><span class="s1">.element[</span><span class="s4">0</span><span class="s1">]) { 
+                </span><span class="s2">this</span><span class="s1">.element = inputClone; 
+            } 
+        }, 
+ 
+        _handleFileTreeEntry: </span><span class="s2">function </span><span class="s1">(entry, path) { 
+            </span><span class="s2">var </span><span class="s1">that = </span><span class="s2">this</span><span class="s1">, 
+                dfd = $.Deferred(), 
+                errorHandler = </span><span class="s2">function </span><span class="s1">(e) { 
+                    </span><span class="s2">if </span><span class="s1">(e &amp;&amp; !e.entry) { 
+                        e.entry = entry; 
+                    } 
+                    </span><span class="s0">// Since $.when returns immediately if one</span><span class="s1"> 
+                    </span><span class="s0">// Deferred is rejected, we use resolve instead.</span><span class="s1"> 
+                    </span><span class="s0">// This allows valid files and invalid items</span><span class="s1"> 
+                    </span><span class="s0">// to be returned together in one set:</span><span class="s1"> 
+                    dfd.resolve([e]); 
+                }, 
+                successHandler = </span><span class="s2">function </span><span class="s1">(entries) { 
+                    that._handleFileTreeEntries( 
+                        entries, 
+                        path + entry.name + </span><span class="s3">'/'</span><span class="s1"> 
+                    ).done(</span><span class="s2">function </span><span class="s1">(files) { 
+                        dfd.resolve(files); 
+                    }).fail(errorHandler); 
+                }, 
+                readEntries = </span><span class="s2">function </span><span class="s1">() { 
+                    dirReader.readEntries(</span><span class="s2">function </span><span class="s1">(results) { 
+                        </span><span class="s2">if </span><span class="s1">(!results.length) { 
+                            successHandler(entries); 
+                        } </span><span class="s2">else </span><span class="s1">{ 
+                            entries = entries.concat(results); 
+                            readEntries(); 
+                        } 
+                    }, errorHandler); 
+                }, 
+                dirReader, entries = []; 
+            path = path || </span><span class="s3">''</span><span class="s1">; 
+            </span><span class="s2">if </span><span class="s1">(entry.isFile) { 
+                </span><span class="s2">if </span><span class="s1">(entry._file) { 
+                    </span><span class="s0">// Workaround for Chrome bug #149735</span><span class="s1"> 
+                    entry._file.relativePath = path; 
+                    dfd.resolve(entry._file); 
+                } </span><span class="s2">else </span><span class="s1">{ 
+                    entry.file(</span><span class="s2">function </span><span class="s1">(file) { 
+                        file.relativePath = path; 
+                        dfd.resolve(file); 
+                    }, errorHandler); 
+                } 
+            } </span><span class="s2">else if </span><span class="s1">(entry.isDirectory) { 
+                dirReader = entry.createReader(); 
+                readEntries(); 
+            } </span><span class="s2">else </span><span class="s1">{ 
+                </span><span class="s0">// Return an empy list for file system items</span><span class="s1"> 
+                </span><span class="s0">// other than files or directories:</span><span class="s1"> 
+                dfd.resolve([]); 
+            } 
+            </span><span class="s2">return </span><span class="s1">dfd.promise(); 
+        }, 
+ 
+        _handleFileTreeEntries: </span><span class="s2">function </span><span class="s1">(entries, path) { 
+            </span><span class="s2">var </span><span class="s1">that = </span><span class="s2">this</span><span class="s1">; 
+            </span><span class="s2">return </span><span class="s1">$.when.apply( 
+                $, 
+                $.map(entries, </span><span class="s2">function </span><span class="s1">(entry) { 
+                    </span><span class="s2">return </span><span class="s1">that._handleFileTreeEntry(entry, path); 
+                }) 
+            ).pipe(</span><span class="s2">function </span><span class="s1">() { 
+                </span><span class="s2">return </span><span class="s1">Array.prototype.concat.apply( 
+                    [], 
+                    arguments 
+                ); 
+            }); 
+        }, 
+ 
+        _getDroppedFiles: </span><span class="s2">function </span><span class="s1">(dataTransfer) { 
+            dataTransfer = dataTransfer || {}; 
+            </span><span class="s2">var </span><span class="s1">items = dataTransfer.items; 
+            </span><span class="s2">if </span><span class="s1">(items &amp;&amp; items.length &amp;&amp; (items[</span><span class="s4">0</span><span class="s1">].webkitGetAsEntry || 
+                    items[</span><span class="s4">0</span><span class="s1">].getAsEntry)) { 
+                </span><span class="s2">return this</span><span class="s1">._handleFileTreeEntries( 
+                    $.map(items, </span><span class="s2">function </span><span class="s1">(item) { 
+                        </span><span class="s2">var </span><span class="s1">entry; 
+                        </span><span class="s2">if </span><span class="s1">(item.webkitGetAsEntry) { 
+                            entry = item.webkitGetAsEntry(); 
+                            </span><span class="s2">if </span><span class="s1">(entry) { 
+                                </span><span class="s0">// Workaround for Chrome bug #149735:</span><span class="s1"> 
+                                entry._file = item.getAsFile(); 
+                            } 
+                            </span><span class="s2">return </span><span class="s1">entry; 
+                        } 
+                        </span><span class="s2">return </span><span class="s1">item.getAsEntry(); 
+                    }) 
+                ); 
+            } 
+            </span><span class="s2">return </span><span class="s1">$.Deferred().resolve( 
+                $.makeArray(dataTransfer.files) 
+            ).promise(); 
+        }, 
+ 
+        _getSingleFileInputFiles: </span><span class="s2">function </span><span class="s1">(fileInput) { 
+            fileInput = $(fileInput); 
+            </span><span class="s2">var </span><span class="s1">entries = fileInput.prop(</span><span class="s3">'webkitEntries'</span><span class="s1">) || 
+                    fileInput.prop(</span><span class="s3">'entries'</span><span class="s1">), 
+                files, 
+                value; 
+            </span><span class="s2">if </span><span class="s1">(entries &amp;&amp; entries.length) { 
+                </span><span class="s2">return this</span><span class="s1">._handleFileTreeEntries(entries); 
+            } 
+            files = $.makeArray(fileInput.prop(</span><span class="s3">'files'</span><span class="s1">)); 
+            </span><span class="s2">if </span><span class="s1">(!files.length) { 
+                value = fileInput.prop(</span><span class="s3">'value'</span><span class="s1">); 
+                </span><span class="s2">if </span><span class="s1">(!value) { 
+                    </span><span class="s2">return </span><span class="s1">$.Deferred().resolve([]).promise(); 
+                } 
+                </span><span class="s0">// If the files property is not available, the browser does not</span><span class="s1"> 
+                </span><span class="s0">// support the File API and we add a pseudo File object with</span><span class="s1"> 
+                </span><span class="s0">// the input value as name with path information removed:</span><span class="s1"> 
+                files = [{name: value.replace(</span><span class="s4">/^.*\\/</span><span class="s1">, </span><span class="s3">''</span><span class="s1">)}]; 
+            } </span><span class="s2">else if </span><span class="s1">(files[</span><span class="s4">0</span><span class="s1">].name === undefined &amp;&amp; files[</span><span class="s4">0</span><span class="s1">].fileName) { 
+                </span><span class="s0">// File normalization for Safari 4 and Firefox 3:</span><span class="s1"> 
+                $.each(files, </span><span class="s2">function </span><span class="s1">(index, file) { 
+                    file.name = file.fileName; 
+                    file.size = file.fileSize; 
+                }); 
+            } 
+            </span><span class="s2">return </span><span class="s1">$.Deferred().resolve(files).promise(); 
+        }, 
+ 
+        _getFileInputFiles: </span><span class="s2">function </span><span class="s1">(fileInput) { 
+            </span><span class="s2">if </span><span class="s1">(!(fileInput </span><span class="s2">instanceof </span><span class="s1">$) || fileInput.length === </span><span class="s4">1</span><span class="s1">) { 
+                </span><span class="s2">return this</span><span class="s1">._getSingleFileInputFiles(fileInput); 
+            } 
+            </span><span class="s2">return </span><span class="s1">$.when.apply( 
+                $, 
+                $.map(fileInput, </span><span class="s2">this</span><span class="s1">._getSingleFileInputFiles) 
+            ).pipe(</span><span class="s2">function </span><span class="s1">() { 
+                </span><span class="s2">return </span><span class="s1">Array.prototype.concat.apply( 
+                    [], 
+                    arguments 
+                ); 
+            }); 
+        }, 
+ 
+        _onChange: </span><span class="s2">function </span><span class="s1">(e) { 
+            </span><span class="s2">var </span><span class="s1">that = </span><span class="s2">this</span><span class="s1">, 
+                data = { 
+                    fileInput: $(e.target), 
+                    form: $(e.target.form) 
+                }; 
+            </span><span class="s2">this</span><span class="s1">._getFileInputFiles(data.fileInput).always(</span><span class="s2">function </span><span class="s1">(files) { 
+                data.files = files; 
+                </span><span class="s2">if </span><span class="s1">(that.options.replaceFileInput) { 
+                    that._replaceFileInput(data); 
+                } 
+                </span><span class="s2">if </span><span class="s1">(that._trigger( 
+                        </span><span class="s3">'change'</span><span class="s1">, 
+                        $.Event(</span><span class="s3">'change'</span><span class="s1">, {delegatedEvent: e}), 
+                        data 
+                    ) !== </span><span class="s2">false</span><span class="s1">) { 
+                    that._onAdd(e, data); 
+                } 
+            }); 
+        }, 
+ 
+        _onPaste: </span><span class="s2">function </span><span class="s1">(e) { 
+            </span><span class="s2">var </span><span class="s1">items = e.originalEvent &amp;&amp; e.originalEvent.clipboardData &amp;&amp; 
+                    e.originalEvent.clipboardData.items, 
+                data = {files: []}; 
+            </span><span class="s2">if </span><span class="s1">(items &amp;&amp; items.length) { 
+                $.each(items, </span><span class="s2">function </span><span class="s1">(index, item) { 
+                    </span><span class="s2">var </span><span class="s1">file = item.getAsFile &amp;&amp; item.getAsFile(); 
+                    </span><span class="s2">if </span><span class="s1">(file) { 
+                        data.files.push(file); 
+                    } 
+                }); 
+                </span><span class="s2">if </span><span class="s1">(</span><span class="s2">this</span><span class="s1">._trigger( 
+                        </span><span class="s3">'paste'</span><span class="s1">, 
+                        $.Event(</span><span class="s3">'paste'</span><span class="s1">, {delegatedEvent: e}), 
+                        data 
+                    ) !== </span><span class="s2">false</span><span class="s1">) { 
+                    </span><span class="s2">this</span><span class="s1">._onAdd(e, data); 
+                } 
+            } 
+        }, 
+ 
+        _onDrop: </span><span class="s2">function </span><span class="s1">(e) { 
+            e.dataTransfer = e.originalEvent &amp;&amp; e.originalEvent.dataTransfer; 
+            </span><span class="s2">var </span><span class="s1">that = </span><span class="s2">this</span><span class="s1">, 
+                dataTransfer = e.dataTransfer, 
+                data = {}; 
+            </span><span class="s2">if </span><span class="s1">(dataTransfer &amp;&amp; dataTransfer.files &amp;&amp; dataTransfer.files.length) { 
+                e.preventDefault(); 
+                </span><span class="s2">this</span><span class="s1">._getDroppedFiles(dataTransfer).always(</span><span class="s2">function </span><span class="s1">(files) { 
+                    data.files = files; 
+                    </span><span class="s2">if </span><span class="s1">(that._trigger( 
+                            </span><span class="s3">'drop'</span><span class="s1">, 
+                            $.Event(</span><span class="s3">'drop'</span><span class="s1">, {delegatedEvent: e}), 
+                            data 
+                        ) !== </span><span class="s2">false</span><span class="s1">) { 
+                        that._onAdd(e, data); 
+                    } 
+                }); 
+            } 
+        }, 
+ 
+        _onDragOver: getDragHandler(</span><span class="s3">'dragover'</span><span class="s1">), 
+ 
+        _onDragEnter: getDragHandler(</span><span class="s3">'dragenter'</span><span class="s1">), 
+ 
+        _onDragLeave: getDragHandler(</span><span class="s3">'dragleave'</span><span class="s1">), 
+ 
+        _initEventHandlers: </span><span class="s2">function </span><span class="s1">() { 
+            </span><span class="s2">if </span><span class="s1">(</span><span class="s2">this</span><span class="s1">._isXHRUpload(</span><span class="s2">this</span><span class="s1">.options)) { 
+                </span><span class="s2">this</span><span class="s1">._on(</span><span class="s2">this</span><span class="s1">.options.dropZone, { 
+                    dragover: </span><span class="s2">this</span><span class="s1">._onDragOver, 
+                    drop: </span><span class="s2">this</span><span class="s1">._onDrop, 
+                    </span><span class="s0">// event.preventDefault() on dragenter is required for IE10+:</span><span class="s1"> 
+                    dragenter: </span><span class="s2">this</span><span class="s1">._onDragEnter, 
+                    </span><span class="s0">// dragleave is not required, but added for completeness:</span><span class="s1"> 
+                    dragleave: </span><span class="s2">this</span><span class="s1">._onDragLeave 
+                }); 
+                </span><span class="s2">this</span><span class="s1">._on(</span><span class="s2">this</span><span class="s1">.options.pasteZone, { 
+                    paste: </span><span class="s2">this</span><span class="s1">._onPaste 
+                }); 
+            } 
+            </span><span class="s2">if </span><span class="s1">($.support.fileInput) { 
+                </span><span class="s2">this</span><span class="s1">._on(</span><span class="s2">this</span><span class="s1">.options.fileInput, { 
+                    change: </span><span class="s2">this</span><span class="s1">._onChange 
+                }); 
+            } 
+        }, 
+ 
+        _destroyEventHandlers: </span><span class="s2">function </span><span class="s1">() { 
+            </span><span class="s2">this</span><span class="s1">._off(</span><span class="s2">this</span><span class="s1">.options.dropZone, </span><span class="s3">'dragenter dragleave dragover drop'</span><span class="s1">); 
+            </span><span class="s2">this</span><span class="s1">._off(</span><span class="s2">this</span><span class="s1">.options.pasteZone, </span><span class="s3">'paste'</span><span class="s1">); 
+            </span><span class="s2">this</span><span class="s1">._off(</span><span class="s2">this</span><span class="s1">.options.fileInput, </span><span class="s3">'change'</span><span class="s1">); 
+        }, 
+ 
+        _setOption: </span><span class="s2">function </span><span class="s1">(key, value) { 
+            </span><span class="s2">var </span><span class="s1">reinit = $.inArray(key, </span><span class="s2">this</span><span class="s1">._specialOptions) !== -</span><span class="s4">1</span><span class="s1">; 
+            </span><span class="s2">if </span><span class="s1">(reinit) { 
+                </span><span class="s2">this</span><span class="s1">._destroyEventHandlers(); 
+            } 
+            </span><span class="s2">this</span><span class="s1">._super(key, value); 
+            </span><span class="s2">if </span><span class="s1">(reinit) { 
+                </span><span class="s2">this</span><span class="s1">._initSpecialOptions(); 
+                </span><span class="s2">this</span><span class="s1">._initEventHandlers(); 
+            } 
+        }, 
+ 
+        _initSpecialOptions: </span><span class="s2">function </span><span class="s1">() { 
+            </span><span class="s2">var </span><span class="s1">options = </span><span class="s2">this</span><span class="s1">.options; 
+            </span><span class="s2">if </span><span class="s1">(options.fileInput === undefined) { 
+                options.fileInput = </span><span class="s2">this</span><span class="s1">.element.is(</span><span class="s3">'input[type=&quot;file&quot;]'</span><span class="s1">) ? 
+                        </span><span class="s2">this</span><span class="s1">.element : </span><span class="s2">this</span><span class="s1">.element.find(</span><span class="s3">'input[type=&quot;file&quot;]'</span><span class="s1">); 
+            } </span><span class="s2">else if </span><span class="s1">(!(options.fileInput </span><span class="s2">instanceof </span><span class="s1">$)) { 
+                options.fileInput = $(options.fileInput); 
+            } 
+            </span><span class="s2">if </span><span class="s1">(!(options.dropZone </span><span class="s2">instanceof </span><span class="s1">$)) { 
+                options.dropZone = $(options.dropZone); 
+            } 
+            </span><span class="s2">if </span><span class="s1">(!(options.pasteZone </span><span class="s2">instanceof </span><span class="s1">$)) { 
+                options.pasteZone = $(options.pasteZone); 
+            } 
+        }, 
+ 
+        _getRegExp: </span><span class="s2">function </span><span class="s1">(str) { 
+            </span><span class="s2">var </span><span class="s1">parts = str.split(</span><span class="s3">'/'</span><span class="s1">), 
+                modifiers = parts.pop(); 
+            parts.shift(); 
+            </span><span class="s2">return new </span><span class="s1">RegExp(parts.join(</span><span class="s3">'/'</span><span class="s1">), modifiers); 
+        }, 
+ 
+        _isRegExpOption: </span><span class="s2">function </span><span class="s1">(key, value) { 
+            </span><span class="s2">return </span><span class="s1">key !== </span><span class="s3">'url' </span><span class="s1">&amp;&amp; $.type(value) === </span><span class="s3">'string' </span><span class="s1">&amp;&amp; 
+                </span><span class="s4">/^\/.*\/[igm]{0,3}$/</span><span class="s1">.test(value); 
+        }, 
+ 
+        _initDataAttributes: </span><span class="s2">function </span><span class="s1">() { 
+            </span><span class="s2">var </span><span class="s1">that = </span><span class="s2">this</span><span class="s1">, 
+                options = </span><span class="s2">this</span><span class="s1">.options, 
+                clone = $(</span><span class="s2">this</span><span class="s1">.element[</span><span class="s4">0</span><span class="s1">].cloneNode(</span><span class="s2">false</span><span class="s1">)), 
+                data = clone.data(); 
+            </span><span class="s0">// Avoid memory leaks:</span><span class="s1"> 
+            clone.remove(); 
+            </span><span class="s0">// Initialize options set via HTML5 data-attributes:</span><span class="s1"> 
+            $.each( 
+                data, 
+                </span><span class="s2">function </span><span class="s1">(key, value) { 
+                    </span><span class="s2">var </span><span class="s1">dataAttributeName = </span><span class="s3">'data-' </span><span class="s1">+ 
+                        </span><span class="s0">// Convert camelCase to hyphen-ated key:</span><span class="s1"> 
+                        key.replace(</span><span class="s4">/([a-z])([A-Z])/g</span><span class="s1">, </span><span class="s3">'$1-$2'</span><span class="s1">).toLowerCase(); 
+                    </span><span class="s2">if </span><span class="s1">(clone.attr(dataAttributeName)) { 
+                        </span><span class="s2">if </span><span class="s1">(that._isRegExpOption(key, value)) { 
+                            value = that._getRegExp(value); 
+                        } 
+                        options[key] = value; 
+                    } 
+                } 
+            ); 
+        }, 
+ 
+        _create: </span><span class="s2">function </span><span class="s1">() { 
+            </span><span class="s2">this</span><span class="s1">._initDataAttributes(); 
+            </span><span class="s2">this</span><span class="s1">._initSpecialOptions(); 
+            </span><span class="s2">this</span><span class="s1">._slots = []; 
+            </span><span class="s2">this</span><span class="s1">._sequence = </span><span class="s2">this</span><span class="s1">._getXHRPromise(</span><span class="s2">true</span><span class="s1">); 
+            </span><span class="s2">this</span><span class="s1">._sending = </span><span class="s2">this</span><span class="s1">._active = </span><span class="s4">0</span><span class="s1">; 
+            </span><span class="s2">this</span><span class="s1">._initProgressObject(</span><span class="s2">this</span><span class="s1">); 
+            </span><span class="s2">this</span><span class="s1">._initEventHandlers(); 
+        }, 
+ 
+        </span><span class="s0">// This method is exposed to the widget API and allows to query</span><span class="s1"> 
+        </span><span class="s0">// the number of active uploads:</span><span class="s1"> 
+        active: </span><span class="s2">function </span><span class="s1">() { 
+            </span><span class="s2">return this</span><span class="s1">._active; 
+        }, 
+ 
+        </span><span class="s0">// This method is exposed to the widget API and allows to query</span><span class="s1"> 
+        </span><span class="s0">// the widget upload progress.</span><span class="s1"> 
+        </span><span class="s0">// It returns an object with loaded, total and bitrate properties</span><span class="s1"> 
+        </span><span class="s0">// for the running uploads:</span><span class="s1"> 
+        progress: </span><span class="s2">function </span><span class="s1">() { 
+            </span><span class="s2">return this</span><span class="s1">._progress; 
+        }, 
+ 
+        </span><span class="s0">// This method is exposed to the widget API and allows adding files</span><span class="s1"> 
+        </span><span class="s0">// using the fileupload API. The data parameter accepts an object which</span><span class="s1"> 
+        </span><span class="s0">// must have a files property and can contain additional options:</span><span class="s1"> 
+        </span><span class="s0">// .fileupload('add', {files: filesList});</span><span class="s1"> 
+        add: </span><span class="s2">function </span><span class="s1">(data) { 
+            </span><span class="s2">var </span><span class="s1">that = </span><span class="s2">this</span><span class="s1">; 
+            </span><span class="s2">if </span><span class="s1">(!data || </span><span class="s2">this</span><span class="s1">.options.disabled) { 
+                </span><span class="s2">return</span><span class="s1">; 
+            } 
+            </span><span class="s2">if </span><span class="s1">(data.fileInput &amp;&amp; !data.files) { 
+                </span><span class="s2">this</span><span class="s1">._getFileInputFiles(data.fileInput).always(</span><span class="s2">function </span><span class="s1">(files) { 
+                    data.files = files; 
+                    that._onAdd(</span><span class="s2">null</span><span class="s1">, data); 
+                }); 
+            } </span><span class="s2">else </span><span class="s1">{ 
+                data.files = $.makeArray(data.files); 
+                </span><span class="s2">this</span><span class="s1">._onAdd(</span><span class="s2">null</span><span class="s1">, data); 
+            } 
+        }, 
+ 
+        </span><span class="s0">// This method is exposed to the widget API and allows sending files</span><span class="s1"> 
+        </span><span class="s0">// using the fileupload API. The data parameter accepts an object which</span><span class="s1"> 
+        </span><span class="s0">// must have a files or fileInput property and can contain additional options:</span><span class="s1"> 
+        </span><span class="s0">// .fileupload('send', {files: filesList});</span><span class="s1"> 
+        </span><span class="s0">// The method returns a Promise object for the file upload call.</span><span class="s1"> 
+        send: </span><span class="s2">function </span><span class="s1">(data) { 
+            </span><span class="s2">if </span><span class="s1">(data &amp;&amp; !</span><span class="s2">this</span><span class="s1">.options.disabled) { 
+                </span><span class="s2">if </span><span class="s1">(data.fileInput &amp;&amp; !data.files) { 
+                    </span><span class="s2">var </span><span class="s1">that = </span><span class="s2">this</span><span class="s1">, 
+                        dfd = $.Deferred(), 
+                        promise = dfd.promise(), 
+                        jqXHR, 
+                        aborted; 
+                    promise.abort = </span><span class="s2">function </span><span class="s1">() { 
+                        aborted = </span><span class="s2">true</span><span class="s1">; 
+                        </span><span class="s2">if </span><span class="s1">(jqXHR) { 
+                            </span><span class="s2">return </span><span class="s1">jqXHR.abort(); 
+                        } 
+                        dfd.reject(</span><span class="s2">null</span><span class="s1">, </span><span class="s3">'abort'</span><span class="s1">, </span><span class="s3">'abort'</span><span class="s1">); 
+                        </span><span class="s2">return </span><span class="s1">promise; 
+                    }; 
+                    </span><span class="s2">this</span><span class="s1">._getFileInputFiles(data.fileInput).always( 
+                        </span><span class="s2">function </span><span class="s1">(files) { 
+                            </span><span class="s2">if </span><span class="s1">(aborted) { 
+                                </span><span class="s2">return</span><span class="s1">; 
+                            } 
+                            </span><span class="s2">if </span><span class="s1">(!files.length) { 
+                                dfd.reject(); 
+                                </span><span class="s2">return</span><span class="s1">; 
+                            } 
+                            data.files = files; 
+                            jqXHR = that._onSend(</span><span class="s2">null</span><span class="s1">, data); 
+                            jqXHR.then( 
+                                </span><span class="s2">function </span><span class="s1">(result, textStatus, jqXHR) { 
+                                    dfd.resolve(result, textStatus, jqXHR); 
+                                }, 
+                                </span><span class="s2">function </span><span class="s1">(jqXHR, textStatus, errorThrown) { 
+                                    dfd.reject(jqXHR, textStatus, errorThrown); 
+                                } 
+                            ); 
+                        } 
+                    ); 
+                    </span><span class="s2">return this</span><span class="s1">._enhancePromise(promise); 
+                } 
+                data.files = $.makeArray(data.files); 
+                </span><span class="s2">if </span><span class="s1">(data.files.length) { 
+                    </span><span class="s2">return this</span><span class="s1">._onSend(</span><span class="s2">null</span><span class="s1">, data); 
+                } 
+            } 
+            </span><span class="s2">return this</span><span class="s1">._getXHRPromise(</span><span class="s2">false</span><span class="s1">, data &amp;&amp; data.context); 
+        } 
+ 
+    }); 
+ 
+})); 
+</span></pre>
+</body>
+</html>

@@ -1,0 +1,2455 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>数据包内容</title>
+    <link href="/static/img/favicon.png" type="image/png" rel="alternate icon">
+    <link href="/static/css/semantic.css" type="text/css" rel="stylesheet">
+    <link href="/static/components/icon.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/home.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/jquery.fileupload.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/kkpager_orange.css" type="text/css" rel="stylesheet">
+
+    <script src="/static/js/jquery-2.1.1.min.js" type="text/javascript"></script>
+    <script src="/static/js/semantic.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.ui.widget.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.iframe-transport.js" type="text/javascript"></script>
+    <script src="/static/js/highcharts.js" type="text/javascript"></script>
+    <script src="/static/js/kkpager.min.js" text="text/javascript"></script>
+    <script src="/static/js/jquery.fileupload.js" type="text/javascript"></script>
+    <script src="/static/js/chartkick.js" tyep="text/javascript"></script>
+    <script src="/static/js/upload.js" text="text/javascript"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#loading").hide();
+        });
+    </script>
+</head>
+<body id='home'>
+<div class="ui active dimmer" id="loading">
+    <div class="ui medium indeterminate text loader">Loading</div>
+</div>
+<div class="ui basic active modal" id="loadbar">
+    <div class="ui dimmer" id="loadbartable">
+        <div class="ui medium indeterminate text loader">Loading</div>
+    </div>
+</div>
+<div class="ui fixed inverted menu">
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+<br/>
+<div class="ui divider"></div>
+<div id='wrapper'>
+    <div class="ui small form">
+        <div class="ui segment">
+
+
+    <link rel="stylesheet" type="text/css" href="/static/css/kkpager_orange.css">
+    <h3 class="ui dividing header">Pcap File Stats</h3>
+    <div class="ui stacked segment">
+        <div class="ui fitted stackable grid">
+            <div class="ui sixteen wide column">
+                <div class="ui black center aligned segment">
+                    <div class="ui large horizontal list">
+                        <div class="item">
+                            <i class="file text outline icon"></i>
+                            <div class="content">
+                                <div class="header">FileName</div>
+                                test23_14809421137.pcap
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="database icon"></i>
+                            <div class="content">
+                                <div class="header">FileSize</div>
+                                231.64 KB
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="info circle icon"></i>
+                            <div class="content">
+                                <div class="header">Packets</div>
+                                500
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="zoom icon"></i>
+                            <div class="content">
+                                <div class="header">Avg Packet Length</div>
+                                393
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="analyzeid" value="84">
+        <div class="ui two column fitted stackable grid">
+            <div class="ui eleven wide column">
+                <div class="ui black segment">
+
+                </div>
+            </div>
+            <div class="ui five wide column">
+                <div class="ui black segment">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="spinner hide">
+            <div class="ui packetPane modal"></div>
+        </div>
+
+        <div class="ui small que modal">
+            <i class="close icon"></i>
+            <div class="header">
+                Confirm Filter?
+            </div>
+            <div class="actions">
+                <div class="ui negative button">
+                    No
+                </div>
+                <div class="ui positive right labeled icon button">
+                    Yes
+                    <i class="checkmark icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <br/>
+        <div class="ui top attached black pointing menu">
+            <a class="active item" data-tab="first">包列表信息</a>
+            <a class="item" data-tab="third">Web请求信息</a>
+            <a class="item" data-tab="fourth">DNS请求信息</a>
+        </div>
+        <div class="ui bottom attached active tab segment" data-tab="first">
+            <!--first-->
+            <div class="ui stacked segment" style="height:37rem">
+                <br/>
+                <div style="position:absolute; height:31rem; overflow:auto;width: 100%">
+                    <table class="ui black small table" id="pcaptable" cellpadding="0" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th width="6%">序号</th>
+                            <th width="9%">时间</th>
+                            <th width="13%">源地址</th>
+                            <th width="13%">目地址</th>
+                            <th width="5%">协议</th>
+                            <th width="5%">长度</th>
+                            <th>概要</th>
+                        </tr>
+                        </thead>
+                        <tbody style="cursor:pointer;" class="pktdetail" id="xxx_tbody">
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">1</td>
+                        <td>0.0</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>574</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57535 &gt; 9090 [PSH, ACK] Seq=1 Ack=1 Win=4102 Len=520</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">2</td>
+                        <td>0.003123</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>576</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [PSH, ACK] Seq=1 Ack=1 Win=256 Len=522</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">3</td>
+                        <td>0.005807</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>236</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57535 [PSH, ACK] Seq=1 Ack=521 Win=198 Len=182</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">4</td>
+                        <td>0.009355</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>235</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57533 [PSH, ACK] Seq=1 Ack=523 Win=148 Len=181</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">5</td>
+                        <td>0.012007</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>567</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57536 &gt; 9090 [PSH, ACK] Seq=1 Ack=1 Win=253 Len=513</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">6</td>
+                        <td>0.014412</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>233</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57536 [PSH, ACK] Seq=1 Ack=514 Win=165 Len=179</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">7</td>
+                        <td>0.016806</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>581</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57537 &gt; 9090 [PSH, ACK] Seq=1 Ack=1 Win=256 Len=527</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">8</td>
+                        <td>0.019194</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>234</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57537 [PSH, ACK] Seq=1 Ack=528 Win=156 Len=180</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">9</td>
+                        <td>0.021575</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>578</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57542 &gt; 9090 [PSH, ACK] Seq=1 Ack=1 Win=255 Len=524</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">10</td>
+                        <td>0.023918</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>234</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57542 [PSH, ACK] Seq=1 Ack=525 Win=148 Len=180</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">11</td>
+                        <td>0.026308</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>565</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57534 &gt; 9090 [PSH, ACK] Seq=1 Ack=1 Win=256 Len=511</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">12</td>
+                        <td>0.028899</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>236</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57534 [PSH, ACK] Seq=1 Ack=512 Win=140 Len=182</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">13</td>
+                        <td>0.001307</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>557</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57535 &gt; 9090 [PSH, ACK] Seq=521 Ack=183 Win=4101 Len=503</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">14</td>
+                        <td>0.001381</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>236</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57535 [PSH, ACK] Seq=183 Ack=1024 Win=207 Len=182</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">15</td>
+                        <td>0.001547</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>564</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [PSH, ACK] Seq=523 Ack=182 Win=255 Len=510</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">16</td>
+                        <td>0.001615</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>235</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57533 [PSH, ACK] Seq=182 Ack=1033 Win=156 Len=181</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">17</td>
+                        <td>0.002197</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>571</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57536 &gt; 9090 [PSH, ACK] Seq=514 Ack=180 Win=252 Len=517</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">18</td>
+                        <td>0.002267</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>235</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57536 [PSH, ACK] Seq=180 Ack=1031 Win=173 Len=181</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">19</td>
+                        <td>0.003788</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>559</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57537 &gt; 9090 [PSH, ACK] Seq=528 Ack=181 Win=255 Len=505</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">20</td>
+                        <td>0.003863</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>236</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57537 [PSH, ACK] Seq=181 Ack=1033 Win=165 Len=182</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">21</td>
+                        <td>0.004094</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>559</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57542 &gt; 9090 [PSH, ACK] Seq=525 Ack=181 Win=254 Len=505</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">22</td>
+                        <td>0.004162</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>235</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57542 [PSH, ACK] Seq=181 Ack=1030 Win=156 Len=181</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">23</td>
+                        <td>0.004309</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>565</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57534 &gt; 9090 [PSH, ACK] Seq=512 Ack=183 Win=255 Len=511</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">24</td>
+                        <td>0.004377</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>235</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57534 [PSH, ACK] Seq=183 Ack=1023 Win=148 Len=181</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">25</td>
+                        <td>0.006137</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>557</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57535 &gt; 9090 [PSH, ACK] Seq=1024 Ack=365 Win=4100 Len=503</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">26</td>
+                        <td>0.006215</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>235</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57535 [PSH, ACK] Seq=365 Ack=1527 Win=215 Len=181</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">27</td>
+                        <td>0.006416</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>553</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57536 &gt; 9090 [PSH, ACK] Seq=1031 Ack=361 Win=251 Len=499</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">28</td>
+                        <td>0.006483</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>234</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57536 [PSH, ACK] Seq=361 Ack=1530 Win=182 Len=180</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">29</td>
+                        <td>0.00651</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>561</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [PSH, ACK] Seq=1033 Ack=363 Win=255 Len=507</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">30</td>
+                        <td>0.006573</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>234</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57533 [PSH, ACK] Seq=363 Ack=1540 Win=165 Len=180</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">31</td>
+                        <td>0.007384</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>554</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57537 &gt; 9090 [PSH, ACK] Seq=1033 Ack=363 Win=255 Len=500</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">32</td>
+                        <td>0.007452</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>234</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57537 [PSH, ACK] Seq=363 Ack=1533 Win=173 Len=180</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">33</td>
+                        <td>0.009944</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>570</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57535 &gt; 9090 [PSH, ACK] Seq=1527 Ack=546 Win=4100 Len=516</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">34</td>
+                        <td>0.009959</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>559</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57534 &gt; 9090 [PSH, ACK] Seq=1023 Ack=364 Win=255 Len=505</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">35</td>
+                        <td>0.01002</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>236</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57535 [PSH, ACK] Seq=546 Ack=2043 Win=223 Len=182</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">36</td>
+                        <td>0.010116</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>235</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57534 [PSH, ACK] Seq=364 Ack=1528 Win=156 Len=181</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">37</td>
+                        <td>0.01014</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>559</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57542 &gt; 9090 [PSH, ACK] Seq=1030 Ack=362 Win=253 Len=505</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">38</td>
+                        <td>0.01016</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>553</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [PSH, ACK] Seq=1540 Ack=543 Win=254 Len=499</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">39</td>
+                        <td>0.010207</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>235</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57542 [PSH, ACK] Seq=362 Ack=1535 Win=165 Len=181</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">40</td>
+                        <td>0.010285</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>234</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57533 [PSH, ACK] Seq=543 Ack=2039 Win=173 Len=180</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">41</td>
+                        <td>0.05839</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57536 &gt; 9090 [ACK] Seq=1530 Ack=541 Win=251 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">42</td>
+                        <td>0.059946</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57537 &gt; 9090 [ACK] Seq=1533 Ack=543 Win=254 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">43</td>
+                        <td>0.061969</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57535 &gt; 9090 [ACK] Seq=2043 Ack=728 Win=4099 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">44</td>
+                        <td>0.061978</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57534 &gt; 9090 [ACK] Seq=1528 Ack=545 Win=254 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">45</td>
+                        <td>0.061981</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57542 &gt; 9090 [ACK] Seq=1535 Ack=543 Win=252 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">46</td>
+                        <td>0.063987</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [ACK] Seq=2039 Ack=723 Win=253 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">47</td>
+                        <td>0.13762</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>580</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [PSH, ACK] Seq=2039 Ack=723 Win=253 Len=526</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">48</td>
+                        <td>0.137721</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>235</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57533 [PSH, ACK] Seq=723 Ack=2565 Win=182 Len=181</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">49</td>
+                        <td>0.189048</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [ACK] Seq=2565 Ack=904 Win=253 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">50</td>
+                        <td>0.392219</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.234 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">49149 &gt; 24007 [ACK] Seq=1 Ack=1 Win=131 Len=0 TSval=10253984 TSecr=94019911</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">51</td>
+                        <td>0.392395</td>
+                        <td>10.10.1.234 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP ACKed unseen segment] 24007 &gt; 49149 [ACK] Seq=1 Ack=2 Win=178 Len=0 TSval=94029911 TSecr=10244009</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">52</td>
+                        <td>0.418087</td>
+                        <td>10.10.1.234 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Keep-Alive] [TCP ACKed unseen segment] 24007 &gt; 49149 [ACK] Seq=0 Ack=2 Win=178 Len=0 TSval=94029937 TSecr=10244009</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">53</td>
+                        <td>0.418116</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.234 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Previous segment not captured] 49149 &gt; 24007 [ACK] Seq=2 Ack=1 Win=131 Len=0 TSval=10254009 TSecr=94029911</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">54</td>
+                        <td>0.420973</td>
+                        <td>10.10.1.234 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">49150 &gt; 24007 [ACK] Seq=1 Ack=1 Win=131 Len=0 TSval=94029940 TSecr=10244012</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">55</td>
+                        <td>0.420981</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.234 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP ACKed unseen segment] 24007 &gt; 49150 [ACK] Seq=1 Ack=2 Win=190 Len=0 TSval=10254012 TSecr=94019957</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">56</td>
+                        <td>0.438186</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.234 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Keep-Alive] [TCP ACKed unseen segment] 24007 &gt; 49150 [ACK] Seq=0 Ack=2 Win=190 Len=0 TSval=10254030 TSecr=94019957</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">57</td>
+                        <td>0.438363</td>
+                        <td>10.10.1.234 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Previous segment not captured] 49150 &gt; 24007 [ACK] Seq=2 Ack=1 Win=131 Len=0 TSval=94029957 TSecr=10254012</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">58</td>
+                        <td>1.427624</td>
+                        <td>10.10.1.224 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">49145 &gt; 24007 [ACK] Seq=1 Ack=1 Win=131 Len=0 TSval=94029340 TSecr=10245019</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">59</td>
+                        <td>1.427654</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.224 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP ACKed unseen segment] 24007 &gt; 49145 [ACK] Seq=1 Ack=2 Win=167 Len=0 TSval=10255019 TSecr=94019368</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">60</td>
+                        <td>1.456197</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.224 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Keep-Alive] [TCP ACKed unseen segment] 24007 &gt; 49145 [ACK] Seq=0 Ack=2 Win=167 Len=0 TSval=10255048 TSecr=94019368</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">61</td>
+                        <td>1.456369</td>
+                        <td>10.10.1.224 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Previous segment not captured] 49145 &gt; 24007 [ACK] Seq=2 Ack=1 Win=131 Len=0 TSval=94029368 TSecr=10255019</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">62</td>
+                        <td>2.383204</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.224 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">49151 &gt; 24007 [ACK] Seq=1 Ack=1 Win=131 Len=0 TSval=10255975 TSecr=94020295</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">63</td>
+                        <td>2.383374</td>
+                        <td>10.10.1.224 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP ACKed unseen segment] 24007 &gt; 49151 [ACK] Seq=1 Ack=2 Win=178 Len=0 TSval=94030295 TSecr=10245988</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">64</td>
+                        <td>2.396628</td>
+                        <td>10.10.1.224 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Keep-Alive] [TCP ACKed unseen segment] 24007 &gt; 49151 [ACK] Seq=0 Ack=2 Win=178 Len=0 TSval=94030309 TSecr=10245988</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">65</td>
+                        <td>2.396657</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.224 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Previous segment not captured] 49151 &gt; 24007 [ACK] Seq=2 Ack=1 Win=131 Len=0 TSval=10255988 TSecr=94030295</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">66</td>
+                        <td>3.252326</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>534</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [PSH, ACK] Seq=2565 Ack=904 Win=253 Len=480</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">67</td>
+                        <td>3.262192</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>1600</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57533 [ACK] Seq=904 Ack=3045 Win=190 Len=1546</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">68</td>
+                        <td>3.262206</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>1600</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Previous segment not captured] 9090 &gt; 57533 [ACK] Seq=3824 Ack=3045 Win=190 Len=1546</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">69</td>
+                        <td>3.262212</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>1600</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Previous segment not captured] 9090 &gt; 57533 [ACK] Seq=6744 Ack=3045 Win=190 Len=1546</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">70</td>
+                        <td>3.262218</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>1514</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Previous segment not captured] 9090 &gt; 57533 [ACK] Seq=9664 Ack=3045 Win=190 Len=1460</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">71</td>
+                        <td>3.26222</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>1159</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57533 [PSH, ACK] Seq=11124 Ack=3045 Win=190 Len=1105</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">72</td>
+                        <td>3.263597</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP ACKed unseen segment] 57533 &gt; 9090 [ACK] Seq=3045 Ack=4376 Win=256 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">73</td>
+                        <td>3.264118</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [ACK] Seq=3045 Ack=7848 Win=256 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">74</td>
+                        <td>3.264124</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [ACK] Seq=3045 Ack=11124 Win=256 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">75</td>
+                        <td>3.264339</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [ACK] Seq=3045 Ack=12229 Win=252 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">76</td>
+                        <td>4.049212</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.224 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">49139 &gt; 49152 [ACK] Seq=1 Ack=1 Win=131 Len=0 TSval=10257641 TSecr=94011961</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">77</td>
+                        <td>4.049423</td>
+                        <td>10.10.1.224 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP ACKed unseen segment] 49152 &gt; 49139 [ACK] Seq=1 Ack=2 Win=131 Len=0 TSval=94031961 TSecr=10237691</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">78</td>
+                        <td>4.050165</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.226 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">49146 &gt; 49152 [ACK] Seq=1 Ack=1 Win=131 Len=0 TSval=10257642 TSecr=94076591</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">79</td>
+                        <td>4.050321</td>
+                        <td>10.10.1.226 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP ACKed unseen segment] 49152 &gt; 49146 [ACK] Seq=1 Ack=2 Win=131 Len=0 TSval=94096591 TSecr=10237697</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">80</td>
+                        <td>4.056156</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.234 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">49137 &gt; 49152 [ACK] Seq=1 Ack=1 Win=131 Len=0 TSval=10257648 TSecr=94013575</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">81</td>
+                        <td>4.056311</td>
+                        <td>10.10.1.234 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP ACKed unseen segment] 49152 &gt; 49137 [ACK] Seq=1 Ack=2 Win=131 Len=0 TSval=94033575 TSecr=10237712</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">82</td>
+                        <td>4.099638</td>
+                        <td>10.10.1.224 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Keep-Alive] [TCP ACKed unseen segment] 49152 &gt; 49139 [ACK] Seq=0 Ack=2 Win=131 Len=0 TSval=94032012 TSecr=10237691</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">83</td>
+                        <td>4.099667</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.224 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Previous segment not captured] 49139 &gt; 49152 [ACK] Seq=2 Ack=1 Win=131 Len=0 TSval=10257691 TSecr=94031961</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">84</td>
+                        <td>4.105854</td>
+                        <td>10.10.1.226 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Keep-Alive] [TCP ACKed unseen segment] 49152 &gt; 49146 [ACK] Seq=0 Ack=2 Win=131 Len=0 TSval=94096647 TSecr=10237697</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">85</td>
+                        <td>4.105884</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.226 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Previous segment not captured] 49146 &gt; 49152 [ACK] Seq=2 Ack=1 Win=131 Len=0 TSval=10257697 TSecr=94096591</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">86</td>
+                        <td>4.121081</td>
+                        <td>10.10.1.234 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Keep-Alive] [TCP ACKed unseen segment] 49152 &gt; 49137 [ACK] Seq=0 Ack=2 Win=131 Len=0 TSval=94033640 TSecr=10237712</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">87</td>
+                        <td>4.12111</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.234 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>66</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Previous segment not captured] 49137 &gt; 49152 [ACK] Seq=2 Ack=1 Win=131 Len=0 TSval=10257712 TSecr=94033575</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">88</td>
+                        <td>4.251601</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>534</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [PSH, ACK] Seq=3045 Ack=12229 Win=252 Len=480</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">89</td>
+                        <td>4.266587</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>1600</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57533 [ACK] Seq=12229 Ack=3525 Win=198 Len=1546</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">90</td>
+                        <td>4.266602</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>1600</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Previous segment not captured] 9090 &gt; 57533 [ACK] Seq=15149 Ack=3525 Win=198 Len=1546</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">91</td>
+                        <td>4.266609</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>1600</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Previous segment not captured] 9090 &gt; 57533 [ACK] Seq=18069 Ack=3525 Win=198 Len=1546</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">92</td>
+                        <td>4.266613</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>1600</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Previous segment not captured] 9090 &gt; 57533 [ACK] Seq=20989 Ack=3525 Win=198 Len=1546</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">93</td>
+                        <td>4.26662</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>1514</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP Previous segment not captured] 9090 &gt; 57533 [ACK] Seq=23909 Ack=3525 Win=198 Len=1460</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">94</td>
+                        <td>4.266623</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>1263</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57533 [PSH, ACK] Seq=25369 Ack=3525 Win=198 Len=1209</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">95</td>
+                        <td>4.267875</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">[TCP ACKed unseen segment] 57533 &gt; 9090 [ACK] Seq=3525 Ack=15701 Win=256 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">96</td>
+                        <td>4.271437</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [ACK] Seq=3525 Ack=19173 Win=256 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">97</td>
+                        <td>4.271445</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [ACK] Seq=3525 Ack=22645 Win=256 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">98</td>
+                        <td>4.271478</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>60</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [ACK] Seq=3525 Ack=26578 Win=256 Len=0</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">99</td>
+                        <td>5.377387</td>
+                        <td>10.10.1.113 </td>
+                        <td>10.10.1.244 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>534</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">57533 &gt; 9090 [PSH, ACK] Seq=3525 Ack=26578 Win=256 Len=480</td>
+                        </tr>
+
+
+                                <tr class="warning yytr">
+
+                        <td class="number">100</td>
+                        <td>5.387246</td>
+                        <td>10.10.1.244 </td>
+                        <td>10.10.1.113 </td>
+                        <td>TCP
+
+                        </td>
+                        <td>1600</td>
+                        <td style="max-width: 200px;white-space:nowrap; overflow: hidden;">9090 &gt; 57533 [ACK] Seq=26578 Ack=4005 Win=207 Len=1546</td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+
+
+            </div>
+        </div>
+        <div class="ui bottom attached tab segment" data-tab="third">
+			<div class="ui raised segment">
+			<a class="ui red ribbon label">Web Packets</a>
+				<div class="ui black segment" style = "word-wrap: break-word;word-break:break-all;">
+
+
+
+
+                                <div class="ui vertical segment"><span>24</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"54b98776-f724"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>25</span><br/><p>GET&nbsp;/static/js/chartkick.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"54b98776-448d"
+<br>If-Modified-Since:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>26</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"54b98776-448d"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>27</span><br/><p>GET&nbsp;/static/js/upload.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"583f8666-d06"
+<br>If-Modified-Since:&nbsp;Thu,&nbsp;01&nbsp;Dec&nbsp;2016&nbsp;02:09:42&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>20</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"54b98776-25935"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>21</span><br/><p>GET&nbsp;/static/js/kkpager.min.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"5809ce5d-173f"
+<br>If-Modified-Since:&nbsp;Fri,&nbsp;21&nbsp;Oct&nbsp;2016&nbsp;08:14:21&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>22</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Fri,&nbsp;21&nbsp;Oct&nbsp;2016&nbsp;08:14:21&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"5809ce5d-173f"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>23</span><br/><p>GET&nbsp;/static/js/jquery.fileupload.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"54b98776-f724"
+<br>If-Modified-Since:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>28</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Thu,&nbsp;01&nbsp;Dec&nbsp;2016&nbsp;02:09:42&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"583f8666-d06"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>29</span><br/><p>GET&nbsp;/static/js/fixtableheader.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"58242d7b-a6b"
+<br>If-Modified-Since:&nbsp;Thu,&nbsp;10&nbsp;Nov&nbsp;2016&nbsp;08:19:07&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>4</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"54b98776-8b5f"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>8</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"54b98776-28e"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>88</span><br/><p>GET&nbsp;/options&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Upgrade-Insecure-Requests:&nbsp;1
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+<br>Referer:&nbsp;http://10.10.1.244:9090/upload
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>3</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Wed,&nbsp;26&nbsp;Oct&nbsp;2016&nbsp;10:22:50&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"581083fa-88349"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>7</span><br/><p>GET&nbsp;/static/css/jquery.fileupload.css&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"54b98776-28e"
+<br>If-Modified-Since:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;text/css,*/*;q=0.1
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>39</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Mon,&nbsp;04&nbsp;Jul&nbsp;2016&nbsp;05:27:28&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"5779f3c0-4d83"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>38</span><br/><p>GET&nbsp;/static/js/mybugs.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"583f9772-fbf"
+<br>If-Modified-Since:&nbsp;Thu,&nbsp;01&nbsp;Dec&nbsp;2016&nbsp;03:22:26&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>33</span><br/><p>GET&nbsp;/static/js/jquery.datatables.min.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"58108282-21637"
+<br>If-Modified-Since:&nbsp;Wed,&nbsp;26&nbsp;Oct&nbsp;2016&nbsp;10:16:34&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>32</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Thu,&nbsp;01&nbsp;Dec&nbsp;2016&nbsp;07:05:48&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"583fcbcc-97f"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>31</span><br/><p>GET&nbsp;/static/js/analyze.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"583fcbcc-97f"
+<br>If-Modified-Since:&nbsp;Thu,&nbsp;01&nbsp;Dec&nbsp;2016&nbsp;07:05:48&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>30</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Thu,&nbsp;10&nbsp;Nov&nbsp;2016&nbsp;08:19:07&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"58242d7b-a6b"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>37</span><br/><p>GET&nbsp;/static/js/layer/layer.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"5779f3c0-4d83"
+<br>If-Modified-Since:&nbsp;Mon,&nbsp;04&nbsp;Jul&nbsp;2016&nbsp;05:27:28&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>36</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Tue,&nbsp;01&nbsp;Nov&nbsp;2016&nbsp;07:07:33&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"58183f35-b022"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>35</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Wed,&nbsp;26&nbsp;Oct&nbsp;2016&nbsp;10:16:34&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"58108282-21637"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>34</span><br/><p>GET&nbsp;/static/js/jquery-form.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"58183f35-b022"
+<br>If-Modified-Since:&nbsp;Tue,&nbsp;01&nbsp;Nov&nbsp;2016&nbsp;07:07:33&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>66</span><br/><p>GET&nbsp;/upload&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Upgrade-Insecure-Requests:&nbsp;1
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>2</span><br/><p>GET&nbsp;/static/components/icon.css&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"54b98776-8b5f"
+<br>If-Modified-Since:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;text/css,*/*;q=0.1
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>6</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Thu,&nbsp;20&nbsp;Oct&nbsp;2016&nbsp;07:19:30&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"58087002-9c"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>99</span><br/><p>GET&nbsp;/upload&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Upgrade-Insecure-Requests:&nbsp;1
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>94</span><br/><p>&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$("#btn").attr("disabled",&nbsp;"disabled");<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$("#btn").removeAttr("disabled",&nbsp;"disabled");<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$("#message").show();<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$("#message").html(message);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});<br>&nbsp;&nbsp;&nbsp;&nbsp;});<br><br>&nbsp;&nbsp;&nbsp;&nbsp;$("#bpf").blur(function&nbsp;()&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$.ajax({<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type:&nbsp;"post",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url:&nbsp;"/sniffverify/",<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data:&nbsp;{"filter":&nbsp;$("#bpf").val(),"netcard":$("#url_list").val()},<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;success:&nbsp;function&nbsp;(message)&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(message&nbsp;==&nbsp;"device_err"){<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;layer.msg("",{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;time:2000<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;})<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}else&nbsp;if&nbsp;(message&nbsp;==&nbsp;"filter_err"){<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$("#btn").attr("disabled",&nbsp;"disabled");<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;layer.msg("BPF",{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;time:1000<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;})<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$("#btn").removeAttr("disabled",&nbsp;"disabled");<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});<br>&nbsp;&nbsp;&nbsp;&nbsp;});<br></script><br><br><br></body><br></html></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>11</span><br/><p>GET&nbsp;/static/js/jquery-2.1.1.min.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"54b98776-14915"
+<br>If-Modified-Since:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>10</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Thu,&nbsp;10&nbsp;Nov&nbsp;2016&nbsp;09:46:37&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"582441fd-78b"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>13</span><br/><p>GET&nbsp;/static/js/semantic.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"54b98776-80fae"
+<br>If-Modified-Since:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nnbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>12</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"54b98776-14915"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>15</span><br/><p>GET&nbsp;/static/js/jquery.ui.widget.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"54b98776-3df7"
+<br>If-Modified-Since:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>14</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"54b98776-80fae"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>17</span><br/><p>GET&nbsp;/static/js/jquery.iframe-transport.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"54b98776-29e9"
+<br>If-Modified-Since:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>16</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"54b98776-3df7"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>19</span><br/><p>GET&nbsp;/static/js/highcharts.js&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"54b98776-25935"
+<br>If-Modified-Since:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;*/*
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>18</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Fri,&nbsp;16&nbsp;Jan&nbsp;2015&nbsp;21:49:42&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"54b98776-29e9"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>48</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Mon,&nbsp;04&nbsp;Jul&nbsp;2016&nbsp;05:27:28&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"5779f3c0-36e0"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>47</span><br/><p>GET&nbsp;/static/js/layer/skin/layer.css&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"5779f3c0-36e0"
+<br>If-Modified-Since:&nbsp;Mon,&nbsp;04&nbsp;Jul&nbsp;2016&nbsp;05:27:28&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;text/css,*/*;q=0.1
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>40</span><br/><p>HTTP/1.1&nbsp;304&nbsp;Not&nbsp;Modified
+<br>Server:&nbsp;nginx/1.10.2
+<br>Date:&nbsp;Mon,&nbsp;05&nbsp;Dec&nbsp;2016&nbsp;12:48:33&nbsp;GMT
+<br>Last-Modified:&nbsp;Thu,&nbsp;01&nbsp;Dec&nbsp;2016&nbsp;03:22:26&nbsp;GMT
+<br>Connection:&nbsp;keep-alive
+<br>ETag:&nbsp;"583f9772-fbf"
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>1</span><br/><p>GET&nbsp;/static/css/semantic.css&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"581083fa-88349"
+<br>If-Modified-Since:&nbsp;Wed,&nbsp;26&nbsp;Oct&nbsp;2016&nbsp;10:22:50&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;text/css,*/*;q=0.1
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>5</span><br/><p>GET&nbsp;/static/css/home.css&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"58087002-9c"
+<br>If-Modified-Since:&nbsp;Thu,&nbsp;20&nbsp;Oct&nbsp;2016&nbsp;07:19:30&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;text/css,*/*;q=0.1
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>9</span><br/><p>GET&nbsp;/static/css/kkpager_orange.css&nbsp;HTTP/1.1
+<br>Host:&nbsp;10.10.1.244:9090
+<br>Connection:&nbsp;keep-alive
+<br>Cache-Control:&nbsp;max-age=0
+<br>If-None-Match:&nbsp;"582441fd-78b"
+<br>If-Modified-Since:&nbsp;Thu,&nbsp;10&nbsp;Nov&nbsp;2016&nbsp;09:46:37&nbsp;GMT
+<br>User-Agent:&nbsp;Mozilla/5.0&nbsp;(Windows&nbsp;NT&nbsp;10.0;&nbsp;Win64;&nbsp;x64)&nbsp;AppleWebKit/537.36&nbsp;(KHTML,&nbsp;like&nbsp;Gecko)&nbsp;Chrome/51.0.2704.103&nbsp;Safari/537.36
+<br>Accept:&nbsp;text/css,*/*;q=0.1
+<br>Referer:&nbsp;http://10.10.1.244:9090/options
+<br>Accept-Encoding:&nbsp;gzip,&nbsp;deflate,&nbsp;sdch
+<br>Accept-Language:&nbsp;zh-CN,zh;q=0.8
+<br>Cookie:&nbsp;sessionid=0vj3t0mxigb4zyeisekyyql1mcjo7440
+<br>
+<br></p></div>
+
+
+
+
+
+
+                                <div class="ui vertical segment"><span>71</span><br/><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div&nbsp;class="label"&nbsp;id='progresslabel'></div><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div><br>&nbsp;&nbsp;&nbsp;&nbsp;</div><br>&nbsp;&nbsp;&nbsp;&nbsp;<br/><br/><br></div><br><script><br>&nbsp;&nbsp;&nbsp;&nbsp;$(".checkbox").click(function&nbsp;()&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;param&nbsp;=&nbsp;"";<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(!$(this).hasClass("checked"))&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(".checkbox").each(function&nbsp;()&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(this).removeClass("checked");<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(this).addClass("checked");<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;tmp&nbsp;&nbsp;=&nbsp;$(this).children().eq(0).attr("value");<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(this).attr("value",tmp);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(this).removeAttr("value");<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(this).removeClass("checked");<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return&nbsp;false;<br>&nbsp;&nbsp;&nbsp;&nbsp;});<br>&nbsp;&nbsp;&nbsp;&nbsp;$("#download-button").click(function&nbsp;()&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;params&nbsp;=&nbsp;"";<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(".checkbox").each(function&nbsp;()&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if($(this).attr("value")){<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;params&nbsp;+=&nbsp;$(this).attr("value")&nbsp;+&nbsp;",";<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(this).attr("href","/download_pcap/"&nbsp;+&nbsp;params&nbsp;+&nbsp;"/");<br>&nbsp;&nbsp;&nbsp;&nbsp;});<br></script><br></p></div>
+
+
+
+
+
+				</div>
+			</div>
+		</div>
+        <div class="ui bottom attached tab segment" data-tab="fourth">
+            <div class="ui raised segment">
+                <a class="ui red ribbon label">DNS Requests</a>
+                <div class="ui stacked segment">
+                    <div class="ui black center aligned segment">
+
+
+<table class="ui table">
+    <thead>
+        <tr>
+        <th class="twelve wide">DNS Request</th>
+        <th class="four wide">Request Num</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+  </table>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="width:800px;margin:0 auto;">
+            <div id="kkpager"></div>
+        </div>
+    </div>
+
+    <style type="text/css">
+        table tbody td {
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+    </style>
+    <script src="/static/js/fixtableheader.js" text="text/javascripy"></script>
+    <script src="/static/js/analyze.js" text="text/javascript"></script>
+    <script>
+        function getParameter(name) {
+	        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+	        var r = window.location.search.substr(1).match(reg);
+	        if (r!=null) return unescape(r[2]); return null;
+        }
+
+//init
+$(function(){
+	var totalPage = 1;
+	var totalRecords = 5;
+	var pageNo = getParameter('pno');
+	if(!pageNo){
+		pageNo = 1;
+	}
+	//生成分页
+	//有些参数是可选的，比如lang，若不传有默认值
+	kkpager.generPageHtml({
+		pno : 1,
+		//总页码
+		total : 5,
+		//总数据条数
+		totalRecords : 500,
+		getLink : function(n){
+			return "/analyze/" + 84 + '/' + n + '/';
+		}
+		,lang				: {
+			firstPageText			: '首页',
+			firstPageTipText		: '首页',
+			lastPageText			: '尾页',
+			lastPageTipText			: '尾页',
+			prePageText				: '上一页',
+			prePageTipText			: '上一页',
+			nextPageText			: '下一页',
+			nextPageTipText			: '下一页',
+			totalPageBeforeText		: '共',
+			totalPageAfterText		: '页',
+			currPageBeforeText		: '当前第',
+			currPageAfterText		: '页',
+			totalInfoSplitStr		: '/',
+			totalRecordsBeforeText	: '共',
+			totalRecordsAfterText	: '条数据',
+			gopageBeforeText		: '&nbsp;转到',
+			gopageButtonOkText		: '确定',
+			gopageAfterText			: '页',
+			buttonTipBeforeText		: '第',
+			buttonTipAfterText		: '页'
+		}
+	});
+});
+    </script>
+
+        </div>
+    </div>
+</div>
+<br/><br/>
+</body>
+</html>

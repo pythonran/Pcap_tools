@@ -1,0 +1,128 @@
+<html>
+<head>
+<title>upload.js</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,0); }
+.s1 { color: rgb(0,0,128); font-weight: bold; }
+.s2 { color: rgb(0,128,0); font-weight: bold; }
+.s3 { color: rgb(0,0,255); }
+.s4 { color: rgb(128,128,128); font-style: italic; }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+upload.js</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">$(document).ready(</span><span class="s1">function </span><span class="s0">() { 
+ 
+    $(</span><span class="s2">'select.dropdown'</span><span class="s0">).dropdown(); 
+    $(</span><span class="s2">'.ui.checkbox'</span><span class="s0">).checkbox(); 
+    $(</span><span class="s2">'#delete-button'</span><span class="s0">).on(</span><span class="s2">'click'</span><span class="s0">, </span><span class="s1">function </span><span class="s0">() { 
+        $(</span><span class="s2">'.small.del.modal'</span><span class="s0">).modal({ 
+            closable: </span><span class="s1">true</span><span class="s0">, 
+            allowMultiple: </span><span class="s1">false</span><span class="s0">, 
+            onDeny: </span><span class="s1">function </span><span class="s0">() { 
+                </span><span class="s1">return true</span><span class="s0">; 
+            }, 
+            onApprove: </span><span class="s1">function </span><span class="s0">() { 
+                </span><span class="s1">var </span><span class="s0">delCheckbox = $(</span><span class="s2">&quot;input[name='checkoption']:checked&quot;</span><span class="s0">); 
+                </span><span class="s1">var </span><span class="s0">size = delCheckbox.size(); 
+                </span><span class="s1">if </span><span class="s0">(size &gt; </span><span class="s3">0</span><span class="s0">) { 
+                    </span><span class="s1">var </span><span class="s0">params = </span><span class="s2">&quot;&quot;</span><span class="s0">; 
+                    </span><span class="s1">for </span><span class="s0">(</span><span class="s1">var </span><span class="s0">i = </span><span class="s3">0</span><span class="s0">; i &lt; size; i++) { 
+                        params += delCheckbox.eq(i).val(); 
+                        </span><span class="s1">if </span><span class="s0">(i != size - </span><span class="s3">1</span><span class="s0">) { 
+                            params = params + </span><span class="s2">','</span><span class="s0">; 
+                        } 
+                    } 
+                    $.post(</span><span class="s2">&quot;/delete/&quot; </span><span class="s0">+ params + </span><span class="s2">'/'</span><span class="s0">, </span><span class="s2">''</span><span class="s0">, </span><span class="s1">function </span><span class="s0">(d) { 
+                        history.go(</span><span class="s3">0</span><span class="s0">); 
+                    }, </span><span class="s2">'text'</span><span class="s0">); 
+                } 
+            } 
+        }).modal(</span><span class="s2">'show'</span><span class="s0">); 
+    }); 
+ 
+ 
+    $(</span><span class="s2">'#start-button'</span><span class="s0">).on(</span><span class="s2">'click'</span><span class="s0">, </span><span class="s1">function </span><span class="s0">() { 
+ 
+        $.get(</span><span class="s2">'/start_sniffer/'</span><span class="s0">); 
+    }); 
+ 
+ 
+    $(</span><span class="s2">'#stop-button'</span><span class="s0">).on(</span><span class="s2">'click'</span><span class="s0">, </span><span class="s1">function </span><span class="s0">() { 
+        $.get(</span><span class="s2">'/stop_sniffer/'</span><span class="s0">); 
+    }); 
+ 
+ 
+     
+    $(</span><span class="s2">'#analyze-button'</span><span class="s0">).on(</span><span class="s2">'click'</span><span class="s0">, </span><span class="s1">function </span><span class="s0">() { 
+        </span><span class="s1">var </span><span class="s0">delCheckbox = $(</span><span class="s2">&quot;input[name='checkoption']:checked&quot;</span><span class="s0">); 
+        </span><span class="s1">var </span><span class="s0">size = delCheckbox.size(); 
+        </span><span class="s1">if </span><span class="s0">(size == </span><span class="s3">1</span><span class="s0">) { 
+            </span><span class="s1">var </span><span class="s0">params = </span><span class="s2">&quot;&quot;</span><span class="s0">; 
+            </span><span class="s1">for </span><span class="s0">(</span><span class="s1">var </span><span class="s0">i = </span><span class="s3">0</span><span class="s0">; i &lt; size; i++) { 
+                param = delCheckbox.eq(i).val(); 
+                window.open(</span><span class="s2">'/analyze/' </span><span class="s0">+ param + </span><span class="s2">'/' </span><span class="s0">+ </span><span class="s2">'1/'</span><span class="s0">); 
+            } 
+        }</span><span class="s1">else if </span><span class="s0">(size &gt; </span><span class="s3">1</span><span class="s0">){ 
+            layer.msg(</span><span class="s2">&quot;一次只能查看一个文件哦!&quot;</span><span class="s0">); 
+        }</span><span class="s1">else</span><span class="s0">{} 
+    }); 
+ 
+     $(</span><span class="s2">'#scan-button'</span><span class="s0">).on(</span><span class="s2">'click'</span><span class="s0">, </span><span class="s1">function </span><span class="s0">() { 
+        </span><span class="s1">var </span><span class="s0">delCheckbox = $(</span><span class="s2">&quot;input[name='checkoption']:checked&quot;</span><span class="s0">); 
+        </span><span class="s1">var </span><span class="s0">size = delCheckbox.size(); 
+        </span><span class="s1">if </span><span class="s0">(size == </span><span class="s3">1</span><span class="s0">) { 
+            </span><span class="s1">var </span><span class="s0">params = </span><span class="s2">&quot;&quot;</span><span class="s0">; 
+            </span><span class="s1">for </span><span class="s0">(</span><span class="s1">var </span><span class="s0">i = </span><span class="s3">0</span><span class="s0">; i &lt; size; i++) { 
+                param = delCheckbox.eq(i).val(); 
+                window.open(</span><span class="s2">'/scan/' </span><span class="s0">+ param + </span><span class="s2">'/'</span><span class="s0">); 
+            } 
+        }</span><span class="s1">else if</span><span class="s0">(size &gt; </span><span class="s3">1</span><span class="s0">){ 
+            layer.msg(</span><span class="s2">&quot;一次只能扫描一个文件哦!&quot;</span><span class="s0">); 
+        }</span><span class="s1">else</span><span class="s0">{} 
+    }); 
+ 
+    $(</span><span class="s2">'#fileupload'</span><span class="s0">).fileupload({ 
+        url: </span><span class="s2">'/upload' </span><span class="s0">+ </span><span class="s2">'/'</span><span class="s0">, 
+        add: </span><span class="s1">function </span><span class="s0">(e, data) { 
+            </span><span class="s1">var </span><span class="s0">goUpload = </span><span class="s1">true</span><span class="s0">; 
+            </span><span class="s1">var </span><span class="s0">uploadFile = data.files[</span><span class="s3">0</span><span class="s0">]; 
+            </span><span class="s1">if </span><span class="s0">(!(</span><span class="s3">/\.(pcap)$/i</span><span class="s0">).test(uploadFile.name)) { 
+                alert(</span><span class="s2">'Pcap file only!'</span><span class="s0">); 
+                goUpload = </span><span class="s1">false</span><span class="s0">; 
+            } 
+             
+            </span><span class="s4">// if (uploadFile.size &gt; 30000000) { // 2mb</span><span class="s0"> 
+            </span><span class="s4">//     alert('Max Size is 30 MB!');</span><span class="s0"> 
+            </span><span class="s4">//     goUpload = false;</span><span class="s0"> 
+            </span><span class="s4">// }</span><span class="s0"> 
+            </span><span class="s1">if </span><span class="s0">(goUpload == </span><span class="s1">true</span><span class="s0">) { 
+                data.submit(); 
+            } 
+        }, 
+        progressall: </span><span class="s1">function </span><span class="s0">(e, data) { 
+            $(</span><span class="s2">'.progress'</span><span class="s0">).progress({percent: </span><span class="s3">1</span><span class="s0">}); 
+            </span><span class="s1">var </span><span class="s0">progressbar = parseInt(data.loaded / data.total * </span><span class="s3">100</span><span class="s0">, </span><span class="s3">10</span><span class="s0">); 
+          
+            $(</span><span class="s2">'.progress'</span><span class="s0">).progress({percent: progressbar}); 
+        }, 
+        done: </span><span class="s1">function </span><span class="s0">(e, data) { 
+            </span><span class="s1">if </span><span class="s0">(data[</span><span class="s2">'textStatus'</span><span class="s0">] == </span><span class="s2">&quot;success&quot;</span><span class="s0">) 
+                $(</span><span class="s2">&quot;#progresslabel&quot;</span><span class="s0">).append(</span><span class="s2">&quot;Upload OK!&quot;</span><span class="s0">); 
+            $(</span><span class="s2">'#fileupload'</span><span class="s0">).attr({</span><span class="s2">&quot;disabled&quot;</span><span class="s0">: </span><span class="s2">&quot;disabled&quot;</span><span class="s0">}); 
+            $(</span><span class="s2">'.small.ok.modal'</span><span class="s0">).modal(</span><span class="s2">'show'</span><span class="s0">); 
+            history.go(</span><span class="s3">0</span><span class="s0">); 
+        }, 
+    }); 
+ 
+}); 
+</span></pre>
+</body>
+</html>

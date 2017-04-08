@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>网络协议嗅探分析</title>
+    <link href="/static/img/favicon.png" type="image/png" rel="alternate icon">
+    <link href="/static/css/semantic.css" type="text/css" rel="stylesheet">
+    <link href="/static/components/icon.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/home.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/jquery.fileupload.css" type="text/css" rel="stylesheet">
+    <link href="/static/css/kkpager_orange.css" type="text/css" rel="stylesheet">
+
+    <script src="/static/js/jquery-2.1.1.min.js" type="text/javascript"></script>
+    <script src="/static/js/semantic.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.ui.widget.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.iframe-transport.js" type="text/javascript"></script>
+    <script src="/static/js/highcharts.js" type="text/javascript"></script>
+    <script src="/static/js/kkpager.min.js" text="text/javascript"></script>
+    <script src="/static/js/jquery.fileupload.js" type="text/javascript"></script>
+    <script src="/static/js/chartkick.js" tyep="text/javascript"></script>
+    <script src="/static/js/fixtableheader.js" text="text/javascripy"></script>
+    <script src="/static/js/layer/layer.js" type="text/javascript"></script>
+    <script src="/static/js/upload.js" text="text/javascript"></script>
+    <script src="/static/js/analyze.js" text="text/javascript"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#loading").hide();
+        });
+
+    </script>
+</head>
+<body id='home'>
+<div class="ui active dimmer" id="loading">
+    <div class="ui medium indeterminate text loader">Loading</div>
+</div>
+<div class="ui basic active modal" id="loadbar">
+    <div class="ui dimmer" id="loadbartable">
+        <div class="ui medium indeterminate text loader">Loading</div>
+    </div>
+</div>
+<div class="ui fixed inverted menu">
+    <a class="item" style='margin-left: 10rem;padding: 1.2rem;' href='#'>
+        <i class="home icon"></i>EasyEdu-Analyzer
+    </a>
+
+    <a class="item" style='padding: 1.2rem;' href='/options' id='upload-nav'>
+        <i class="icon setting"></i>嗅探配置
+    </a>
+
+    <a class="item active" style='padding: 1.2rem;' href='/upload' id='upload-nav1'>
+        <i class="icon file"></i>文件管理
+    </a>
+
+    <a class="item " style='padding: 1.2rem;' href='/bugs' id='upload-nav2'>
+        <i class="icon beer"></i>漏洞规则
+    </a>
+
+</div>
+<br/>
+<div class="ui divider"></div>
+<div id='wrapper'>
+    <div class="ui small form">
+        <div class="ui segment">
+            <h3 class="ui dividing header">Pcap文件管理</h3>
+            <div class="ui two column fitted stackable grid">
+                <!--column1-->
+                <div class="ui eleven wide column">
+                    <div class="ui segment" style="height:46rem">
+                        <div style="position:absolute; height:20rem; overflow:auto;width: 98%">
+                            <table class="ui black small table" id="example" cellpadding="0"
+                                   cellspacing="0">
+                                <thead>
+                                <tr>
+                                <tr>
+                                    <th width="40%">文件</th>
+                                    <th width="15%">包数</th>
+                                    <th width="15%">大小</th>
+                                    <th width="15%">时间</th>
+                                    <th width="15%" class="center aligned">编辑</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for CapFile in CapFiles %}
+                                    <tr>
+                                        <td width="40%">{{ CapFile.file }}</td>
+                                        <td width="15%">{{ CapFile.filepcap }}</td>
+                                        <td width="15%">{{ CapFile.filesize }}</td>
+                                        <td width="15%">{{ CapFile.uploaddate }}</td>
+                                        <td class="right aligned collapsing" width="15%">
+                                            <div class="ui fitted toggle checkbox">
+                                                <input type="checkbox" name="checkoption"
+                                                       value="{{ CapFile.id }}"><label></label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="full-width">
+
+                            <div class="ui black small right floated button" id="scan-button"
+                                 style="float:right;margin-top:300px;">
+                                <i class="search icon"></i>扫描
+                            </div>
+                            <div class="ui small button" id="delete-button" style="color: #0a0a0b;margin-top:300px;">
+                                删除
+                            </div>
+                            <div class="ui small button" style="margin-top:300px;">
+                                <a href="" download="" id="download-button" style="color:#0a0a0b">下载</a>
+                            </div>
+                            <div class="ui small button" id="analyze-button" style="color: #0a0a0b;margin-top:300px;">
+                                查看
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="ui small del modal " id='del-confirm'>
+                            <div class="header">
+                                删除文件?
+                            </div>
+                            <div class="content">
+                                <p>删除原始包文件，将删除一切与之相关的扫描缓存，以及对应的报告文件！</p>
+                            </div>
+                            <div class="actions">
+                                <div class="ui negative button">
+                                    No
+                                </div>
+                                <div class="ui positive right labeled icon button">
+                                    Yes
+                                    <i class="checkmark icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="ui small ok modal" id='upload-ok'>
+                            <div class="header">
+                                上传文件
+                            </div>
+                            <div class="content">
+                                <p>上传成功</p>
+                            </div>
+                            <div class="actions">
+                                <div class="ui positive right labeled icon button">
+                                    Yes
+                                    <i class="checkmark icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+
+                </div>
+
+                <!--column2-->
+                <div class="ui five wide column">
+                    <div class="ui segment">
+                        <div class="field">
+                            <h5 class="ui dividing header">导入包文件</h5>
+		                        <span class="fluid ui black button fileinput-button"><i class="cloud upload icon"></i>Upload
+		                            <input id='fileupload' type="file" name="pcapfile" data-url="/upload">
+		                        </span>
+                            <br/>
+                            <div id="upprogress" class="ui green file progress">
+                                <div class="progress">
+                                    <div class="bar"></div>
+                                </div>
+                                <div class="label" id='progresslabel'></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/><br/>
+</div>
+<script>
+
+    $("#download-button").click(function () {
+        var params = "";
+        $(".checkbox").each(function () {
+           if($(this).hasClass("checked")){
+
+               params += $(this).children().attr("value") + ",";
+           }
+        });
+        $(this).attr("href","/download_pcap/" + params + "/");
+    });
+</script>
+</body>
+</html>
