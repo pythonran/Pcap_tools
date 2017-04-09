@@ -1,4 +1,4 @@
-# rybsup
+# Pcap_tools
 网络流量可配置嗅探，流量包解析，漏洞规则扫描，生成报告. ....搞网络安全这块，还凑合着用吧.<br>
 <B>1、环境安装:</B><br>
     &nbsp;&nbsp;&nbsp;python2.7 django>1.9 mysql mongo<br>
@@ -24,11 +24,11 @@
      &nbsp;&nbsp;&nbsp; tornado (4.4.3)<br>
      &nbsp;&nbsp;&nbsp; trollius (1.0.4)<br>
     &nbsp;&nbsp;&nbsp;  Werkzeug (0.12.1)<br>
-    
-    配置好settings中的DATABASES；
-    新建数据库；
-    运行python manage.py check无报错；
-    运行python manage.py makemigrate && python manage.py migrate 建立表结构
+    <br>
+    配置好settings中的DATABASES；<br>
+    新建数据库；<br>
+    运行python manage.py check无报错；<br>
+    运行python manage.py makemigrate && python manage.py migrate 建立表结构<br>
 <B>2、配置文件:</B>app01_config<br>
     &nbsp;&nbsp;&nbsp;[example_bpf]#BPF规则示范<br>
     &nbsp;&nbsp;&nbsp;监听物理地址  = ether host 00:00:5e:00:53:00<br>
@@ -48,6 +48,7 @@
     &nbsp;&nbsp;&nbsp;[report]#文件下载url，按照自己的IP改<br>
     &nbsp;&nbsp;&nbsp;downloadurl = http://192.168.137.100:8000/<br>
 <B>如果提示找不到tshark，运行yum install wireshark</B><br>
+<hr>
 <B>3、配置嗅探项目</B><br>
  ![](https://github.com/pythonran/rybsup/blob/master/sniffer.jpg)
 <B>4、流量包管理</B><br>
