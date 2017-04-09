@@ -48,7 +48,7 @@
     &nbsp;&nbsp;&nbsp;[report]#文件下载url，按照自己的IP改<br>
     &nbsp;&nbsp;&nbsp;downloadurl = http://192.168.137.100:8000/<br>
 <B>如果提示找不到tshark，运行yum install wireshark</B><br>
-<hr>
+<br>
 <B>3、配置嗅探项目</B><br>
  ![](https://github.com/pythonran/rybsup/blob/master/sniffer.jpg)
 <B>4、流量包管理</B><br>
