@@ -1,0 +1,4 @@
+*.pyc
+*.zip
+/analyzer/app01/repoters/*
+/analyzer/migrations/*
