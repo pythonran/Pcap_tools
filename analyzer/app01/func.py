@@ -3,14 +3,14 @@
 
 from cStringIO import StringIO
 from analyzer import settings
-from models import File_pcap, Bugs_content, sniff_Project
+from models import File_pcap, Bugs_content, sniff_Project, Bugs, Bugs_content, Repoters, Scan_result
 from scapy.all import *
-from pymongo import MongoClient as Client
+# from pymongo import MongoClient as Client
 
 import collections
 import os,sys,math
 import pyshark
-import MySQLdb
+# import MySQLdb
 import psutil
 import urllib
 import threading
@@ -21,17 +21,102 @@ import hashlib
 import cgi
 
 
+class Client(object):
+    def __init__(self):
+        self.cache = collections.OrderedDict()
+    
+    def __getattr__(self, item):
+        self.cache.update({item: Client()})
+        return self.cache[item]
+
+    def insert_one(self, val):
+        self.cache.setdefault('db', []).append(val)
+
+    def count(self, filters):
+        count = 0
+        for d in self.cache.get('db', []):
+            for k, v in filters.iteritems():
+                if d.get(k, None) != v:
+                    break
+            else:
+                count += 1
+        return count
+
+    def find(self, filters):
+        items = []
+        for d in self.cache['db']:
+            for k, v in filters.iteritems():
+                if isinstance(v, dict) and d.get(k, None) is not None:
+                    for kc, vc in v.iteritems():
+                        if "$gte" == kc:
+                            if d[k] >= vc:
+                                continue
+                            else:
+                                # 不满足条件
+                                break
+                        elif "$lte" == kc:
+                            if d[k] <= vc:
+                                continue
+                            else:
+                                break
+                        else:
+                            break
+                    else:
+                        # 含有匹配条件未命中条件
+                        continue
+                    # 全部命中，跳出后append
+                    break
+                elif d.get(k, None) != v:
+                    break
+            else:
+                items.append(d)
+        return items
+
+    def remove(self, filters):
+        items = []
+        db = self.cache.get('db', [])
+        for d in db:
+            for k, v in filters.iteritems():
+                if isinstance(v, dict) and d.get(k, None) is not None:
+                    for kc, vc in v.iteritems():
+                        if "$gte" == kc:
+                            if d[k] >= vc:
+                                continue
+                            else:
+                                # 不满足条件
+                                break
+                        elif "$lte" == kc:
+                            if d[k] <= vc:
+                                continue
+                            else:
+                                break
+                        else:
+                            break
+                    else:
+                        # 含有匹配条件未命中条件
+                        continue
+                    # 全部命中，跳出后append
+                    break
+                elif d.get(k, None) != v:
+                    break
+            else:
+                items.append(d)
+        self.cache['db'] = list(set(db) ^ set(items))
+        return True
+
+
 apppath = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = apppath + '/pcapfiles/'
 BUGS_FOLDER = apppath + '/bugsfiles/'
-PER_FILE_PKTS = 100
+PER_FILE_PKTS = 50
 ALLOWED_EXTENSIONS = set(['pcap','pcapng','cap'])
 conn = None
 db = None
 count = 0
 client = Client()               #连接mongoclinet
-mongodb = client.bugs           #创建bugs数据库
-bugs_info = mongodb.bugs_info   #创建bugs_info聚集,相当于表
+
+bugs = client.bugs           #创建bugs数据库
+list_bugs_info = bugs.bugs_info   #创建bugs_info聚集,相当于表
 content_num = 0
 mutex = threading.Lock()
 
@@ -60,9 +145,15 @@ def get_connection():
 
 #获取数据条目
 def show_entries():
-    db = get_connection()
-    db.execute('select * from app01_file_pcap')
-    entries = [dict(id=row[0], filename=row[1], filepcap=row[3], filesize=row[2],uploaddate=row[4]) for row in db.fetchall()]
+    # db = get_connection()
+    # db.execute('select * from app01_file_pcap')
+    rows = File_pcap.objects.all()
+    entries = [dict(id=row.id, filename=row.name, filepcap=row.pkt_counts, filesize=row.size,uploaddate=row.uploaddate) for row in rows]
+    # entries = [dict({
+
+    #         "filename": row.name,
+            
+    #     }) for row in rows]
     for i in entries:
         tmp = str(i["filename"])
         tmp = str(i["filename"])
@@ -84,54 +175,73 @@ def show_entries():
         entries[entries.index(i)] = i
     return entries
 
+
 def show_pro_entries():
-    db = get_connection()
-    db.execute('select * from app01_sniff_project')
-    entries = [dict(id=row[0], pro_name=row[1], filter=row[2], pcap_name=row[3], netcard=row[4], \
-                    pkt_counts=row[5],pcap_size=row[6], stat=row[7]) for row in db.fetchall()]
-    # mp = sniff_Project.objects.all()
-    # entries = mp.values()
+    # db = get_connection()
+    # db.execute('select * from app01_sniff_project')
+    rows = sniff_Project.objects.all()
+    entries = [dict(id=row.id, pro_name=row.pro_name, filter=row.filter, pcap_name=row.pcap_name, netcard=row.netcard, \
+                    pkt_counts=row.pkt_counts,pcap_size=row.pcap_size, stat=row.stat) for row in rows]
     return entries
+
 
 def show_bug_entries():
-    db = get_connection()
-    db.execute('select * from app01_bugs')
-    entries = [dict(id=row[0], bugs_name=row[1] ,bugsdesc=row[2]) for row in db.fetchall()]
+    # db = get_connection()
+    # db.execute('select * from app01_bugs')
+    rows = Bugs.objects.all()
+    entries = [dict(id=row.id, bugs_name=row.name,bugsdesc=row.desc) for row in rows]
     return entries
 
+
 def show_reporter_entries(id):
-    db = get_connection()
-    db.execute('select * from app01_repoters where user_id=%d'%id)
-    entries = [dict(id=row[0], name=row[2].split("_")[0]) for row in db.fetchall()]
+    # db = get_connection()
+    # db.execute('select * from app01_repoters where user_id=%d'%id)
+    rows = Repoters.objects.filter(user_id=id)
+    entries = [dict(id=row.id, name=row.repoter_name.split("_")[0]) for row in rows]
     return entries
 
 def show_repodown_entries(id):
-    db = get_connection()
-    db.execute('select * from app01_repoters where id=%d'%id)
-    entries = [dict(id=row[0], name=row[2]) for row in db.fetchall()]
+    # db = get_connection()
+    # db.execute('select * from app01_repoters where id=%d'%id)
+    # entries = [dict(id=row[0], name=row[2]) for row in db.fetchall()]
+    # return entries
+
+    rows = Repoters.objects.filter(id=id)
+    entries = [dict(id=row.id, name=row.repoter_name) for row in rows]
     return entries
 
 def show_reporterinfo_entries(id):
 
-    db = get_connection()
-    db.execute('select * from app01_repoters where id=%d'%id)
-    entries = [dict(reporter_summary=row[4]) for row in db.fetchall()]
+    # db = get_connection()
+    # db.execute('select * from app01_repoters where id=%d'%id)
+    # entries = [dict(reporter_summary=row[4]) for row in db.fetchall()]
+    # return entries
+
+    rows = Repoters.objects.filter(user_id=id)
+    entries = [dict(reporter_summary=row.repoter_summary) for row in rows]
     return entries
 
 def show_reporter(pname):
 
-    db = get_connection()
-    db.execute('''select * from app01_repoters where pcap_name="%s"''' % pname)
-    entries = [dict(id=row[0], reporter_name=row[2], reporter_summary=row[3], time=row[6], report_down=row[5]) for row in db.fetchall()]
+    # db = get_connection()
+    # db.execute('''select * from app01_repoters where pcap_name="%s"''' % pname)
+    # entries = [dict(id=row[0], reporter_name=row[2], reporter_summary=row[3], time=row[6], report_down=row[5]) for row in db.fetchall()]
+    # return entries
+    rows = Repoters.objects.filter(pcap_name=pname)
+    entries = [dict(id=row.id,reporter_summary=row.repoter_summary,reporter_name=row.repoter_name,
+        time=row.update_time,report_down=row.report_down) for row in rows]
     return entries
 
 
 #获取包信息
 def get_pcap_entries(id):
-    db = get_connection()
-    db.execute('''select * from app01_file_pcap where id="%d"''' % int(id))
-    entries = [dict(id=row[0], filename=row[1], filepcap=row[3], filesize=row[2], uploaddate=row[4]) for row in
-               db.fetchall()]
+    # db = get_connection()
+    # db.execute('''select * from app01_file_pcap where id="%d"''' % int(id))
+    # entries = [dict(id=row[0], filename=row[1], filepcap=row[3], filesize=row[2], uploaddate=row[4]) for row in
+    #            db.fetchall()]
+    rows = File_pcap.objects.filter(id=int(id))
+    entries = [dict(id=row.id, filename=row.name, filepcap=row.pkt_counts, filesize=row.size,uploaddate=row.uploaddate) for row in rows]
+    # entries = [dict({
     for i in entries:
         tmp = str(i["filename"])
         if "_" in tmp:
@@ -636,6 +746,8 @@ def get_filter(idselect):
     ret = {}
     try:
         for i in idselect.split(','):           #循环处理id
+            if i == "":
+                continue
             id = int(i)
             bc = Bugs_content.objects.get(id=id)
             key = bc.name.name                  #获取bugs_content的外键Bugs的name
@@ -738,7 +850,7 @@ class Pcapthread(threading.Thread):
         self.filepath = filepath
         self.flag=flag
         self.pcapfilename = self.filepath.split("/")[-1] + ".pcap"
-        self.bugs_info = db.bugs_info
+        self.bugs_info = list_bugs_info
         self.bugs_id = bugsid
         self.start_time = start
         self.stop_time = stop
@@ -766,7 +878,7 @@ def filter_Bugs(bugsfile, start_time, stop_time, bugsid):
     :param bugsid:          扫描文件的漏洞规则id
     :return:
     '''
-    global mongodb, content_num
+    global bugs, content_num
     timefilepath = ""
     content_num = 0 #清空全局计数器
     try:
@@ -816,11 +928,11 @@ def filter_Bugs(bugsfile, start_time, stop_time, bugsid):
     for i in range(0,thread_num):
         if i != thread_num - 1: #不是最后一组时
             tailnum = (i + 1) * PER_FILE_PKTS
-            thread_list.append(Pcapthread(mongodb, 'easyedu_' + str(i), timefilepath, tailnum, start_time, stop_time, bugsid))
+            thread_list.append(Pcapthread(bugs, 'easyanalyzer_' + str(i), timefilepath, tailnum, start_time, stop_time, bugsid))
         else: #最后一组
             tailnum = tail + i * PER_FILE_PKTS
 
-            thread_list.append(Pcapthread(mongodb, 'easyedu_' + str(i), timefilepath, tailnum, start_time, stop_time, bugsid, flag=True))
+            thread_list.append(Pcapthread(bugs, 'easyanalyzer_' + str(i), timefilepath, tailnum, start_time, stop_time, bugsid, flag=True))
     for ts in thread_list:
         ts.start()
     for tj in thread_list:

@@ -189,9 +189,9 @@ def delete_file(request, id):
             os.popen("rm -fr %s" % UPLOAD_FOLDER + name[0:-5])
             mi.delete()
             # 删除mongo的扫描缓存
-            list_client = Client()
-            list_bugs = list_client.bugs
-            list_bugs_info = list_bugs.bugs_info
+            # list_client = Client()
+            # list_bugs = list_client.bugs
+            # list_bugs_info = list_bugs.bugs_info
             mscan_result = Scan_result.objects.all()
             match_hash = []
             for msr in mscan_result:
@@ -207,7 +207,7 @@ def delete_file(request, id):
             reporter_name = []
             for mr in mrepoter:
                 if mr.pcap_name == name[0:-5]:
-                    if request.session["userid"] == mr.user_id:
+                    if 1 == mr.user_id:
                         reporter_name.append(mr.repoter_name)
                         mr.delete()
                 pass
@@ -344,9 +344,9 @@ def getBugs(request):
             'other_code': 1,
             'msg': 'No Project',
         }
-        sql_obj = Bugs.objects.get(name="SQL_Injection")
-        xss_obj = Bugs.objects.get(name="XSS")
-        other_obj = Bugs.objects.get(name="Other")
+        sql_obj,_ = Bugs.objects.get_or_create(name="SQL_Injection")
+        xss_obj,_ = Bugs.objects.get_or_create(name="XSS")
+        other_obj,_ = Bugs.objects.get_or_create(name="Other")
         sql_injection = sql_obj.bugs_content_set.all()
         xss = xss_obj.bugs_content_set.all()
         other = other_obj.bugs_content_set.all()
@@ -430,7 +430,7 @@ def saveSQL(request):
         params = request.POST
         filter_string = params["filter_string"]
         # filter_reg = params["filter_reg"]
-        bugs = Bugs.objects.get(name="SQL_Injection")
+        bugs,_ = Bugs.objects.get_or_create(name="SQL_Injection")
         bug_content = Bugs_content.objects.all()
         bug_content.create(name=bugs, filter_string=filter_string)
     except Exception, err:
@@ -445,7 +445,7 @@ def saveXSS(request):
         params = request.POST
         filter_string = params["filter_string"]
         # filter_reg = params["filter_reg"]
-        bugs = Bugs.objects.get(name="XSS")
+        bugs,_ = Bugs.objects.get_or_create(name="XSS")
         bug_content = Bugs_content.objects.all()
         bug_content.create(name=bugs, filter_string=filter_string)
     except Exception, err:
@@ -461,7 +461,7 @@ def saveOther(request):
         params = request.POST
         filter_string = params["filter_string"]
         # filter_reg = params["filter_reg"]
-        bugs = Bugs.objects.get(name="Other")
+        bugs,_ = Bugs.objects.get_or_create(name="Other")
         bug_content = Bugs_content.objects.all()
         bug_content.create(name=bugs, filter_string=filter_string)
     except Exception, err:
@@ -515,9 +515,9 @@ def pcapScan(request, id, num):
     '''
     SCAN_PAGER = 100
     page_id = id
-    list_client = Client()
-    list_bugs = list_client.bugs
-    list_bugs_info = list_bugs.bugs_info
+    # list_client = Client()
+    # list_bugs = list_client.bugs
+    # list_bugs_info = list_bugs.bugs_info
     page_num = int(num)
     if request.method == "POST":
         params = request.POST
@@ -837,9 +837,9 @@ def willRepoter(request, id):
     # print params
     content_num_list = []
     match_hash = ""
-    list_client = Client()
-    list_bugs = list_client.bugs
-    list_bugs_info = list_bugs.bugs_info
+    # list_client = Client()
+    # list_bugs = list_client.bugs
+    # list_bugs_info = list_bugs.bugs_info
     for i in params.items():
         if i[1] != "":
             if "key" in i[0]:
@@ -867,11 +867,11 @@ def gerRepoter(request, id):
     # print params
     content_num_list = []
     match_hash = ""
-    list_client = Client()
-    list_bugs = list_client.bugs
-    list_bugs_info = list_bugs.bugs_info
+    # list_client = Client()
+    # list_bugs = list_client.bugs
+    # list_bugs_info = list_bugs.bugs_info
     try:
-        has_userid = request.session["userid"]
+        has_userid = 1#request.session["userid"]
     except:
         err = {"msg": "认证已过期，请从数据分析字平台重新登录"}
         return render(request, "404.html", err)
@@ -914,7 +914,9 @@ def gerRepoter(request, id):
     # 处理用户选中项与数据库做匹配，选择最快方案
     counter = 0
     final_list = []
-    report_down = getConfig(apppath + "/app01_config")["repoter"][0]["report_down"] + "repoterdown/"
+    #report_down = getConfig(apppath + "/app01_config")["repoter"][0]["report_down"] + "repoterdown/"
+    report_down = "../../repoterdown/"
+
     example = {}
     for n in content_num_list:
         final = {}
@@ -960,12 +962,12 @@ def gerRepoter(request, id):
     }
     ret = {"scan_repo": ret_final}
     # 将概要描述入库
-    repoter_name = request.session["repoter_name"] + "_" + str(request.session["userid"])
+    repoter_name = request.session["repoter_name"] + "_" + 1
     mr = Repoters.objects.all()
-    mr.create(user_id=request.session["userid"], repoter_name=repoter_name \
+    mr.create(user_id=1, repoter_name=repoter_name \
               , repoter_summary=simplejson.dumps(ret_summary), pcap_name=pcapfilename, \
               update_time=time.strftime(r'%Y.%m.%d_%H:%M', time.localtime(time.time())))
-    report = mr.get(user_id=request.session["userid"], repoter_name=repoter_name)
+    report = mr.get(user_id=1, repoter_name=repoter_name)
     report_id = report.id
     ret_summary["results_summary"]["report_down"] = report_down + str(report_id) + "/"
     # ret_summary["example"][0]["report_down"] = report_down + str(report_id) + "/"
@@ -975,6 +977,8 @@ def gerRepoter(request, id):
     # 生成报告文件
 
     staic_html = REPORT_FOLDER + repoter_name
+    if not os.path.exists(REPORT_FOLDER):
+        os.popen("mkdir %s" % REPORT_FOLDER)
     if not os.path.exists(staic_html):
         cont = render_to_string(template_name='repo_tem.html', context=ret)
         with open(staic_html, 'w') as static_file:
@@ -1050,7 +1054,7 @@ def repoterName(request):
     try:
         flag = "false"
         params = request.POST
-        userid = request.session["userid"]
+        userid = 1#request.session["userid"]
         repoter_name = params["name"]
         strs = ["%", "&", "#", "!", "@", "^", "(", ")", "[", "]", "{", "}", "~", "+", "=", "-", "_", ".", ",", ";", "|"]
         for s in strs:
@@ -1166,7 +1170,7 @@ def _saveSQL(params):
     try:
         filter_string = params
         # filter_reg = params["filter_reg"]
-        bugs = Bugs.objects.get(name="SQL_Injection")
+        bugs ,_= Bugs.objects.get_or_create(name="SQL_Injection", desc="SQL注入攻击")
         bug_content = Bugs_content.objects.all()
         if bug_content.filter(filter_string=filter_string):
             pass
@@ -1180,7 +1184,7 @@ def _saveXSS(params):
     try:
         filter_string = params
         # filter_reg = params["filter_reg"]
-        bugs = Bugs.objects.get(name="XSS")
+        bugs,_ = Bugs.objects.get_or_create(name="XSS", desc="跨站脚本攻击")
         bug_content = Bugs_content.objects.all()
         if bug_content.filter(filter_string=filter_string):
             pass
@@ -1192,7 +1196,7 @@ def _saveXSS(params):
 
 @api_view(["GET"])
 def bugsinsert(request):
-    vmm_xml_path = os.path.abspath(os.path.curdir) + "/payloads/"
+    vmm_xml_path = os.path.abspath(os.path.curdir) + "/app01/payloads/"
     pathlist = [vmm_xml_path + i for i in os.listdir(vmm_xml_path)]
     print pathlist
     rootlist = [ET.parse(pathone) for pathone in pathlist]

@@ -5,7 +5,7 @@ import views
 
 urlpatterns = [
 
-    url(r'^login/(?P<sid>\d+)/$', views.login),
+    # url(r'^login/(?P<sid>\d+)/$', views.login),
 
     url(r'^upload$', views.upload),
     url(r'^upload/$',views.upload),
